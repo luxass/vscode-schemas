@@ -1,7 +1,3 @@
-[versions_compared]
-base = ""
-head = ""
-
 schemas = [
     "vscode://schemas/settings/default",
     "vscode://schemas/settings/folder",
@@ -28,3 +24,7 @@ schemas = [
     "vscode://schemas/workbench-colors",
     "vscode://schemas/workspaceConfig"
 ]
+
+[versions_compared]
+base = ""
+head = ""

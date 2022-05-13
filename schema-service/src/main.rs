@@ -3,6 +3,27 @@ use std::fs::File;
 use markdown_gen::markdown::{AsMarkdown, Markdown};
 use octocrab::Octocrab;
 use pulldown_cmark::{html, Options, Parser};
+use schema_lib::SchemaList;
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+struct Config {
+    plain: MyEnum,
+    plain_table: MyEnum,
+    tuple: MyEnum,
+    #[serde(rename = "struct")]
+    structv: MyEnum,
+    newtype: MyEnum,
+    my_enum: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+enum MyEnum {
+    Plain,
+    Tuple(i64, bool),
+    NewType(String),
+    Struct { value: i64 },
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -36,6 +57,42 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Write result to stdout.
     println!("\nHTML output:\n{}", &html_output);
+
+
+    let toml_str = r#"
+    schemas = [
+        "vscode://schemas/settings/default",
+        "vscode://schemas/settings/folder",
+        "vscode://schemas/settings/machine",
+        "vscode://schemas/settings/resourceLanguage",
+        "vscode://schemas/settings/user",
+        "vscode://schemas/settings/workspace",
+        "vscode://schemas/argv",
+        "vscode://schemas/color-theme",
+        "vscode://schemas/extensions",
+        "vscode://schemas/global-snippets",
+        "vscode://schemas/icon-theme",
+        "vscode://schemas/icons",
+        "vscode://schemas/ignoredSettings",
+        "vscode://schemas/keybindings",
+        "vscode://schemas/language-configuration",
+        "vscode://schemas/launch",
+        "vscode://schemas/product-icon-theme",
+        "vscode://schemas/snippets",
+        "vscode://schemas/tasks",
+        "vscode://schemas/textmate-colors",
+        "vscode://schemas/token-styling",
+        "vscode://schemas/vscode-extensions",
+        "vscode://schemas/workbench-colors",
+        "vscode://schemas/workspaceConfig"
+    ]
+
+    [versions_compared]
+    base = ""
+    head = """#;
+
+    let decoded: SchemaList = toml::from_str(toml_str).unwrap();
+    println!("{:#?}", decoded);
     Ok(())
 }
 
