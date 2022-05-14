@@ -10,8 +10,6 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(
     commands.registerCommand("schema-extractor.extract-one", async () => {
       const schemas = await getSchemas();
-      console.log(schemas);
-
       const root = TOML.parse(schemas);
 
       if (!root.schemas) {
