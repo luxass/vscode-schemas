@@ -47,7 +47,7 @@ impl<'octo, 'r> CompareBuilder<'octo, 'r> {
         self
     }
 
-    pub async fn send(self) -> Result<crate::octoduck::Pagination<compare::Root>> {
+    pub async fn send(self) -> Result<crate::octoduck::Pagination<compare::RootCommit>> {
         let url = format!(
             "repos/{owner}/{repo}/compare/{base}...{head}",
             owner = self.handler.owner,

@@ -1,29 +1,18 @@
-mod pagination;
 mod api;
-pub mod models;
 mod from_response;
+pub mod models;
+mod pagination;
 
+use reqwest::{StatusCode, Url};
 use secrecy::{ExposeSecret, SecretString};
 use serde::Serialize;
 use snafu::*;
-use reqwest::{StatusCode, Url};
 
-use crate::{
-    error,
-    Result,
-};
+use crate::{error, Result};
 
-pub use self::{
-    api::{
-        repos,
-    },
-    from_response::FromResponse,
-    pagination::Pagination,
-};
-
+pub use self::{api::repos, from_response::FromResponse, pagination::Pagination};
 
 const GITHUB_BASE_URL: &str = "https://api.github.com";
-
 
 pub async fn map_github_error(response: reqwest::Response) -> Result<reqwest::Response> {
     if response.status().is_success() {
@@ -61,7 +50,6 @@ pub struct OctoduckBuilder {
 }
 
 impl OctoduckBuilder {
-
     pub fn new() -> Self {
         Self::default()
     }
@@ -74,8 +62,7 @@ impl OctoduckBuilder {
     pub fn build(self) -> Result<Octoduck> {
         let mut hmap = reqwest::header::HeaderMap::new();
 
-
-         let auth_state = match self.auth {
+        let auth_state = match self.auth {
             Auth::None => AuthState::None,
             Auth::PersonalToken(token) => {
                 hmap.append(
@@ -87,8 +74,6 @@ impl OctoduckBuilder {
                 AuthState::None
             }
         };
-
-
 
         let client = reqwest::Client::builder()
             .user_agent("deprecatedluxas/vscode-schemas")
@@ -109,7 +94,6 @@ pub struct Octoduck {
     pub base_url: Url,
 }
 
-
 impl Octoduck {
     pub fn builder() -> OctoduckBuilder {
         OctoduckBuilder::default()
@@ -120,10 +104,10 @@ impl Octoduck {
     }
 
     pub async fn get<R, A, P>(&self, route: A, parameters: Option<&P>) -> Result<R>
-        where
-            A: AsRef<str>,
-            P: Serialize + ?Sized,
-            R: FromResponse,
+    where
+        A: AsRef<str>,
+        P: Serialize + ?Sized,
+        R: FromResponse,
     {
         let response = self._get(self.absolute_url(route)?, parameters).await?;
         R::from_response(map_github_error(response).await?).await
@@ -166,9 +150,7 @@ impl Octoduck {
     }
 
     pub fn absolute_url(&self, url: impl AsRef<str>) -> Result<Url> {
-        self.base_url
-            .join(url.as_ref())
-            .context(error::UrlSnafu)
+        self.base_url.join(url.as_ref()).context(error::UrlSnafu)
     }
 
     pub async fn get_page<R: serde::de::DeserializeOwned>(
@@ -176,8 +158,13 @@ impl Octoduck {
         url: &Option<Url>,
     ) -> Result<Option<Pagination<R>>> {
         match url {
-            Some(url) => self.get(url, None::<&()>).await.map(Some),
+            Some(url) => {
+                println!("{}", url.to_string());
+                self.get(url, None::<&()>).await.map(Some)
+            },
             None => Ok(None),
         }
     }
+
+
 }

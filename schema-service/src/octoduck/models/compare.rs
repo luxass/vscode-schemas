@@ -332,7 +332,7 @@ pub struct Parent2 {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Commit3 {
+pub struct RootCommit {
     pub sha: String,
     #[serde(rename = "node_id")]
     pub node_id: String,

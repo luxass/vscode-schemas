@@ -1,15 +1,14 @@
+use log::{debug, error};
 use schema_lib::{octoduck::Octoduck, read_schema_list, write_schema_list, SchemaList};
 use std::env;
 use std::fs::File;
 use std::io::Write;
-use log::{debug, error};
 
 // use markdown_gen::markdown::{AsMarkdown, Markdown};
 // use octocrab::Octocrab;
 // use pulldown_cmark::{html, Options, Parser};
 // use schema_lib::releases::ReleaseHandlerExt;
 // use schema_lib::repo::RepoHandlerExt;
-
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -18,7 +17,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .filter_module("vscode_schemas", log::LevelFilter::Trace)
         .write_style(env_logger::WriteStyle::Always)
         .init();
-
 
     let github_token = env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN not set");
 
@@ -44,23 +42,33 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // println!("{:?}", last_two_releases);
     println!("{:?}", last_two_releases.names());
 
-    let mut compare_page = repo.compare().per_page(250).base("1.65.0").head("1.66.2").send().await?;
-    // error!("{:?}", compare_page.take_items());
+    // let mut compare_page = repo.compare().per_page(250).base("1.65.0").head("1.66.2").send().await?;
     //
-    // for page in compare_page {
-    //     println!("{:?}", page);
+    // let mut files = compare_page.take_items();
+    // while let Ok(Some(mut new_compare)) = octoduck.get_page(&compare_page.next).await {
+    //     files.extend(new_compare.take_items());
+    //     compare_page = new_compare;
     // }
-    //
+
+    let mut compare_page = repo
+        .compare()
+        .per_page(250)
+        .base("1.65.0")
+        .head("1.66.2")
+        .send()
+        .await?;
+
     let mut files = compare_page.take_items();
     while let Ok(Some(mut new_compare)) = octoduck.get_page(&compare_page.next).await {
         files.extend(new_compare.take_items());
+
+
         compare_page = new_compare;
     }
 
-
     //
-    debug!("{:?}", files.len());
-
+    error!("{:?}", files.len());
+    println!("WHAT");
     // let contents = toml::to_string_pretty(&schema_list).unwrap();
     let mut file = File::create("../test.json").unwrap();
     let stri = serde_json::to_string_pretty(&files).unwrap();
