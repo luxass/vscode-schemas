@@ -51,10 +51,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // }
 
     let mut compare_page = repo
-        .compare()
+        .compare("1.65.0".to_string(), "1.66.2".to_string())
+        .list_commits()
         .per_page(250)
-        .base("1.65.0")
-        .head("1.66.2")
         .send()
         .await?;
 
@@ -62,11 +61,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     while let Ok(Some(mut new_compare)) = octoduck.get_page(&compare_page.next).await {
         files.extend(new_compare.take_items());
 
-
         compare_page = new_compare;
     }
 
-    //
     error!("{:?}", files.len());
     println!("WHAT");
     // let contents = toml::to_string_pretty(&schema_list).unwrap();
