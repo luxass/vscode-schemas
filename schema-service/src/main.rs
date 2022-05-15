@@ -58,24 +58,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     let mut files = compare_page.take_items();
+
     while let Ok(Some(mut new_compare)) = octoduck.get_page(&compare_page.next).await {
         files.extend(new_compare.take_items());
 
+        debug!("{:?}", new_compare.total_count);
+
         compare_page = new_compare;
     }
-
-    error!("{:?}", files.len());
-    println!("WHAT");
-    // let contents = toml::to_string_pretty(&schema_list).unwrap();
-    let mut file = File::create("../test.json").unwrap();
-    let stri = serde_json::to_string_pretty(&files).unwrap();
-    file.write_all(stri.as_bytes()).unwrap();
-    // debug!("{:?}", files.len());
-
-    // let file = File::create("C:/Users/Yepper/Yepper/vscode-schemas/README.md").unwrap();
-    // let mut md = Markdown::new(file);
-    //
-    // println!("{:?}", Markdown::from("".as_markdown()));
 
     // let markdown_input: &str = "Hello world, this is a ~~complicated~~ *very simple* example.";
     // println!("Parsing the following markdown string:\n{}", markdown_input);

@@ -95,22 +95,14 @@ impl<T: serde::de::DeserializeOwned> crate::octoduck::FromResponse for Paginatio
                 .into_iter()
                 .find(|v| json.get(v).is_some())
                 .unwrap();
-            // debug!("Pagination response is not an array, but contains {}", attr);
-            // if attr == "files" {
-            //     let logl = serde_json::from_value(json.get(attr).cloned().unwrap())
-            //         .context(crate::error::SerdeSnafu)?;
-            //     debug!("{:?}", logl);
-            //     panic!("Pagination response is not an array, but contains files");
-            // }
 
             Ok(Self {
                 items: serde_json::from_value(json.get(attr).cloned().unwrap())
                     .context(crate::error::SerdeSnafu)?,
-                incomplete_results: None,
-                // incomplete_results: json
-                //     .get("incomplete_results")
-                //     .and_then(serde_json::Value::as_bool),
-                total_count: json.get("total_commits").and_then(serde_json::Value::as_u64),
+                incomplete_results: json
+                    .get("incomplete_results")
+                    .and_then(serde_json::Value::as_bool),
+                total_count: json.get("total_count").and_then(serde_json::Value::as_u64),
                 next,
                 prev,
                 first,
