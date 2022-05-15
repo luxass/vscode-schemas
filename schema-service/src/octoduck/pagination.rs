@@ -16,12 +16,11 @@ pub struct Pagination<T> {
 }
 
 impl<T> Pagination<T> {
-    /// Returns the current set of items, replacing it with an empty Vec.
+
     pub fn take_items(&mut self) -> Vec<T> {
         std::mem::take(&mut self.items)
     }
 
-    /// If `last` is present, return the number of pages for this navigation.
     pub fn number_of_pages(&self) -> Option<u32> {
         self.last.as_ref().and_then(|url| {
             url.query_pairs()
@@ -78,14 +77,10 @@ impl<T: serde::de::DeserializeOwned> crate::octoduck::FromResponse for Paginatio
             next,
             last,
         } = get_links(&response)?;
-        // debug!("{:?}", first);
-        // debug!("{:?}", prev);
-        // debug!("{:?}", next);
-        // debug!("{:?}", last);
-
         let json: serde_json::Value = response.json().await.context(crate::error::HttpSnafu)?;
 
         if json.is_array() {
+
             Ok(Self {
                 items: serde_json::from_value(json).context(crate::error::SerdeSnafu)?,
                 incomplete_results: None,
@@ -96,7 +91,6 @@ impl<T: serde::de::DeserializeOwned> crate::octoduck::FromResponse for Paginatio
                 last,
             })
         } else {
-            // debug!("Pagination response is not an array");
             let attr = vec!["items", "workflows", "workflow_runs", "jobs", "artifacts", "commits"]
                 .into_iter()
                 .find(|v| json.get(v).is_some())
@@ -108,11 +102,8 @@ impl<T: serde::de::DeserializeOwned> crate::octoduck::FromResponse for Paginatio
             //     debug!("{:?}", logl);
             //     panic!("Pagination response is not an array, but contains files");
             // }
-            let gg = json.get(attr).cloned().unwrap();
 
-
-            debug!("JSON URL: {:?}", gg);
-            let lol = Self {
+            Ok(Self {
                 items: serde_json::from_value(json.get(attr).cloned().unwrap())
                     .context(crate::error::SerdeSnafu)?,
                 incomplete_results: None,
@@ -124,8 +115,7 @@ impl<T: serde::de::DeserializeOwned> crate::octoduck::FromResponse for Paginatio
                 prev,
                 first,
                 last,
-            };
-            Ok(lol)
+            })
         }
     }
 }

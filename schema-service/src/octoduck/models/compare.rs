@@ -3,28 +3,37 @@ use url::Url;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct Root {
-    // pub url: Url,
-    // #[serde(rename = "html_url")]
+    // #[serde(skip)]
+    // pub url: String,
+    // #[serde(skip)]
     // pub html_url: String,
-    // #[serde(rename = "permalink_url")]
-    // pub permalink_url: Url,
-    // #[serde(rename = "diff_url")]
+    // #[serde(skip)]
+    // pub permalink_url: String,
+    // #[serde(skip)]
     // pub diff_url: String,
-    // #[serde(rename = "patch_url")]
+    // #[serde(skip)]
     // pub patch_url: String,
-    // #[serde(rename = "base_commit")]
+    //
+    // #[serde(skip)]
     // pub base_commit: BaseCommit,
-    // #[serde(rename = "merge_base_commit")]
+    //
+    // #[serde(skip)]
     // pub merge_base_commit: MergeBaseCommit,
+    //
+    // #[serde(skip)]
     // pub status: String,
-    // #[serde(rename = "ahead_by")]
+    //
+    // #[serde(skip)]
     // pub ahead_by: i64,
-    // #[serde(rename = "behind_by")]
+    // #[serde(skip)]
     // pub behind_by: i64,
-    // #[serde(rename = "total_commits")]
-    pub total_commits: i64,
-    pub commits: Vec<Commit3>,
-    pub files: Vec<File>,
+    // #[serde(skip)]
+    // pub total_commits: i64,
+    // #[serde(skip)]
+
+    // pub commits: Vec<Commit3>,
+    // #[serde(skip)]
+    // pub files: Vec<File>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

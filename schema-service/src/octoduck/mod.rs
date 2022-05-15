@@ -144,6 +144,7 @@ impl Octoduck {
 
     pub async fn execute(&self, mut request: reqwest::RequestBuilder) -> Result<reqwest::Response> {
         let mut retries = 0;
+
         loop {
             // Saved request that we can retry later if necessary
             let retry_request = None;
@@ -174,7 +175,6 @@ impl Octoduck {
         &self,
         url: &Option<Url>,
     ) -> Result<Option<Pagination<R>>> {
-        error!("GET_PAGE URL: {:?}", url);
         match url {
             Some(url) => self.get(url, None::<&()>).await.map(Some),
             None => Ok(None),
