@@ -13,7 +13,8 @@ use crate::{
 };
 
 pub use releases::ReleasesHandler;
-use crate::octoduck::repos::compares::CompareBuilder;
+pub use compares::CompareHandler;
+// use crate::octoduck::repos::compares::CompareBuilder;
 
 pub struct RepoHandler<'octo> {
     duck: &'octo Octoduck,
@@ -35,7 +36,8 @@ impl<'octo> RepoHandler<'octo> {
       ReleasesHandler::new(self)
     }
 
-    pub fn compare(&self) -> CompareBuilder<'_, '_> {
-      CompareBuilder::new(self)
+    pub fn compare(&self, base: String, head: String) -> CompareHandler<'_, '_> {
+      CompareHandler::new(self, base, head)
     }
+
 }

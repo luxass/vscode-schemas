@@ -1,39 +1,20 @@
 use url::Url;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub struct Root {
-    // #[serde(skip)]
-    // pub url: String,
-    // #[serde(skip)]
-    // pub html_url: String,
-    // #[serde(skip)]
-    // pub permalink_url: String,
-    // #[serde(skip)]
-    // pub diff_url: String,
-    // #[serde(skip)]
-    // pub patch_url: String,
-    //
-    // #[serde(skip)]
-    // pub base_commit: BaseCommit,
-    //
-    // #[serde(skip)]
-    // pub merge_base_commit: MergeBaseCommit,
-    //
-    // #[serde(skip)]
-    // pub status: String,
-    //
-    // #[serde(skip)]
-    // pub ahead_by: i64,
-    // #[serde(skip)]
-    // pub behind_by: i64,
-    // #[serde(skip)]
-    // pub total_commits: i64,
-    // #[serde(skip)]
-
-    // pub commits: Vec<Commit3>,
-    // #[serde(skip)]
-    // pub files: Vec<File>,
+pub struct CompareRoot {
+    pub url: String,
+    pub html_url: String,
+    pub permalink_url: String,
+    pub diff_url: String,
+    pub patch_url: String,
+    pub base_commit: BaseCommit,
+    pub merge_base_commit: MergeBaseCommit,
+    pub status: String,
+    pub ahead_by: i64,
+    pub behind_by: i64,
+    pub total_commits: i64,
+    pub commits: Vec<CompareCommit>,
+    pub files: Vec<File>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -331,20 +312,25 @@ pub struct Parent2 {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct RootCommit {
-    pub sha: String,
-    #[serde(rename = "node_id")]
-    pub node_id: String,
-    pub commit: Commit4,
-    pub url: String,
-    #[serde(rename = "html_url")]
-    pub html_url: String,
-    #[serde(rename = "comments_url")]
-    pub comments_url: String,
-    pub author: Author6,
-    pub committer: Committer6,
-    pub parents: Vec<Parent3>,
+pub struct CompareCommit {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sha: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub node_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub html_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub comments_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub commit: Option<Commit4>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub author: Option<Author6>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub committer: Option<Committer6>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parents: Option<Vec<Parent3>>
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
