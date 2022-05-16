@@ -26,5 +26,5 @@ schemas = [
 ]
 
 [versions_compared]
-base = '69'
-head = '420'
+base = '1.66.2'
+head = '1.67.0'
