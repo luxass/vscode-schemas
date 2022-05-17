@@ -171,7 +171,7 @@ pub struct Repository {
     pub source: Option<Box<Repository>>,
 }
 
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct LatestCommit {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub sha: Option<String>,
+    pub sha: String,
 }

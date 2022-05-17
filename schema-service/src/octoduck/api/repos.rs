@@ -1,20 +1,14 @@
-pub mod releases;
 pub mod compares;
+pub mod releases;
 
-use crate::{
-    octoduck::{
-        Octoduck, Result,
-        models::{
-            repos,
-            release,
-            compare
-        }
-    }
+use crate::octoduck::{
+    models::{compare, release, repos},
+    Octoduck, Result,
 };
 
-pub use releases::ReleasesHandler;
-pub use compares::CompareHandler;
 use crate::octoduck::models::repos::LatestCommit;
+pub use compares::CompareHandler;
+pub use releases::ReleasesHandler;
 
 pub struct RepoHandler<'octo> {
     duck: &'octo Octoduck,
@@ -33,19 +27,25 @@ impl<'octo> RepoHandler<'octo> {
     }
 
     pub fn releases(&self) -> ReleasesHandler<'_, '_> {
-      ReleasesHandler::new(self)
+        ReleasesHandler::new(self)
     }
 
     pub fn compare(&self, base: String, head: String) -> CompareHandler<'_, '_> {
-      CompareHandler::new(self, base, head)
+        CompareHandler::new(self, base, head)
     }
 
     pub async fn get_latest_commit_sha(&self) -> Result<String> {
         let repo = self.get().await?;
 
-        let url = format!("repos/{owner}/{repo}/commits/{default_branch}", owner = self.owner, repo = self.repo, default_branch = repo.default_branch,);
-        let commit = self.duck.get(url, None::<&()>).await?;
-        commit.sha
+        let default_branch = repo.default_branch.unwrap_or("main".to_string());
 
+        let url = format!(
+            "repos/{owner}/{repo}/commits/{default_branch}",
+            owner = self.owner,
+            repo = self.repo,
+            default_branch = default_branch
+        );
+        let commit: LatestCommit = self.duck.get(url, None::<&()>).await?;
+        Ok(commit.sha)
     }
 }
