@@ -23,6 +23,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let octoduck = Octoduck::builder().personal_token(github_token).build()?;
 
     let repo = octoduck.repos("microsoft", "vscode");
+    repo.get_last_commit()
 
     // println!("{:?}", repo.get().await?);
     let mut release_page = repo.releases().list().per_page(10).send().await?;

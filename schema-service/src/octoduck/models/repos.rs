@@ -170,3 +170,8 @@ pub struct Repository {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<Box<Repository>>,
 }
+
+pub struct LatestCommit {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sha: Option<String>,
+}

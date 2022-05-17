@@ -14,7 +14,7 @@ use crate::{
 
 pub use releases::ReleasesHandler;
 pub use compares::CompareHandler;
-// use crate::octoduck::repos::compares::CompareBuilder;
+use crate::octoduck::models::repos::LatestCommit;
 
 pub struct RepoHandler<'octo> {
     duck: &'octo Octoduck,
@@ -40,4 +40,12 @@ impl<'octo> RepoHandler<'octo> {
       CompareHandler::new(self, base, head)
     }
 
+    pub async fn get_latest_commit_sha(&self) -> Result<String> {
+        let repo = self.get().await?;
+
+        let url = format!("repos/{owner}/{repo}/commits/{default_branch}", owner = self.owner, repo = self.repo, default_branch = repo.default_branch,);
+        let commit = self.duck.get(url, None::<&()>).await?;
+        commit.sha
+
+    }
 }
