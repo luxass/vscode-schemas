@@ -34,6 +34,11 @@ impl<'octo> RepoHandler<'octo> {
         CompareHandler::new(self, base, head)
     }
 
+    pub async fn default_branch(&self) -> Result<String> {
+        let repo = self.get().await?;
+        Ok(repo.default_branch.unwrap_or("main".to_string()))
+    }
+
     pub async fn get_latest_commit_sha(&self) -> Result<String> {
         let repo = self.get().await?;
 
@@ -47,5 +52,15 @@ impl<'octo> RepoHandler<'octo> {
         );
         let commit: LatestCommit = self.duck.get(url, None::<&()>).await?;
         Ok(commit.sha)
+    }
+
+    pub async fn download_tarball(&self, reference: String) -> Result<reqwest::Response> {
+        let url = self.duck.absolute_url(format!(
+            "repos/{owner}/{repo}/tarball/{reference}",
+            owner = self.owner,
+            repo = self.repo,
+            reference = reference,
+        ))?;
+        self.duck._get(url, None::<&()>).await
     }
 }

@@ -1,8 +1,8 @@
 use log::{debug, error};
 use schema_lib::{octoduck::Octoduck, read_schema_list, write_schema_list, SchemaList};
-use std::env;
-use std::fs::File;
-use std::io::Write;
+use std::{env, io};
+use std::fs::{copy, File};
+use std::io::{Cursor, Write};
 
 // use markdown_gen::markdown::{AsMarkdown, Markdown};
 // use octocrab::Octocrab;
@@ -23,7 +23,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let octoduck = Octoduck::builder().personal_token(github_token).build()?;
 
     let repo = octoduck.repos("microsoft", "vscode");
-    repo.get_last_commit()
+
+
+    let default_branch = repo.default_branch().await?;
+    debug!("default branch: {}", default_branch);
+
+    let res = repo.download_tarball(default_branch).await?;
+    let mut file = File::create("vscode.tar.gz")?;
+
+    let bytes = res.bytes().await.expect("failed to read bytes");
+
+    let mut content = Cursor::new(bytes);
+    io::copy(&mut content, &mut file).expect("failed to write file");
+
 
     // println!("{:?}", repo.get().await?);
     let mut release_page = repo.releases().list().per_page(10).send().await?;
