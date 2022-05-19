@@ -13,8 +13,6 @@ use std::io::{Read, Write};
 use url::Url;
 
 pub mod docker;
-pub mod releases;
-pub mod repo;
 pub mod error;
 pub mod octoduck;
 
@@ -35,8 +33,8 @@ pub type Result<T, E = error::Error> = std::result::Result<T, E>;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct SchemaList {
+    pub last_release: String,
     pub schemas: Vec<String>,
-    pub versions_compared: VersionsCompared
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -69,19 +67,19 @@ pub struct CompareFile {
 }
 
 
-pub fn read_schema_list() -> SchemaList {
-
-    let mut file = File::open("../schema-list.toml").unwrap();
-    let mut contents = String::new();
-    file.read_to_string(&mut contents).unwrap();
-
-    let schema_list: SchemaList = toml::from_str(&contents).unwrap();
-    schema_list
-}
+// pub fn read_schema_list() -> SchemaList {
+//
+//     let mut file = File::open("../schema-list.toml").unwrap();
+//     let mut contents = String::new();
+//     file.read_to_string(&mut contents).unwrap();
+//
+//     let schema_list: SchemaList = toml::from_str(&contents).unwrap();
+//     schema_list
+// }
 
 pub fn write_schema_list(schema_list: SchemaList) {
-    let contents = toml::to_string_pretty(&schema_list).unwrap();
-    let mut file = File::create("../schema-list.toml").unwrap();
+    let contents = serde_json::to_string_pretty(&schema_list).unwrap();
+    let mut file = File::create("../schema-list.json").unwrap();
     file.write_all(contents.as_bytes()).unwrap();
 }
 

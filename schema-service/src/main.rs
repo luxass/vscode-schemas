@@ -1,14 +1,18 @@
 use log::{debug, error};
-use schema_lib::{octoduck::Octoduck, read_schema_list, write_schema_list, SchemaList};
+use schema_lib::{octoduck::Octoduck, write_schema_list, SchemaList};
 use std::{env, io};
 use std::fs::{copy, File};
 use std::io::{Cursor, Write};
+use std::path::Path;
+use tar::Archive;
+use flate2::read::GzDecoder;
 
 // use markdown_gen::markdown::{AsMarkdown, Markdown};
 // use octocrab::Octocrab;
 // use pulldown_cmark::{html, Options, Parser};
 // use schema_lib::releases::ReleaseHandlerExt;
 // use schema_lib::repo::RepoHandlerExt;
+
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -17,6 +21,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .filter_module("vscode_schemas", log::LevelFilter::Trace)
         .write_style(env_logger::WriteStyle::Always)
         .init();
+
+    let extraction_dir: &Path = Path::new("../extraction");
 
     let github_token = env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN not set");
 
@@ -29,7 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     debug!("default branch: {}", default_branch);
 
     let res = repo.download_tarball(default_branch).await?;
-    let mut file = File::create("vscode.tar.gz")?;
+    let mut file = File::create(extraction_dir.join("vscode.tar.gz"))?;
 
     let bytes = res.bytes().await.expect("failed to read bytes");
 
@@ -37,23 +43,33 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     io::copy(&mut content, &mut file).expect("failed to write file");
 
 
-    // println!("{:?}", repo.get().await?);
-    let mut release_page = repo.releases().list().per_page(10).send().await?;
-    let mut releases = release_page.take_items();
+    let tar_gz = File::open(extraction_dir.join("vscode.tar.gz"))?;
 
-    while let Ok(Some(mut new_release)) = octoduck.get_page(&release_page.next).await {
-        releases.extend(new_release.take_items());
+    let tar = GzDecoder::new(tar_gz);
+    let mut archive = Archive::new(tar);
+    archive.unpack(extraction_dir.join("."))?;
 
-        release_page = new_release;
-    }
+    let sha = repo.get_latest_commit_sha().await?;
+    debug!("latest commit: {}", sha);
 
-    for release in releases {
-        println!("{:?}", release.tag_name);
-    }
 
-    let last_two_releases = repo.releases().get_last_two_releases().await?;
-    // println!("{:?}", last_two_releases);
-    println!("{:?}", last_two_releases.names());
+    // // println!("{:?}", repo.get().await?);
+    // let mut release_page = repo.releases().list().per_page(10).send().await?;
+    // let mut releases = release_page.take_items();
+    //
+    // while let Ok(Some(mut new_release)) = octoduck.get_page(&release_page.next).await {
+    //     releases.extend(new_release.take_items());
+    //
+    //     release_page = new_release;
+    // }
+    //
+    // for release in releases {
+    //     println!("{:?}", release.tag_name);
+    // }
+    //
+    // let last_two_releases = repo.releases().get_last_two_releases().await?;
+    // // println!("{:?}", last_two_releases);
+    // println!("{:?}", last_two_releases.names());
 
     // let mut compare_page = repo.compare().per_page(250).base("1.65.0").head("1.66.2").send().await?;
     //
@@ -63,22 +79,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     compare_page = new_compare;
     // }
 
-    let mut compare_page = repo
-        .compare("1.65.0".to_string(), "1.66.2".to_string())
-        .list_commits()
-        .per_page(250)
-        .send()
-        .await?;
-
-    let mut files = compare_page.take_items();
-
-    while let Ok(Some(mut new_compare)) = octoduck.get_page(&compare_page.next).await {
-        files.extend(new_compare.take_items());
-
-        debug!("{:?}", new_compare.total_count);
-
-        compare_page = new_compare;
-    }
+    // let mut compare_page = repo
+    //     .compare("1.65.0".to_string(), "1.66.2".to_string())
+    //     .list_commits()
+    //     .per_page(250)
+    //     .send()
+    //     .await?;
+    //
+    // let mut files = compare_page.take_items();
+    //
+    // while let Ok(Some(mut new_compare)) = octoduck.get_page(&compare_page.next).await {
+    //     files.extend(new_compare.take_items());
+    //
+    //     debug!("{:?}", new_compare.total_count);
+    //
+    //     compare_page = new_compare;
+    // }
 
     // let markdown_input: &str = "Hello world, this is a ~~complicated~~ *very simple* example.";
     // println!("Parsing the following markdown string:\n{}", markdown_input);
@@ -147,7 +163,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // base = ""
     // head = """#;
 
-    let schema_list: SchemaList = read_schema_list();
+    // let schema_list: SchemaList = read_schema_list();
 
     // let mut decoded: SchemaList = schema_lib::compare::read_schema_list();
     // println!("{:#?}", decoded);

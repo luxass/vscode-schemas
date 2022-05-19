@@ -27,18 +27,12 @@ pub enum Error {
         source: serde_path_to_error::Error<serde_json::Error>,
         backtrace: Backtrace,
     },
-    // #[snafu(display("JWT Error in {}\nFound at {}", source, backtrace))]
-    // JWT {
-    //     source: jsonwebtoken::errors::Error,
-    //     backtrace: Backtrace,
-    // },
     Other {
         source: Box<dyn std::error::Error + Send + Sync>,
         backtrace: Backtrace,
     },
 }
 
-/// An error returned from GitHub's API.
 #[derive(serde::Deserialize, Debug, Clone)]
 #[non_exhaustive]
 pub struct GitHubError {

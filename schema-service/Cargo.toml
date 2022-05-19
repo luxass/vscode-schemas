@@ -16,7 +16,6 @@ tokio = { version = "1", features = ["full"] }
 async-trait = "0.1"
 url = { version = "2.2", features = ["serde"] }
 chrono = { version = "0.4.19", features = ["serde"]}
-toml = "0.5"
 markdown-gen = "1.2.1"
 pulldown-cmark = "0.9.1"
 bollard = "0.12"
@@ -28,3 +27,7 @@ secrecy = "0.8"
 # Logging
 log = "0.4"
 env_logger = "0.8"
+
+# IO
+tar = "0.4"
+flate2 = "1.0"
