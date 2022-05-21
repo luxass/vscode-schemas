@@ -13,17 +13,15 @@ impl<'octo, 'r> ReleasesHandler<'octo, 'r> {
     pub fn list(&self) -> ListReleasesBuilder<'_, '_, '_> {
         ListReleasesBuilder::new(self)
     }
-
-
-    pub async fn get_last_two_releases(&self) -> Result<release::LastTwoReleases> {
-        info!("Getting last two releases");
-        let releases = self.list().send().await?;
-        let releases = releases.items.iter().take(2).collect::<Vec<_>>();
-        let last_release = releases.get(0).unwrap();
-        let second_last_release = releases.get(1).unwrap();
-
-        // Placement needs to be like this, otherwise we compare the wrong way around
-        Ok(release::LastTwoReleases(second_last_release.to_owned().clone(), last_release.to_owned().clone()))
+    
+    
+    pub async fn get_last_release(&self) -> Result<release::Release> {
+        let url = format!(
+            "repos/{owner}/{repo}/releases/latest",
+            owner = self.parent.owner,
+            repo = self.parent.repo,
+        );
+        self.parent.duck.get(url, None::<&()>).await
     }
 }
 

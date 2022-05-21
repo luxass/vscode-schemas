@@ -1,11 +1,14 @@
-use log::{debug, error};
-use schema_lib::{octoduck::Octoduck, write_schema_list, SchemaList};
-use std::{env, io};
-use std::fs::{copy, File};
-use std::io::{Cursor, Write};
-use std::path::Path;
-use tar::Archive;
 use flate2::read::GzDecoder;
+use log::info;
+use schema_lib::{
+    clean_up_src_folder, octoduck::Octoduck, parse_folder_name, scan_for_ts_files,
+    write_schema_list, SchemaList,
+};
+use std::fs::File;
+use std::io::Cursor;
+use std::path::Path;
+use std::{env, fs, io};
+use tar::Archive;
 
 // use markdown_gen::markdown::{AsMarkdown, Markdown};
 // use octocrab::Octocrab;
@@ -13,6 +16,15 @@ use flate2::read::GzDecoder;
 // use schema_lib::releases::ReleaseHandlerExt;
 // use schema_lib::repo::RepoHandlerExt;
 
+#[macro_use]
+extern crate swc_common;
+extern crate swc_ecma_parser;
+use swc_common::sync::Lrc;
+use swc_common::{
+    errors::{ColorConfig, Handler},
+    FileName, FilePathMapping, SourceMap,
+};
+use swc_ecma_parser::{lexer::Lexer, Capturing, Parser, StringInput, Syntax, TsConfig};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -30,28 +42,85 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let repo = octoduck.repos("microsoft", "vscode");
 
+    let last_release = repo.releases().get_last_release().await?;
+    let last_release_tag_name = last_release.tag_name;
+    info!("latest release name: {}", last_release_tag_name);
+
+    let mut sha = repo.get_latest_commit_sha().await?;
+    sha = sha[0..7].to_string();
+    info!("latest commit: {}", sha);
+
+    let unpack_name = parse_folder_name(&sha);
+    info!("unpack name: {}", unpack_name);
+
+    let src_folder = extraction_dir.join(unpack_name);
 
     let default_branch = repo.default_branch().await?;
-    debug!("default branch: {}", default_branch);
+    info!("default branch: {}", default_branch);
 
-    let res = repo.download_tarball(default_branch).await?;
-    let mut file = File::create(extraction_dir.join("vscode.tar.gz"))?;
+    if !Path::new(src_folder.to_str().unwrap()).exists() {
+        let res = repo.download_tarball(default_branch).await?;
+        let mut file = File::create(extraction_dir.join("vscode.tar.gz"))?;
 
-    let bytes = res.bytes().await.expect("failed to read bytes");
+        let bytes = res.bytes().await.expect("failed to read bytes");
 
-    let mut content = Cursor::new(bytes);
-    io::copy(&mut content, &mut file).expect("failed to write file");
+        let mut content = Cursor::new(bytes);
+        io::copy(&mut content, &mut file).expect("failed to write file");
 
+        let tar_gz = File::open(extraction_dir.join("vscode.tar.gz"))?;
 
-    let tar_gz = File::open(extraction_dir.join("vscode.tar.gz"))?;
+        let tar = GzDecoder::new(tar_gz);
+        let mut archive = Archive::new(tar);
+        archive.unpack(extraction_dir.join("."))?;
+    }
 
-    let tar = GzDecoder::new(tar_gz);
-    let mut archive = Archive::new(tar);
-    archive.unpack(extraction_dir.join("."))?;
+    let ts_files = scan_for_ts_files(src_folder.join("src").to_str().unwrap())?;
+    info!("ts files: {:?}", ts_files.len());
 
-    let sha = repo.get_latest_commit_sha().await?;
-    debug!("latest commit: {}", sha);
+    let cm: Lrc<SourceMap> = Default::default();
+    let handler = Handler::with_tty_emitter(ColorConfig::Auto, true, false, Some(cm.clone()));
 
+    for item in ts_files {
+        let fm = cm
+            .load_file(Path::new(item.as_str()))
+            .expect("failed to load file");
+        // info!("Loaded {}", item);
+
+        let lexer = Lexer::new(
+            Syntax::Typescript(TsConfig {
+                decorators: true,
+                ..Default::default()
+            }),
+            Default::default(),
+            StringInput::from(&*fm),
+            None,
+        );
+        // info!("lexed {}", item);
+
+        let capturing = Capturing::new(lexer);
+        // info!("capturing {}", item);
+
+        let mut parser = Parser::new_from(capturing);
+        // info!("parsed {}", item);
+
+        for e in parser.take_errors() {
+            e.into_diagnostic(&handler).emit();
+        }
+
+        let _module = parser
+            .parse_module()
+            .map_err(|mut e| {
+                // Unrecoverable fatal error occurred
+                e.into_diagnostic(&handler).emit()
+            })
+            .expect("failed to parser module");
+        // info!("complete i think {}", item);
+
+        info!("Tokens: {:?}", parser.input().take());
+    }
+
+    // TODO uncomment this
+    // clean_up_src_folder(src_folder.to_str().unwrap());
 
     // // println!("{:?}", repo.get().await?);
     // let mut release_page = repo.releases().list().per_page(10).send().await?;
