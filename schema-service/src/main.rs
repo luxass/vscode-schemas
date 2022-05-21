@@ -1,11 +1,12 @@
 use flate2::read::GzDecoder;
-use log::info;
+use log::{debug, info};
 use schema_lib::{
     clean_up_src_folder, octoduck::Octoduck, parse_folder_name, scan_for_ts_files,
     write_schema_list, SchemaList,
 };
+use std::any::Any;
 use std::fs::File;
-use std::io::Cursor;
+use std::io::{Cursor, Write};
 use std::path::Path;
 use std::{env, fs, io};
 use tar::Archive;
@@ -20,10 +21,13 @@ use tar::Archive;
 extern crate swc_common;
 extern crate swc_ecma_parser;
 use swc_common::sync::Lrc;
+use swc_common::util::take::Take;
 use swc_common::{
     errors::{ColorConfig, Handler},
     FileName, FilePathMapping, SourceMap,
 };
+use swc_ecma_ast::Pat::Ident;
+use swc_ecma_ast::{BindingIdent, Decl, Expr, Lit, ModuleDecl, ModuleItem, Pat, VarDeclKind};
 use swc_ecma_parser::{lexer::Lexer, Capturing, Parser, StringInput, Syntax, TsConfig};
 
 #[tokio::main]
@@ -81,42 +85,128 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let handler = Handler::with_tty_emitter(ColorConfig::Auto, true, false, Some(cm.clone()));
 
     for item in ts_files {
+        // let contents = fs::read_to_string(item).expect("failed to read file");
+        //
+        // let lines = contents.lines();
+        //
+        // lines.for_each(| line| {
+        //    debug!("{}", line);
+        // });
+
+        // let fm = cm.new_source_file(
+        //     FileName::Custom("test.ts".into()),
+        //     "export const configurationDefaultsSchemaId = 'vscode://schemas/settings/configurationDefaults';".into(),
+        // );
+        //
         let fm = cm
             .load_file(Path::new(item.as_str()))
             .expect("failed to load file");
-        // info!("Loaded {}", item);
+        info!("Loaded {}", item);
 
         let lexer = Lexer::new(
-            Syntax::Typescript(TsConfig {
-                decorators: true,
-                ..Default::default()
-            }),
+            Syntax::Typescript(Default::default()),
             Default::default(),
             StringInput::from(&*fm),
             None,
         );
-        // info!("lexed {}", item);
 
         let capturing = Capturing::new(lexer);
-        // info!("capturing {}", item);
 
         let mut parser = Parser::new_from(capturing);
-        // info!("parsed {}", item);
 
         for e in parser.take_errors() {
             e.into_diagnostic(&handler).emit();
         }
 
-        let _module = parser
-            .parse_module()
-            .map_err(|mut e| {
-                // Unrecoverable fatal error occurred
-                e.into_diagnostic(&handler).emit()
-            })
-            .expect("failed to parser module");
-        // info!("complete i think {}", item);
+        let module = parser
+            .parse_typescript_module()
+            .map_err(|e| e.into_diagnostic(&handler).emit())
+            .expect("Failed to parse module.");
 
-        info!("Tokens: {:?}", parser.input().take());
+        for module_item in module.body {
+            // if let Ident(name) = &decl.name {
+            // }
+
+            if let ModuleItem::ModuleDecl(mdecl) = module_item {
+                if let ModuleDecl::ExportDecl(edecl) = mdecl {
+                    if let Decl::Var(vdecl) = edecl.decl {
+                        if vdecl.kind == VarDeclKind::Const {
+                            vdecl.decls.iter().for_each(|decl| {
+                                let mut name: String = "".to_string();
+
+                                if let Ident(bident) = &decl.name {
+                                    name = bident.id.sym.to_string();
+                                }
+
+                                if name.contains("SchemaId") {
+                                    if let Some(boxed_expr) = &decl.init {
+                                        if let Expr::Lit(lit) = boxed_expr.unwrap_parens() {
+                                            if let Lit::Str(lit_str) = lit {
+                                                info!(
+                                                    "value !!!!! {:?}",
+                                                    lit_str.value.to_string()
+                                                );
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        //     match module_item {
+        //         ModuleItem::ModuleDecl(mdecl) => {
+        //             match mdecl {
+        //                 ModuleDecl::Import(_) => {}
+        //                 ModuleDecl::ExportDecl(edecl) => {
+        //                     match edecl.decl {
+        //                         Decl::Class(_) => {}
+        //                         Decl::Fn(_) => {}
+        //                         Decl::Var(vdecl) => {
+        //                             if vdecl.kind == VarDeclKind::Const {
+        //
+        //                                 // vdecl.decls.iter().for_each(|decl| {
+        //                                 //     if let Some(ident) = &decl. {
+        //                                 //         info!("{}", ident.sym);
+        //                                 //     }
+        //                                 // });
+        //                             }
+        //                         }
+        //                         Decl::TsInterface(_) => {}
+        //                         Decl::TsTypeAlias(_) => {}
+        //                         Decl::TsEnum(_) => {}
+        //                         Decl::TsModule(_) => {}
+        //                     }
+        //                 }
+        //                 ModuleDecl::ExportNamed(_) => {}
+        //                 ModuleDecl::ExportDefaultDecl(_) => {}
+        //                 ModuleDecl::ExportDefaultExpr(_) => {}
+        //                 ModuleDecl::ExportAll(_) => {}
+        //                 ModuleDecl::TsImportEquals(_) => {}
+        //                 ModuleDecl::TsExportAssignment(_) => {}
+        //                 ModuleDecl::TsNamespaceExport(_) => {}
+        //             }
+        //         }
+        //         ModuleItem::Stmt(_) => {}
+        //     }
+        //     // match module_item {
+        //     //     ModuleItem::ModuleDecl(t) => {
+        //     //         // Get type
+        //     //
+        //     //         debug!("{:?}", t);
+        //     //     }
+        //     //     ModuleItem::Stmt(_) => {}
+        //     // }
+        // }
+        // let contents = serde_json::to_string_pretty(&_module.body).unwrap();
+        // let mut file = File::create("../schema-list2.json").unwrap();
+        // file.write_all(contents.as_bytes()).unwrap();
+
+        // for e in parser.input().take() {
+        //     info!("{:#?}", e);
+        // }
     }
 
     // TODO uncomment this

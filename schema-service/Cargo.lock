@@ -1949,6 +1949,7 @@ dependencies = [
  "serde_path_to_error",
  "snafu",
  "swc_common",
+ "swc_ecma_ast",
  "swc_ecma_parser",
  "tar",
  "tokio",

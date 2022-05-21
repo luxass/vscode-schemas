@@ -5,8 +5,9 @@ extern crate log;
 #[macro_use]
 extern crate serde;
 
-use std::fs::{File, metadata};
+use std::fs::{metadata, File};
 use std::io::{Read, Write};
+use swc_ecma_parser::token::TokenAndSpan;
 use walkdir::WalkDir;
 // use octocrab::models::repos::Release;
 // use octocrab::{Octocrab, Page};
@@ -18,8 +19,6 @@ pub mod error;
 pub mod octoduck;
 
 pub type Result<T, E = error::Error> = std::result::Result<T, E>;
-
-
 
 //
 //
@@ -44,7 +43,6 @@ pub struct VersionsCompared {
     pub head: String,
 }
 
-
 #[derive(Debug, Deserialize)]
 pub struct CompareRoot {
     pub url: Url,
@@ -67,7 +65,6 @@ pub struct CompareFile {
     pub filename: String,
 }
 
-
 // pub fn read_schema_list() -> SchemaList {
 //
 //     let mut file = File::open("../schema-list.toml").unwrap();
@@ -85,7 +82,7 @@ pub fn write_schema_list(schema_list: SchemaList) {
 }
 
 pub fn parse_folder_name(sha: &str) -> String {
-    return "microsoft-vscode-".to_owned() + &sha
+    return "microsoft-vscode-".to_owned() + &sha;
 }
 
 pub fn clean_up_src_folder(folder_name: &str) {
@@ -95,7 +92,6 @@ pub fn clean_up_src_folder(folder_name: &str) {
     }
 }
 
-
 pub fn scan_for_ts_files(dir: &str) -> Result<Vec<String>, std::io::Error> {
     let mut files: Vec<String> = Vec::new();
     for entry in WalkDir::new(dir).into_iter().filter_map(Result::ok) {
@@ -104,7 +100,7 @@ pub fn scan_for_ts_files(dir: &str) -> Result<Vec<String>, std::io::Error> {
         let metadata = metadata(&path)?;
         if metadata.is_file() {
             if path.extension().unwrap() == "ts" {
-                // if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-3649387\\src\\vs\\workbench\\services\\configuration\\common\\configuration.ts" {
+                // if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-3649387\\src\\vs\\platform\\configuration\\common\\configurationRegistry.ts" {
                 //      continue;
                 // }
                 files.push(path.to_str().unwrap().to_owned())
