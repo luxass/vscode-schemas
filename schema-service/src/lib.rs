@@ -37,12 +37,6 @@ pub struct SchemaList {
     pub schemas: Vec<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct VersionsCompared {
-    pub base: String,
-    pub head: String,
-}
-
 #[derive(Debug, Deserialize)]
 pub struct CompareRoot {
     pub url: Url,
@@ -65,15 +59,15 @@ pub struct CompareFile {
     pub filename: String,
 }
 
-// pub fn read_schema_list() -> SchemaList {
-//
-//     let mut file = File::open("../schema-list.toml").unwrap();
-//     let mut contents = String::new();
-//     file.read_to_string(&mut contents).unwrap();
-//
-//     let schema_list: SchemaList = toml::from_str(&contents).unwrap();
-//     schema_list
-// }
+pub fn read_schema_list() -> SchemaList {
+
+    let mut file = File::open("../schema-list.json").unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
+
+    let schema_list: SchemaList = serde_json::from_str(&contents).unwrap();
+    schema_list
+}
 
 pub fn write_schema_list(schema_list: SchemaList) {
     let contents = serde_json::to_string_pretty(&schema_list).unwrap();
@@ -100,23 +94,29 @@ pub fn scan_for_ts_files(dir: &str) -> Result<Vec<String>, std::io::Error> {
         let metadata = metadata(&path)?;
         if metadata.is_file() {
             if path.extension().unwrap() == "ts" {
-                // if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-3649387\\src\\vs\\platform\\configuration\\common\\configurationRegistry.ts" {
+                // if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-93ec6bd\\src\\vs\\platform\\configuration\\common\\configurationRegistry.ts" {
                 //      continue;
+                // }
+
+                // if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-93ec6bd\\src\\vs\\workbench\\services\\extensions\\common\\extensionsRegistry.ts" {
+                //     continue;
+                // }
+                //
+                // if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-93ec6bd\\src\\vs\\workbench\\electron-sandbox\\desktop.contribution.ts" {
+                //     continue;
+                // }
+
+                // if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-93ec6bd\\src\\vs\\platform\\userDataSync\\common\\userDataSync.ts" {
+                //     continue;
+                // }
+                //
+                // if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-93ec6bd\\src\\vs\\workbench\\api\\common\\configurationExtensionPoint.ts" {
+                //     continue;
                 // }
                 files.push(path.to_str().unwrap().to_owned())
                 // debug!("{}", path.display());
             }
         }
-        // if last_modified > 0 && metadata.is_file() {
-        //     println!(
-        //         "Last modified: {:?} seconds, is read only: {:?}, size: {:?} bytes, filename: {:?}, full-path: {:?}",
-        //         last_modified,
-        //         metadata.permissions().readonly(),
-        //         metadata.len(),
-        //         path.file_name().ok_or("No filename").unwrap(),
-        //         path.to_str().ok_or("No path").unwrap()
-        //     );
-        // }
     }
 
     Ok(files)
