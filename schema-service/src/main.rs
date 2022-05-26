@@ -4,10 +4,7 @@ use octocrab::models::repos::{Object, Ref};
 use octocrab::params::repos::Reference;
 use octocrab::Octocrab;
 use regex::Regex;
-use schema_lib::{
-    clean_up_src_folder, octoduck::Octoduck, read_schema_list, scan_for_ts_files,
-    write_schema_list, SchemaList,
-};
+use schema_lib::{read_schema_list, scan_for_ts_files, write_schema_list, SchemaList};
 use std::fs::File;
 use std::io::Cursor;
 use std::path::Path;
@@ -75,16 +72,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let src_folder = extraction_dir.join(unpack_name);
 
+    // microsoft-vscode-1.67.2-0-gc3511e6.tar.gz
+    let tar_gz_file = format!(
+        "microsoft-vscode-{release}-0-{short_sha}.tar.gz",
+        release = last_release_tag_name,
+        short_sha = short_sha
+    );
+
     if !Path::new(src_folder.to_str().unwrap()).exists() {
         let res = repo.download_tarball(tag).await?;
 
-
-        // microsoft-vscode-1.67.2-0-gc3511e6.tar.gz
-        let tar_gz_file = format!(
-            "microsoft-vscode-{release}-0-{short_sha}.tar.gz",
-            release = last_release_tag_name,
-            short_sha = short_sha
-        );
         let mut file = File::create(extraction_dir.join(&tar_gz_file))?;
 
         let bytes = res.bytes().await.expect("failed to read bytes");
@@ -192,6 +189,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     fs::write("Dockerfile", gg).expect("Unable to write Dockerfile");
 
     // write_schema_list(schema_list);
-    clean_up_src_folder(src_folder.to_str().unwrap());
+
+    if Path::new(src_folder.to_str().unwrap()).exists() {
+        fs::remove_dir_all(src_folder.to_str().unwrap()).unwrap();
+    }
+
+    let tar_gz_file_path = extraction_dir.join(&tar_gz_file);
+
+    if Path::new(&tar_gz_file_path).exists() {
+        fs::remove_file(&tar_gz_file_path).unwrap();
+    }
+
     Ok(())
 }

@@ -1,20 +1,13 @@
 #[macro_use]
-extern crate async_trait;
-#[macro_use]
 extern crate log;
 #[macro_use]
 extern crate serde;
 
 use std::fs::{metadata, File};
 use std::io::{Read, Write};
-use std::path::Path;
 use walkdir::WalkDir;
 
 pub mod docker;
-pub mod error;
-pub mod octoduck;
-
-pub type Result<T, E = error::Error> = std::result::Result<T, E>;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct SchemaList {
@@ -37,13 +30,6 @@ pub fn write_schema_list(schema_list: SchemaList) {
     file.write_all(contents.as_bytes()).unwrap();
 }
 
-pub fn clean_up_src_folder(folder_name: &str) {
-    let path = Path::new(folder_name);
-    if path.exists() {
-        std::fs::remove_dir_all(folder_name).unwrap();
-    }
-}
-
 pub fn scan_for_ts_files(dir: &str) -> Result<Vec<String>, std::io::Error> {
     let mut files: Vec<String> = Vec::new();
     for entry in WalkDir::new(dir).into_iter().filter_map(Result::ok) {
@@ -59,6 +45,3 @@ pub fn scan_for_ts_files(dir: &str) -> Result<Vec<String>, std::io::Error> {
 
     Ok(files)
 }
-
-
-

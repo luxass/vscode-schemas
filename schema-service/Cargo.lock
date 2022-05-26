@@ -1577,27 +1577,20 @@ checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 name = "vscode-schemas"
 version = "0.1.0"
 dependencies = [
- "async-trait",
  "bollard",
- "chrono",
  "env_logger",
  "flate2",
  "futures-util",
- "hyperx",
  "log",
  "markdown-gen",
  "octocrab",
  "pulldown-cmark",
  "regex",
  "reqwest",
- "secrecy",
  "serde",
  "serde_json",
- "serde_path_to_error",
- "snafu",
  "tar",
  "tokio",
- "url",
  "walkdir",
 ]
 
