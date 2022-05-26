@@ -6,9 +6,8 @@ use std::fs;
 
 use futures_util::stream::StreamExt;
 
-pub fn build_image(commit: String) {
-    let docker_file = r#"
-FROM buildpack-deps:20.04-curl
+pub fn build_dockerfile(commit: String) {
+    let docker_file = r#"FROM buildpack-deps:20.04-curl
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
@@ -33,8 +32,7 @@ ENV LANG=C.UTF-8 \
 
 EXPOSE 5000
 
-ENTRYPOINT [ "/bin/sh", "-c", "exec ${SERVER_ROOT}/code --host 0.0.0.0 --without-connection-token \"${@}\"", "--" ]
-"#;
+ENTRYPOINT [ "/bin/sh", "-c", "exec ${SERVER_ROOT}/code --host 0.0.0.0 --without-connection-token \"${@}\"", "--" ]"#;
 
     fs::write("../Dockerfile", docker_file).expect("unable to write Dockerfile");
 }
