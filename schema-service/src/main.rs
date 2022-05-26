@@ -4,7 +4,9 @@ use octocrab::models::repos::{Object, Ref};
 use octocrab::params::repos::Reference;
 use octocrab::Octocrab;
 use regex::Regex;
-use schema_lib::{read_schema_list, scan_for_ts_files, write_schema_list, SchemaList};
+use schema_lib::{
+    docker::build_image, read_schema_list, scan_for_ts_files, write_schema_list, SchemaList,
+};
 use std::fs::File;
 use std::io::Cursor;
 use std::path::Path;
@@ -40,8 +42,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let octocrab = Octocrab::builder().personal_token(github_token).build()?;
 
     let repo = octocrab.repos("microsoft", "vscode");
-
-    let vscode_repo = repo.get().await?;
 
     let last_release = repo.releases().get_latest().await?;
     let last_release_tag_name = last_release.tag_name;
@@ -155,39 +155,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         last_release: last_release_tag_name,
         schemas: schema_paths,
     };
-
-    let gg = r#"
-                    FROM buildpack-deps:20.04-curl
-
-                    RUN apt-get update && apt-get install -y --no-install-recommends \
-                        git \
-                        sudo
-
-                    ARG URL="https://code.visualstudio.com/sha/download?build=stable&os=linux-x64"
-                    ARG SERVER_ROOT="/home/.vscode-server"
-
-                    RUN wget https://code.visualstudio.com/sha/download?build=stable&os=linux-x64 && \
-                        tar -xzf code-stable-x64-1652813090.tar.gz && \
-                         mv -f VSCode-linux-x64 ${SERVER_ROOT} && \
-
-                    WORKDIR /home/workspace/
-
-                    ENV LANG=C.UTF-8 \
-                        LC_ALL=C.UTF-8 \
-                        HOME=/home/workspace \
-                        EDITOR=code \
-                        VISUAL=code \
-                        GIT_EDITOR="code --wait" \
-                        SERVER_ROOT=${SERVER_ROOT}
-
-                    EXPOSE 5000
-
-                    ENTRYPOINT [ "/bin/sh", "-c", "exec ${SERVER_ROOT}/code --host 0.0.0.0 --without-connection-token \"${@}\"", "--" ]
-
-                  "#;
-
-    fs::write("Dockerfile", gg).expect("Unable to write Dockerfile");
-
     // write_schema_list(schema_list);
 
     if Path::new(src_folder.to_str().unwrap()).exists() {
@@ -199,6 +166,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if Path::new(&tar_gz_file_path).exists() {
         fs::remove_file(&tar_gz_file_path).unwrap();
     }
+
+    build_image(long_sha);
 
     Ok(())
 }
