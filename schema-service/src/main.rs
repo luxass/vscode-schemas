@@ -1,5 +1,6 @@
 use flate2::read::GzDecoder;
 use log::{debug, info};
+use regex::Regex;
 use schema_lib::{
     clean_up_src_folder, octoduck::Octoduck, parse_folder_name, parse_variable_string,
     read_schema_list, scan_for_ts_files, write_schema_list, SchemaList,
@@ -7,7 +8,7 @@ use schema_lib::{
 use std::fs::File;
 use std::io::Cursor;
 use std::path::Path;
-use std::{env, io};
+use std::{env, fs, io};
 use tar::Archive;
 
 // use markdown_gen::markdown::{AsMarkdown, Markdown};
@@ -27,9 +28,11 @@ use swc_common::{
     FileName, FilePathMapping, SourceMap,
 };
 use swc_ecma_ast::Pat::Ident;
-use swc_ecma_ast::{BindingIdent, BlockStmt, ClassMember, Decl, Expr, Lit, ModuleDecl, ModuleItem, Pat, Stmt, VarDecl, VarDeclKind};
+use swc_ecma_ast::{
+    BindingIdent, BlockStmt, ClassMember, Decl, Expr, Lit, ModuleDecl, ModuleItem, Pat, Stmt,
+    VarDecl, VarDeclKind,
+};
 use swc_ecma_parser::{lexer::Lexer, Capturing, Parser, StringInput, Syntax, TsConfig};
-use tokio::fs;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -94,128 +97,172 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut schema_paths = Vec::<String>::new();
 
+    let re = Regex::new(r"vscode://schemas(?:/\w+)+").unwrap();
+    let strg =
+        "		jsonRegistry.registerSchema('vscode://schemas/notebook/cellmetadata', metadataSchema);";
+
+    let tt = re.find(strg);
+    if let Some(_match) = tt {
+        debug!("match: {:?}", _match);
+        let start = _match.start();
+        let end = _match.end();
+        debug!("{:?}", strg.to_string()[start..end].to_string());
+    }
+
+    let ttt = re.captures(strg);
+    if let Some(_match) = ttt {
+        debug!("match: {:?}", _match);
+        // let start = _match.get(0).unwrap().start();
+        // let end = _match.get(0).unwrap().end();
+        // debug!("{:?}", strg.to_string()[start..end].to_string());
+    }
+
     for item in ts_files {
-        let fm = cm
-            .load_file(Path::new(item.as_str()))
-            .expect("failed to load file");
-        debug!("current file -> {}", item);
+        let contents = fs::read_to_string(item).expect("failed to read file");
 
-        let lexer = Lexer::new(
-            Syntax::Typescript(TsConfig {
-                decorators: true,
-                ..Default::default()
-            }),
-            Default::default(),
-            StringInput::from(&*fm),
-            None,
-        );
+        let lines = contents.lines();
 
-        let capturing = Capturing::new(lexer);
-
-        let mut parser = Parser::new_from(capturing);
-
-        for e in parser.take_errors() {
-            e.into_diagnostic(&handler).emit();
-        }
-
-        let module = parser
-            .parse_typescript_module()
-            .map_err(|e| e.into_diagnostic(&handler).emit())
-            .expect("Failed to parse module.");
-
-        for module_item in module.body {
-            match module_item {
-                ModuleItem::ModuleDecl(module_decl) => {
-                    info!("module decl");
-                    // match module_decl {
-                    //     ModuleDecl::Import(_) => {}
-                    //     ModuleDecl::ExportDecl(_) => {}
-                    //     ModuleDecl::ExportNamed(_) => {}
-                    //     ModuleDecl::ExportDefaultDecl(_) => {}
-                    //     ModuleDecl::ExportDefaultExpr(_) => {}
-                    //     ModuleDecl::ExportAll(_) => {}
-                    //     ModuleDecl::TsImportEquals(_) => {}
-                    //     ModuleDecl::TsExportAssignment(_) => {}
-                    //     ModuleDecl::TsNamespaceExport(_) => {}
-                    // }
-                    if let ModuleDecl::ExportDecl(export_decl) = module_decl {
-                        if let Decl::Var(var_decl) = export_decl.decl {
-                            parse_variable_string(&mut schema_paths, &var_decl);
-                        } else if let Decl::Fn(fn_decl) = export_decl.decl {
-                            if let Some(BlockStmt { stmts, .. }) = fn_decl.function.body {
-                                stmts.iter().for_each(|stmt| {
-                                    if let Stmt::Decl(decl) = stmt {
-                                        if let Decl::Var(var_decl) = decl {
-                                            parse_variable_string(&mut schema_paths, &var_decl);
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }
-                }
-                ModuleItem::Stmt(stmt) => match stmt {
-                    Stmt::Block(_) => {}
-                    Stmt::Empty(_) => {}
-                    Stmt::Debugger(_) => {}
-                    Stmt::With(_) => {}
-                    Stmt::Return(_) => {}
-                    Stmt::Labeled(_) => {}
-                    Stmt::Break(_) => {}
-                    Stmt::Continue(_) => {}
-                    Stmt::If(_) => {}
-                    Stmt::Switch(_) => {}
-                    Stmt::Throw(_) => {}
-                    Stmt::Try(_) => {}
-                    Stmt::While(_) => {}
-                    Stmt::DoWhile(_) => {}
-                    Stmt::For(_) => {}
-                    Stmt::ForIn(_) => {}
-                    Stmt::ForOf(_) => {}
-                    Stmt::Decl(decl) => {
-                        if let Decl::Var(var_decl) = decl {
-                            parse_variable_string(&mut schema_paths, &var_decl);
-                        } else if let Decl::Class(class_decl) = decl {
-                            // for class_body in class_decl.class.body {
-                            //     match class_body {
-                            //         ClassMember::Constructor(_) => {}
-                            //         ClassMember::Method(_) => {}
-                            //         ClassMember::PrivateMethod(_) => {}
-                            //         ClassMember::ClassProp(_) => {}
-                            //         ClassMember::PrivateProp(_) => {}
-                            //         ClassMember::TsIndexSignature(_) => {}
-                            //         ClassMember::Empty(_) => {}
-                            //         ClassMember::StaticBlock(_) => {}
-                            //     }
-                            // }
-                            info!("class decl");
-                            if class_decl.ident.sym.to_string() == "RegisterSchemasContribution" {
-                                fs::write(
-                                    "../test.json",
-                                    serde_json::to_string_pretty(&class_decl).unwrap(),
-                                )
-                                .await?;
-                            }
-                        }
-                    }
-                    Stmt::Expr(expr_stmt) => {
-                        if let Expr::Call(call_expr) = &expr_stmt.expr.unwrap_parens() {
-                            call_expr.args.iter().for_each(|arg| {
-                                if let Expr::Lit(lit) = arg.expr.unwrap_parens() {
-                                    if let Lit::Str(lit_str) = lit {
-                                        let val = lit_str.value.to_string();
-                                        if val.to_lowercase().contains("vscode://schema") {
-                                            schema_paths.push(lit_str.value.to_string());
-                                            info!("found value -> {:?}", val);
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
-                },
+        lines.for_each(|line| {
+            let captures = re.captures(line);
+            if let Some(captures) = captures {
+                let path = captures.get(0).map_or("", |m| m.as_str()).to_string();
+                debug!("{:?}", path);
+                schema_paths.push(path);
             }
-        }
+        });
+
+        // lines.into_iter().enumerate().for_each(|(i, line)| {
+        //     let captures = re.captures(line);
+        //
+        //     if let Some(captures) = captures {
+        //         debug!("{}", line);
+        //         debug!("{:?}", captures);
+        //     } else {
+        //         // debug!("no match on line -> {}", i);
+        //     }
+        // });
+
+        // let fm = cm
+        //     .load_file(Path::new(item.as_str()))
+        //     .expect("failed to load file");
+        // debug!("current file -> {}", item);
+        //
+        // let lexer = Lexer::new(
+        //     Syntax::Typescript(TsConfig {
+        //         decorators: true,
+        //         ..Default::default()
+        //     }),
+        //     Default::default(),
+        //     StringInput::from(&*fm),
+        //     None,
+        // );
+        //
+        // let capturing = Capturing::new(lexer);
+        //
+        // let mut parser = Parser::new_from(capturing);
+        //
+        // for e in parser.take_errors() {
+        //     e.into_diagnostic(&handler).emit();
+        // }
+        //
+        // let module = parser
+        //     .parse_typescript_module()
+        //     .map_err(|e| e.into_diagnostic(&handler).emit())
+        //     .expect("Failed to parse module.");
+        //
+        // for module_item in module.body {
+        //     match module_item {
+        //         ModuleItem::ModuleDecl(module_decl) => {
+        //             info!("module decl");
+        //             // match module_decl {
+        //             //     ModuleDecl::Import(_) => {}
+        //             //     ModuleDecl::ExportDecl(_) => {}
+        //             //     ModuleDecl::ExportNamed(_) => {}
+        //             //     ModuleDecl::ExportDefaultDecl(_) => {}
+        //             //     ModuleDecl::ExportDefaultExpr(_) => {}
+        //             //     ModuleDecl::ExportAll(_) => {}
+        //             //     ModuleDecl::TsImportEquals(_) => {}
+        //             //     ModuleDecl::TsExportAssignment(_) => {}
+        //             //     ModuleDecl::TsNamespaceExport(_) => {}
+        //             // }
+        //             if let ModuleDecl::ExportDecl(export_decl) = module_decl {
+        //                 if let Decl::Var(var_decl) = export_decl.decl {
+        //                     parse_variable_string(&mut schema_paths, &var_decl);
+        //                 } else if let Decl::Fn(fn_decl) = export_decl.decl {
+        //                     if let Some(BlockStmt { stmts, .. }) = fn_decl.function.body {
+        //                         stmts.iter().for_each(|stmt| {
+        //                             if let Stmt::Decl(decl) = stmt {
+        //                                 if let Decl::Var(var_decl) = decl {
+        //                                     parse_variable_string(&mut schema_paths, &var_decl);
+        //                                 }
+        //                             }
+        //                         });
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //         ModuleItem::Stmt(stmt) => match stmt {
+        //             Stmt::Block(_) => {}
+        //             Stmt::Empty(_) => {}
+        //             Stmt::Debugger(_) => {}
+        //             Stmt::With(_) => {}
+        //             Stmt::Return(_) => {}
+        //             Stmt::Labeled(_) => {}
+        //             Stmt::Break(_) => {}
+        //             Stmt::Continue(_) => {}
+        //             Stmt::If(_) => {}
+        //             Stmt::Switch(_) => {}
+        //             Stmt::Throw(_) => {}
+        //             Stmt::Try(_) => {}
+        //             Stmt::While(_) => {}
+        //             Stmt::DoWhile(_) => {}
+        //             Stmt::For(_) => {}
+        //             Stmt::ForIn(_) => {}
+        //             Stmt::ForOf(_) => {}
+        //             Stmt::Decl(decl) => {
+        //                 if let Decl::Var(var_decl) = decl {
+        //                     parse_variable_string(&mut schema_paths, &var_decl);
+        //                 } else if let Decl::Class(class_decl) = decl {
+        //                     // for class_body in class_decl.class.body {
+        //                     //     match class_body {
+        //                     //         ClassMember::Constructor(_) => {}
+        //                     //         ClassMember::Method(_) => {}
+        //                     //         ClassMember::PrivateMethod(_) => {}
+        //                     //         ClassMember::ClassProp(_) => {}
+        //                     //         ClassMember::PrivateProp(_) => {}
+        //                     //         ClassMember::TsIndexSignature(_) => {}
+        //                     //         ClassMember::Empty(_) => {}
+        //                     //         ClassMember::StaticBlock(_) => {}
+        //                     //     }
+        //                     // }
+        //                     info!("class decl");
+        //                     if class_decl.ident.sym.to_string() == "RegisterSchemasContribution" {
+        //                         fs::write(
+        //                             "../test.json",
+        //                             serde_json::to_string_pretty(&class_decl).unwrap(),
+        //                         )
+        //                         .await?;
+        //                     }
+        //                 }
+        //             }
+        //             Stmt::Expr(expr_stmt) => {
+        //                 if let Expr::Call(call_expr) = &expr_stmt.expr.unwrap_parens() {
+        //                     call_expr.args.iter().for_each(|arg| {
+        //                         if let Expr::Lit(lit) = arg.expr.unwrap_parens() {
+        //                             if let Lit::Str(lit_str) = lit {
+        //                                 let val = lit_str.value.to_string();
+        //                                 if val.to_lowercase().contains("vscode://schema") {
+        //                                     schema_paths.push(lit_str.value.to_string());
+        //                                     info!("found value -> {:?}", val);
+        //                                 }
+        //                             }
+        //                         }
+        //                     });
+        //                 }
+        //             }
+        //         },
+        //     }
+        // }
     }
 
     // let markdown_input: &str = "Hello world, this is a ~~complicated~~ *very simple* example.";
@@ -240,7 +287,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // println!("\nHTML output:\n{}", &html_output);
 
     // schema_lib::docker::lmao().await;
+
+    schema_paths.sort();
     info!("SCHEMAS = {:?}", schema_paths);
+
+
 
     schema_list = SchemaList {
         last_release: last_release_tag_name,

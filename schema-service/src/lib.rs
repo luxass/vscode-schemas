@@ -60,7 +60,7 @@ pub fn parse_folder_name(sha: &str) -> String {
 }
 
 pub fn clean_up_src_folder(folder_name: &str) {
-    let path = std::path::Path::new(folder_name);
+    let path = Path::new(folder_name);
     if path.exists() {
         std::fs::remove_dir_all(folder_name).unwrap();
     }
@@ -93,9 +93,9 @@ pub fn scan_for_ts_files(dir: &str) -> Result<Vec<String>, std::io::Error> {
                 // if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-93ec6bd\\src\\vs\\workbench\\api\\common\\configurationExtensionPoint.ts" {
                 //     continue;
                 // }
-                if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-528ee1a\\src\\vs\\workbench\\contrib\\notebook\\browser\\notebook.contribution.ts" {
-                    continue;
-                }
+                // if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-8873e26\\src\\vs\\workbench\\contrib\\notebook\\browser\\notebook.contribution.ts" {
+                //     continue;
+                // }
 
                 files.push(path.to_str().unwrap().to_owned())
                 // debug!("{}", path.display());
@@ -132,3 +132,4 @@ pub fn parse_variable_string(schema_paths: &mut Vec<String>, var_decl: &VarDecl)
         });
     }
 }
+
