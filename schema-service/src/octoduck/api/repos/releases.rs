@@ -13,8 +13,8 @@ impl<'octo, 'r> ReleasesHandler<'octo, 'r> {
     pub fn list(&self) -> ListReleasesBuilder<'_, '_, '_> {
         ListReleasesBuilder::new(self)
     }
-    
-    
+
+
     pub async fn get_last_release(&self) -> Result<release::Release> {
         let url = format!(
             "repos/{owner}/{repo}/releases/latest",

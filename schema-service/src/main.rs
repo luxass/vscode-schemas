@@ -1,9 +1,12 @@
 use flate2::read::GzDecoder;
 use log::{debug, info};
+use octocrab::models::repos::{Object, Ref};
+use octocrab::params::repos::Reference;
+use octocrab::Octocrab;
 use regex::Regex;
 use schema_lib::{
-    clean_up_src_folder, octoduck::Octoduck, parse_folder_name, parse_variable_string,
-    read_schema_list, scan_for_ts_files, write_schema_list, SchemaList,
+    clean_up_src_folder, octoduck::Octoduck, read_schema_list, scan_for_ts_files,
+    write_schema_list, SchemaList,
 };
 use std::fs::File;
 use std::io::Cursor;
@@ -17,23 +20,6 @@ use tar::Archive;
 // use schema_lib::releases::ReleaseHandlerExt;
 // use schema_lib::repo::RepoHandlerExt;
 
-#[macro_use]
-extern crate swc_common;
-extern crate swc_ecma_parser;
-
-use swc_common::sync::Lrc;
-use swc_common::util::take::Take;
-use swc_common::{
-    errors::{ColorConfig, Handler},
-    FileName, FilePathMapping, SourceMap,
-};
-use swc_ecma_ast::Pat::Ident;
-use swc_ecma_ast::{
-    BindingIdent, BlockStmt, ClassMember, Decl, Expr, Lit, ModuleDecl, ModuleItem, Pat, Stmt,
-    VarDecl, VarDeclKind,
-};
-use swc_ecma_parser::{lexer::Lexer, Capturing, Parser, StringInput, Syntax, TsConfig};
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::builder()
@@ -42,47 +28,72 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .write_style(env_logger::WriteStyle::Always)
         .init();
 
+    info!("Reading schema list");
     let mut schema_list: SchemaList = read_schema_list();
+
+    info!(
+        "schema_list -> last_release: {:?}",
+        schema_list.last_release
+    );
 
     let extraction_dir: &Path = Path::new("../extraction");
 
     let github_token = env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN not set");
 
-    let octoduck = Octoduck::builder().personal_token(github_token).build()?;
+    let octocrab = Octocrab::builder().personal_token(github_token).build()?;
 
-    let repo = octoduck.repos("microsoft", "vscode");
+    let repo = octocrab.repos("microsoft", "vscode");
 
-    let last_release = repo.releases().get_last_release().await?;
+    let vscode_repo = repo.get().await?;
+
+    let last_release = repo.releases().get_latest().await?;
     let last_release_tag_name = last_release.tag_name;
-    info!("latest release name: {}", last_release_tag_name);
 
     if schema_list.last_release == last_release_tag_name {
         info!("no new releases");
         return Ok(());
     }
 
-    let mut sha = repo.get_latest_commit_sha().await?;
-    sha = sha[0..7].to_string();
-    info!("latest commit: {}", sha);
+    info!("latest release: {}", last_release_tag_name);
 
-    let unpack_name = parse_folder_name(&sha);
-    info!("unpack name: {}", unpack_name);
+    let tag: Reference = Reference::Tag(last_release_tag_name.clone());
+
+    let _ref: Ref = repo.get_ref(&tag).await?;
+
+    let long_sha = if let Object::Commit { sha, url: _ } = _ref.object {
+        sha
+    } else {
+        panic!("invalid ref");
+    };
+
+    let short_sha = &long_sha[0..7];
+
+    info!("sha for last release: {}", long_sha);
+
+    let unpack_name = format!("microsoft-vscode-{}", short_sha);
+    info!("unpack_name: {}", unpack_name);
 
     let src_folder = extraction_dir.join(unpack_name);
 
-    let default_branch = repo.default_branch().await?;
-    info!("default branch: {}", default_branch);
-
     if !Path::new(src_folder.to_str().unwrap()).exists() {
-        let res = repo.download_tarball(default_branch).await?;
-        let mut file = File::create(extraction_dir.join("vscode.tar.gz"))?;
+        let res = repo.download_tarball(tag).await?;
+
+
+        // microsoft-vscode-1.67.2-0-gc3511e6.tar.gz
+        let tar_gz_file = format!(
+            "microsoft-vscode-{release}-0-{short_sha}.tar.gz",
+            release = last_release_tag_name,
+            short_sha = short_sha
+        );
+        let mut file = File::create(extraction_dir.join(&tar_gz_file))?;
 
         let bytes = res.bytes().await.expect("failed to read bytes");
 
         let mut content = Cursor::new(bytes);
+
         io::copy(&mut content, &mut file).expect("failed to write file");
 
-        let tar_gz = File::open(extraction_dir.join("vscode.tar.gz"))?;
+        let tar_gz = File::open(extraction_dir.join(&tar_gz_file))?;
 
         let tar = GzDecoder::new(tar_gz);
         let mut archive = Archive::new(tar);
@@ -90,33 +101,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let ts_files = scan_for_ts_files(src_folder.join("src").to_str().unwrap())?;
-    info!("ts files: {:?}", ts_files.len());
-
-    let cm: Lrc<SourceMap> = Default::default();
-    let handler = Handler::with_tty_emitter(ColorConfig::Auto, true, false, Some(cm.clone()));
+    info!("found {} typescript files.", ts_files.len());
 
     let mut schema_paths = Vec::<String>::new();
 
     let re = Regex::new(r"vscode://schemas(?:/\w+)+").unwrap();
-    let strg =
-        "		jsonRegistry.registerSchema('vscode://schemas/notebook/cellmetadata', metadataSchema);";
-
-    let tt = re.find(strg);
-    if let Some(_match) = tt {
-        debug!("match: {:?}", _match);
-        let start = _match.start();
-        let end = _match.end();
-        debug!("{:?}", strg.to_string()[start..end].to_string());
-    }
-
-    let ttt = re.captures(strg);
-    if let Some(_match) = ttt {
-        debug!("match: {:?}", _match);
-        // let start = _match.get(0).unwrap().start();
-        // let end = _match.get(0).unwrap().end();
-        // debug!("{:?}", strg.to_string()[start..end].to_string());
-    }
-
     for item in ts_files {
         let contents = fs::read_to_string(item).expect("failed to read file");
 
@@ -130,139 +119,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 schema_paths.push(path);
             }
         });
-
-        // lines.into_iter().enumerate().for_each(|(i, line)| {
-        //     let captures = re.captures(line);
-        //
-        //     if let Some(captures) = captures {
-        //         debug!("{}", line);
-        //         debug!("{:?}", captures);
-        //     } else {
-        //         // debug!("no match on line -> {}", i);
-        //     }
-        // });
-
-        // let fm = cm
-        //     .load_file(Path::new(item.as_str()))
-        //     .expect("failed to load file");
-        // debug!("current file -> {}", item);
-        //
-        // let lexer = Lexer::new(
-        //     Syntax::Typescript(TsConfig {
-        //         decorators: true,
-        //         ..Default::default()
-        //     }),
-        //     Default::default(),
-        //     StringInput::from(&*fm),
-        //     None,
-        // );
-        //
-        // let capturing = Capturing::new(lexer);
-        //
-        // let mut parser = Parser::new_from(capturing);
-        //
-        // for e in parser.take_errors() {
-        //     e.into_diagnostic(&handler).emit();
-        // }
-        //
-        // let module = parser
-        //     .parse_typescript_module()
-        //     .map_err(|e| e.into_diagnostic(&handler).emit())
-        //     .expect("Failed to parse module.");
-        //
-        // for module_item in module.body {
-        //     match module_item {
-        //         ModuleItem::ModuleDecl(module_decl) => {
-        //             info!("module decl");
-        //             // match module_decl {
-        //             //     ModuleDecl::Import(_) => {}
-        //             //     ModuleDecl::ExportDecl(_) => {}
-        //             //     ModuleDecl::ExportNamed(_) => {}
-        //             //     ModuleDecl::ExportDefaultDecl(_) => {}
-        //             //     ModuleDecl::ExportDefaultExpr(_) => {}
-        //             //     ModuleDecl::ExportAll(_) => {}
-        //             //     ModuleDecl::TsImportEquals(_) => {}
-        //             //     ModuleDecl::TsExportAssignment(_) => {}
-        //             //     ModuleDecl::TsNamespaceExport(_) => {}
-        //             // }
-        //             if let ModuleDecl::ExportDecl(export_decl) = module_decl {
-        //                 if let Decl::Var(var_decl) = export_decl.decl {
-        //                     parse_variable_string(&mut schema_paths, &var_decl);
-        //                 } else if let Decl::Fn(fn_decl) = export_decl.decl {
-        //                     if let Some(BlockStmt { stmts, .. }) = fn_decl.function.body {
-        //                         stmts.iter().for_each(|stmt| {
-        //                             if let Stmt::Decl(decl) = stmt {
-        //                                 if let Decl::Var(var_decl) = decl {
-        //                                     parse_variable_string(&mut schema_paths, &var_decl);
-        //                                 }
-        //                             }
-        //                         });
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //         ModuleItem::Stmt(stmt) => match stmt {
-        //             Stmt::Block(_) => {}
-        //             Stmt::Empty(_) => {}
-        //             Stmt::Debugger(_) => {}
-        //             Stmt::With(_) => {}
-        //             Stmt::Return(_) => {}
-        //             Stmt::Labeled(_) => {}
-        //             Stmt::Break(_) => {}
-        //             Stmt::Continue(_) => {}
-        //             Stmt::If(_) => {}
-        //             Stmt::Switch(_) => {}
-        //             Stmt::Throw(_) => {}
-        //             Stmt::Try(_) => {}
-        //             Stmt::While(_) => {}
-        //             Stmt::DoWhile(_) => {}
-        //             Stmt::For(_) => {}
-        //             Stmt::ForIn(_) => {}
-        //             Stmt::ForOf(_) => {}
-        //             Stmt::Decl(decl) => {
-        //                 if let Decl::Var(var_decl) = decl {
-        //                     parse_variable_string(&mut schema_paths, &var_decl);
-        //                 } else if let Decl::Class(class_decl) = decl {
-        //                     // for class_body in class_decl.class.body {
-        //                     //     match class_body {
-        //                     //         ClassMember::Constructor(_) => {}
-        //                     //         ClassMember::Method(_) => {}
-        //                     //         ClassMember::PrivateMethod(_) => {}
-        //                     //         ClassMember::ClassProp(_) => {}
-        //                     //         ClassMember::PrivateProp(_) => {}
-        //                     //         ClassMember::TsIndexSignature(_) => {}
-        //                     //         ClassMember::Empty(_) => {}
-        //                     //         ClassMember::StaticBlock(_) => {}
-        //                     //     }
-        //                     // }
-        //                     info!("class decl");
-        //                     if class_decl.ident.sym.to_string() == "RegisterSchemasContribution" {
-        //                         fs::write(
-        //                             "../test.json",
-        //                             serde_json::to_string_pretty(&class_decl).unwrap(),
-        //                         )
-        //                         .await?;
-        //                     }
-        //                 }
-        //             }
-        //             Stmt::Expr(expr_stmt) => {
-        //                 if let Expr::Call(call_expr) = &expr_stmt.expr.unwrap_parens() {
-        //                     call_expr.args.iter().for_each(|arg| {
-        //                         if let Expr::Lit(lit) = arg.expr.unwrap_parens() {
-        //                             if let Lit::Str(lit_str) = lit {
-        //                                 let val = lit_str.value.to_string();
-        //                                 if val.to_lowercase().contains("vscode://schema") {
-        //                                     schema_paths.push(lit_str.value.to_string());
-        //                                     info!("found value -> {:?}", val);
-        //                                 }
-        //                             }
-        //                         }
-        //                     });
-        //                 }
-        //             }
-        //         },
-        //     }
-        // }
     }
 
     // let markdown_input: &str = "Hello world, this is a ~~complicated~~ *very simple* example.";
@@ -288,17 +144,54 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // schema_lib::docker::lmao().await;
 
+    // To ensure that all items in schema_paths are valid, vscode-schemas
+    schema_paths = schema_paths
+        .iter()
+        .map(|s| s.clone())
+        .filter(|v| v.contains("vscode://schemas"))
+        .collect();
+
     schema_paths.sort();
     info!("SCHEMAS = {:?}", schema_paths);
-
-
 
     schema_list = SchemaList {
         last_release: last_release_tag_name,
         schemas: schema_paths,
     };
 
+    let gg = r#"
+                    FROM buildpack-deps:20.04-curl
+
+                    RUN apt-get update && apt-get install -y --no-install-recommends \
+                        git \
+                        sudo
+
+                    ARG URL="https://code.visualstudio.com/sha/download?build=stable&os=linux-x64"
+                    ARG SERVER_ROOT="/home/.vscode-server"
+
+                    RUN wget https://code.visualstudio.com/sha/download?build=stable&os=linux-x64 && \
+                        tar -xzf code-stable-x64-1652813090.tar.gz && \
+                         mv -f VSCode-linux-x64 ${SERVER_ROOT} && \
+
+                    WORKDIR /home/workspace/
+
+                    ENV LANG=C.UTF-8 \
+                        LC_ALL=C.UTF-8 \
+                        HOME=/home/workspace \
+                        EDITOR=code \
+                        VISUAL=code \
+                        GIT_EDITOR="code --wait" \
+                        SERVER_ROOT=${SERVER_ROOT}
+
+                    EXPOSE 5000
+
+                    ENTRYPOINT [ "/bin/sh", "-c", "exec ${SERVER_ROOT}/code --host 0.0.0.0 --without-connection-token \"${@}\"", "--" ]
+
+                  "#;
+
+    fs::write("Dockerfile", gg).expect("Unable to write Dockerfile");
+
     // write_schema_list(schema_list);
-    // clean_up_src_folder(src_folder.to_str().unwrap());
+    clean_up_src_folder(src_folder.to_str().unwrap());
     Ok(())
 }

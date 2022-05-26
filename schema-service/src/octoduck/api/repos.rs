@@ -30,9 +30,6 @@ impl<'octo> RepoHandler<'octo> {
         ReleasesHandler::new(self)
     }
 
-    pub fn compare(&self, base: String, head: String) -> CompareHandler<'_, '_> {
-        CompareHandler::new(self, base, head)
-    }
 
     pub async fn default_branch(&self) -> Result<String> {
         let repo = self.get().await?;
@@ -53,6 +50,7 @@ impl<'octo> RepoHandler<'octo> {
         let commit: LatestCommit = self.duck.get(url, None::<&()>).await?;
         Ok(commit.sha)
     }
+
 
     pub async fn download_tarball(&self, reference: String) -> Result<reqwest::Response> {
         let url = self.duck.absolute_url(format!(

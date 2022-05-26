@@ -38,14 +38,5 @@ pub struct Asset {
     pub download_count: i64,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-    // pub uploader: User,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct LastTwoReleases(pub Release, pub Release);
-
-impl LastTwoReleases {
-    pub fn names(&self) -> (&str, &str) {
-        (&self.0.tag_name, &self.1.tag_name)
-    }
-}

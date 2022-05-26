@@ -6,6 +6,12 @@ use std::collections::HashMap;
 
 use futures_util::stream::StreamExt;
 
+
+pub fn build_image() {
+
+}
+
+
 pub async fn lmao() {
     let docker = Docker::connect_with_socket_defaults().unwrap();
 
@@ -16,6 +22,7 @@ pub async fn lmao() {
     build_image_labels.insert("maintainer", "somemaintainer");
 
     let build_image_options = BuildImageOptions {
+
         dockerfile: "Dockerfile",
         t: "bollard-build-example",
         extrahosts: Some("myhost:127.0.0.1"),
