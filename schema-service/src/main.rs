@@ -1,8 +1,8 @@
 use flate2::read::GzDecoder;
-use log::info;
+use log::{debug, info};
 use schema_lib::{
-    clean_up_src_folder, octoduck::Octoduck, parse_folder_name, read_schema_list,
-    scan_for_ts_files, write_schema_list, SchemaList,
+    clean_up_src_folder, octoduck::Octoduck, parse_folder_name, parse_variable_string,
+    read_schema_list, scan_for_ts_files, write_schema_list, SchemaList,
 };
 use std::fs::File;
 use std::io::Cursor;
@@ -19,6 +19,7 @@ use tar::Archive;
 #[macro_use]
 extern crate swc_common;
 extern crate swc_ecma_parser;
+
 use swc_common::sync::Lrc;
 use swc_common::util::take::Take;
 use swc_common::{
@@ -26,9 +27,9 @@ use swc_common::{
     FileName, FilePathMapping, SourceMap,
 };
 use swc_ecma_ast::Pat::Ident;
-use swc_ecma_ast::{BindingIdent, BlockStmt, Decl, Expr, Lit, ModuleDecl, ModuleItem, Pat, Stmt, VarDeclKind};
+use swc_ecma_ast::{BindingIdent, BlockStmt, ClassMember, Decl, Expr, Lit, ModuleDecl, ModuleItem, Pat, Stmt, VarDecl, VarDeclKind};
 use swc_ecma_parser::{lexer::Lexer, Capturing, Parser, StringInput, Syntax, TsConfig};
-use uuid::Uuid;
+use tokio::fs;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -94,23 +95,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut schema_paths = Vec::<String>::new();
 
     for item in ts_files {
-        // let contents = fs::read_to_string(item).expect("failed to read file");
-        //
-        // let lines = contents.lines();
-        //
-        // lines.for_each(| line| {
-        //    debug!("{}", line);
-        // });
-
-        // let fm = cm.new_source_file(
-        //     FileName::Custom("test.ts".into()),
-        //     "export const configurationDefaultsSchemaId = 'vscode://schemas/settings/configurationDefaults';".into(),
-        // );
-        //
         let fm = cm
             .load_file(Path::new(item.as_str()))
             .expect("failed to load file");
-        info!("Loaded {}", item);
+        debug!("current file -> {}", item);
 
         let lexer = Lexer::new(
             Syntax::Typescript(TsConfig {
@@ -136,64 +124,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .expect("Failed to parse module.");
 
         for module_item in module.body {
-            // if let Ident(name) = &decl.name {
-            // }
-
             match module_item {
                 ModuleItem::ModuleDecl(module_decl) => {
+                    info!("module decl");
+                    // match module_decl {
+                    //     ModuleDecl::Import(_) => {}
+                    //     ModuleDecl::ExportDecl(_) => {}
+                    //     ModuleDecl::ExportNamed(_) => {}
+                    //     ModuleDecl::ExportDefaultDecl(_) => {}
+                    //     ModuleDecl::ExportDefaultExpr(_) => {}
+                    //     ModuleDecl::ExportAll(_) => {}
+                    //     ModuleDecl::TsImportEquals(_) => {}
+                    //     ModuleDecl::TsExportAssignment(_) => {}
+                    //     ModuleDecl::TsNamespaceExport(_) => {}
+                    // }
                     if let ModuleDecl::ExportDecl(export_decl) = module_decl {
                         if let Decl::Var(var_decl) = export_decl.decl {
-                            if var_decl.kind == VarDeclKind::Const {
-                                var_decl.decls.iter().for_each(|decl| {
-                                    let mut name: String = "".to_string();
-
-                                    if let Ident(bident) = &decl.name {
-                                        name = bident.id.sym.to_string();
-                                    }
-
-                                    if name.to_lowercase().contains("schemaid") {
-                                        if let Some(boxed_expr) = &decl.init {
-                                            if let Expr::Lit(lit) = boxed_expr.unwrap_parens() {
-                                                if let Lit::Str(lit_str) = lit {
-                                                    schema_paths.push(lit_str.value.to_string());
-                                                    info!(
-                                                        "value !!!!! {:?}",
-                                                        lit_str.value.to_string()
-                                                    );
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
-                            }
+                            parse_variable_string(&mut schema_paths, &var_decl);
                         } else if let Decl::Fn(fn_decl) = export_decl.decl {
-                            if let Some(BlockStmt { stmts, ..}) = fn_decl.function.body {
+                            if let Some(BlockStmt { stmts, .. }) = fn_decl.function.body {
                                 stmts.iter().for_each(|stmt| {
                                     if let Stmt::Decl(decl) = stmt {
                                         if let Decl::Var(var_decl) = decl {
-                                            if var_decl.kind == VarDeclKind::Const {
-                                                var_decl.decls.iter().for_each(|decl| {
-                                                    let mut name: String = "".to_string();
-
-                                                    if let Ident(bident) = &decl.name {
-                                                        name = bident.id.sym.to_string();
-                                                    }
-
-                                                    if name.to_lowercase().contains("schemaid") {
-                                                        if let Some(boxed_expr) = &decl.init {
-                                                            if let Expr::Lit(lit) = boxed_expr.unwrap_parens() {
-                                                                if let Lit::Str(lit_str) = lit {
-                                                                    schema_paths.push(lit_str.value.to_string());
-                                                                    info!(
-                                                                        "value !!!!! {:?}",
-                                                                        lit_str.value.to_string()
-                                                                    );
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                });
-                                            }
+                                            parse_variable_string(&mut schema_paths, &var_decl);
                                         }
                                     }
                                 });
@@ -201,49 +154,66 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                     }
                 }
-                ModuleItem::Stmt(stmt) => {
-                    if let Stmt::Decl(decl) = stmt {
+                ModuleItem::Stmt(stmt) => match stmt {
+                    Stmt::Block(_) => {}
+                    Stmt::Empty(_) => {}
+                    Stmt::Debugger(_) => {}
+                    Stmt::With(_) => {}
+                    Stmt::Return(_) => {}
+                    Stmt::Labeled(_) => {}
+                    Stmt::Break(_) => {}
+                    Stmt::Continue(_) => {}
+                    Stmt::If(_) => {}
+                    Stmt::Switch(_) => {}
+                    Stmt::Throw(_) => {}
+                    Stmt::Try(_) => {}
+                    Stmt::While(_) => {}
+                    Stmt::DoWhile(_) => {}
+                    Stmt::For(_) => {}
+                    Stmt::ForIn(_) => {}
+                    Stmt::ForOf(_) => {}
+                    Stmt::Decl(decl) => {
                         if let Decl::Var(var_decl) = decl {
-                            if var_decl.kind == VarDeclKind::Const {
-                                var_decl.decls.iter().for_each(|decl| {
-                                    let mut name: String = "".to_string();
-
-                                    if let Ident(bident) = &decl.name {
-                                        name = bident.id.sym.to_string();
-                                    }
-
-                                    if name.to_lowercase().contains("schemaid") {
-                                        if let Some(boxed_expr) = &decl.init {
-                                            if let Expr::Lit(lit) = boxed_expr.unwrap_parens() {
-                                                if let Lit::Str(lit_str) = lit {
-                                                    schema_paths.push(lit_str.value.to_string());
-                                                    info!(
-                                                        "value !!!!! {:?}",
-                                                        lit_str.value.to_string()
-                                                    );
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
+                            parse_variable_string(&mut schema_paths, &var_decl);
+                        } else if let Decl::Class(class_decl) = decl {
+                            // for class_body in class_decl.class.body {
+                            //     match class_body {
+                            //         ClassMember::Constructor(_) => {}
+                            //         ClassMember::Method(_) => {}
+                            //         ClassMember::PrivateMethod(_) => {}
+                            //         ClassMember::ClassProp(_) => {}
+                            //         ClassMember::PrivateProp(_) => {}
+                            //         ClassMember::TsIndexSignature(_) => {}
+                            //         ClassMember::Empty(_) => {}
+                            //         ClassMember::StaticBlock(_) => {}
+                            //     }
+                            // }
+                            info!("class decl");
+                            if class_decl.ident.sym.to_string() == "RegisterSchemasContribution" {
+                                fs::write(
+                                    "../test.json",
+                                    serde_json::to_string_pretty(&class_decl).unwrap(),
+                                )
+                                .await?;
                             }
                         }
-                    } else if let Stmt::Expr(expr) = stmt {
-                         if let Expr::Call(call_expr) = &expr.expr.unwrap_parens() {
-                             call_expr.args.iter().for_each(|arg| {
-                                 if let Expr::Lit(lit) = arg.expr.unwrap_parens() {
-                                     if let Lit::Str(lit_str) = lit {
-                                         schema_paths.push(lit_str.value.to_string());
-                                         info!(
-                                             "value !!!!! {:?}",
-                                             lit_str.value.to_string()
-                                         );
-                                     }
-                                 }
-                             });
-                         }
                     }
-                }
+                    Stmt::Expr(expr_stmt) => {
+                        if let Expr::Call(call_expr) = &expr_stmt.expr.unwrap_parens() {
+                            call_expr.args.iter().for_each(|arg| {
+                                if let Expr::Lit(lit) = arg.expr.unwrap_parens() {
+                                    if let Lit::Str(lit_str) = lit {
+                                        let val = lit_str.value.to_string();
+                                        if val.to_lowercase().contains("vscode://schema") {
+                                            schema_paths.push(lit_str.value.to_string());
+                                            info!("found value -> {:?}", val);
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                },
             }
         }
     }

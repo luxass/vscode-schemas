@@ -7,29 +7,32 @@ extern crate serde;
 
 use std::fs::{metadata, File};
 use std::io::{Read, Write};
-use swc_ecma_parser::token::TokenAndSpan;
-use walkdir::WalkDir;
-// use octocrab::models::repos::Release;
-// use octocrab::{Octocrab, Page};
-// use octocrab::repos::RepoHandler;
+use std::path::Path;
 use url::Url;
+use walkdir::WalkDir;
 
 pub mod docker;
 pub mod error;
 pub mod octoduck;
+use regex::Regex;
+
+#[macro_use]
+extern crate swc_common;
+extern crate swc_ecma_parser;
+use swc_common::sync::Lrc;
+use swc_common::util::take::Take;
+use swc_common::{
+    errors::{ColorConfig, Handler},
+    FileName, FilePathMapping, SourceMap,
+};
+use swc_ecma_ast::Pat::Ident;
+use swc_ecma_ast::{
+    BindingIdent, BlockStmt, Decl, Expr, FnDecl, Lit, ModuleDecl, ModuleItem, Pat, Stmt, VarDecl,
+    VarDeclKind,
+};
+use swc_ecma_parser::{lexer::Lexer, Capturing, Parser, StringInput, Syntax, TsConfig};
 
 pub type Result<T, E = error::Error> = std::result::Result<T, E>;
-
-//
-//
-// #[derive(Debug)]
-// pub struct LastTwoReleases(pub Release, pub Release);
-//
-// impl LastTwoReleases {
-//     pub fn names(&self) -> (&str, &str) {
-//         (&self.0.tag_name, &self.1.tag_name)
-//     }
-// }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct SchemaList {
@@ -37,30 +40,7 @@ pub struct SchemaList {
     pub schemas: Vec<String>,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct CompareRoot {
-    pub url: Url,
-    pub html_url: Url,
-    pub permalink_url: Url,
-    pub diff_url: Url,
-    pub patch_url: Url,
-    //pub base_commit: String, // todo
-    //pub merge_base_commit: String, // todo
-    pub status: String,
-    pub ahead_by: i64,
-    pub behind_by: i64,
-    pub total_commits: i64,
-    //pub commits: Vec<String>, // todo
-    pub files: Vec<CompareFile>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct CompareFile {
-    pub filename: String,
-}
-
 pub fn read_schema_list() -> SchemaList {
-
     let mut file = File::open("../schema-list.json").unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
@@ -113,6 +93,10 @@ pub fn scan_for_ts_files(dir: &str) -> Result<Vec<String>, std::io::Error> {
                 // if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-93ec6bd\\src\\vs\\workbench\\api\\common\\configurationExtensionPoint.ts" {
                 //     continue;
                 // }
+                if path.to_str().unwrap().to_owned() != "../extraction\\microsoft-vscode-528ee1a\\src\\vs\\workbench\\contrib\\notebook\\browser\\notebook.contribution.ts" {
+                    continue;
+                }
+
                 files.push(path.to_str().unwrap().to_owned())
                 // debug!("{}", path.display());
             }
@@ -120,4 +104,31 @@ pub fn scan_for_ts_files(dir: &str) -> Result<Vec<String>, std::io::Error> {
     }
 
     Ok(files)
+}
+
+pub fn parse_variable_string(schema_paths: &mut Vec<String>, var_decl: &VarDecl) {
+    if var_decl.kind == VarDeclKind::Const {
+        var_decl.decls.iter().for_each(|decl| {
+            let mut name: String = "".to_string();
+
+            if let Ident(biding_ident) = &decl.name {
+                name = biding_ident.id.sym.to_string();
+            }
+
+            if name.to_lowercase().contains("schemaid") {
+                if let Some(boxed_expr) = &decl.init {
+                    if let Expr::Lit(lit) = boxed_expr.unwrap_parens() {
+                        if let Lit::Str(lit_str) = lit {
+                            let val = lit_str.value.to_string();
+
+                            if val.to_lowercase().contains("vscode://schema") {
+                                schema_paths.push(lit_str.value.to_string());
+                                info!("found value -> {:?}", val);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
 }
