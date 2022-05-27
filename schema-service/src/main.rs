@@ -167,6 +167,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         fs::remove_file(&tar_gz_file_path).unwrap();
     }
 
+    info!("writing dockerfile");
     build_dockerfile(long_sha);
 
     Ok(())
