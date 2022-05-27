@@ -1,8 +1,18 @@
-use log::{debug, error};
-use schema_lib::{octoduck::Octoduck, read_schema_list, write_schema_list, SchemaList};
-use std::env;
+use flate2::read::GzDecoder;
+use log::{debug, info};
+use octocrab::models::repos::{Object, Ref};
+use octocrab::params::repos::Reference;
+use octocrab::Octocrab;
+use regex::Regex;
+use schema_lib::{
+    docker::{init},
+    read_schema_list, scan_for_ts_files, write_schema_list, SchemaList,
+};
 use std::fs::File;
-use std::io::Write;
+use std::io::Cursor;
+use std::path::Path;
+use std::{env, fs, io};
+use tar::Archive;
 
 // use markdown_gen::markdown::{AsMarkdown, Markdown};
 // use octocrab::Octocrab;
@@ -18,54 +28,95 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .write_style(env_logger::WriteStyle::Always)
         .init();
 
+    info!("Reading schema list");
+    let mut schema_list: SchemaList = read_schema_list();
+
+    info!(
+        "schema_list -> last_release: {:?}",
+        schema_list.last_release
+    );
+
+    let extraction_dir: &Path = Path::new("../extraction");
+
     let github_token = env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN not set");
 
-    let octoduck = Octoduck::builder().personal_token(github_token).build()?;
+    let octocrab = Octocrab::builder().personal_token(github_token).build()?;
 
-    let repo = octoduck.repos("microsoft", "vscode");
-    repo.get_last_commit()
+    let repo = octocrab.repos("microsoft", "vscode");
 
-    // println!("{:?}", repo.get().await?);
-    let mut release_page = repo.releases().list().per_page(10).send().await?;
-    let mut releases = release_page.take_items();
+    let last_release = repo.releases().get_latest().await?;
+    let last_release_tag_name = last_release.tag_name;
 
-    while let Ok(Some(mut new_release)) = octoduck.get_page(&release_page.next).await {
-        releases.extend(new_release.take_items());
-
-        release_page = new_release;
+    if schema_list.last_release == last_release_tag_name {
+        info!("no new releases");
+        return Ok(());
     }
 
-    for release in releases {
-        println!("{:?}", release.tag_name);
+    info!("latest release: {}", last_release_tag_name);
+
+    let tag: Reference = Reference::Tag(last_release_tag_name.clone());
+
+    let _ref: Ref = repo.get_ref(&tag).await?;
+
+    let long_sha = if let Object::Commit { sha, url: _ } = _ref.object {
+        sha
+    } else {
+        panic!("invalid ref");
+    };
+
+    let short_sha = &long_sha[0..7];
+
+    info!("sha for last release: {}", long_sha);
+
+    let unpack_name = format!("microsoft-vscode-{}", short_sha);
+    info!("unpack_name: {}", unpack_name);
+
+    let src_folder = extraction_dir.join(unpack_name);
+
+    // microsoft-vscode-1.67.2-0-gc3511e6.tar.gz
+    let tar_gz_file = format!(
+        "microsoft-vscode-{release}-0-{short_sha}.tar.gz",
+        release = last_release_tag_name,
+        short_sha = short_sha
+    );
+
+    if !Path::new(src_folder.to_str().unwrap()).exists() {
+        let res = repo.download_tarball(tag).await?;
+
+        let mut file = File::create(extraction_dir.join(&tar_gz_file))?;
+
+        let bytes = res.bytes().await.expect("failed to read bytes");
+
+        let mut content = Cursor::new(bytes);
+
+        io::copy(&mut content, &mut file).expect("failed to write file");
+
+        let tar_gz = File::open(extraction_dir.join(&tar_gz_file))?;
+
+        let tar = GzDecoder::new(tar_gz);
+        let mut archive = Archive::new(tar);
+        archive.unpack(extraction_dir.join("."))?;
     }
 
-    let last_two_releases = repo.releases().get_last_two_releases().await?;
-    // println!("{:?}", last_two_releases);
-    println!("{:?}", last_two_releases.names());
+    let ts_files = scan_for_ts_files(src_folder.join("src").to_str().unwrap())?;
+    info!("found {} typescript files.", ts_files.len());
 
-    // let mut compare_page = repo.compare().per_page(250).base("1.65.0").head("1.66.2").send().await?;
-    //
-    // let mut files = compare_page.take_items();
-    // while let Ok(Some(mut new_compare)) = octoduck.get_page(&compare_page.next).await {
-    //     files.extend(new_compare.take_items());
-    //     compare_page = new_compare;
-    // }
+    let mut schema_paths = Vec::<String>::new();
 
-    let mut compare_page = repo
-        .compare("1.65.0".to_string(), "1.66.2".to_string())
-        .list_commits()
-        .per_page(250)
-        .send()
-        .await?;
+    let re = Regex::new(r"vscode://schemas(?:/\w+)+").unwrap();
+    for item in ts_files {
+        let contents = fs::read_to_string(item).expect("failed to read file");
 
-    let mut files = compare_page.take_items();
+        let lines = contents.lines();
 
-    while let Ok(Some(mut new_compare)) = octoduck.get_page(&compare_page.next).await {
-        files.extend(new_compare.take_items());
-
-        debug!("{:?}", new_compare.total_count);
-
-        compare_page = new_compare;
+        lines.for_each(|line| {
+            let captures = re.captures(line);
+            if let Some(captures) = captures {
+                let path = captures.get(0).map_or("", |m| m.as_str()).to_string();
+                debug!("{:?}", path);
+                schema_paths.push(path);
+            }
+        });
     }
 
     // let markdown_input: &str = "Hello world, this is a ~~complicated~~ *very simple* example.";
@@ -89,61 +140,36 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // // Write result to stdout.
     // println!("\nHTML output:\n{}", &html_output);
 
-    // let repo = octocrab.repos("microsoft", "vscode");
-    //
-    // let last_two_releases = repo.releases().get_last_two_releases().await?;
-    // // println!("{:?}", last_two_releases);
-    // // println!("{:?}", last_two_releases.names());
-    //
-    // let last_two_releases_names = last_two_releases.names();
-    //
-    // let compared = repo.compare(last_two_releases_names.0, last_two_releases_names.1).await.unwrap();
-    // println!("{:?}", compared);
-
-    // let mut compare_page = repo.compare2().per_page(255).send(&octocrab, last_two_releases_names.0, last_two_releases_names.1).await?;
-    // let mut compare_page = repo.compare().page(1u8).per_page(255).base("1.65.0").head("1.66.2").send().await?;
-
-    // let toml_str = r#"
-    // schemas = [
-    //     "vscode://schemas/settings/default",
-    //     "vscode://schemas/settings/folder",
-    //     "vscode://schemas/settings/machine",
-    //     "vscode://schemas/settings/resourceLanguage",
-    //     "vscode://schemas/settings/user",
-    //     "vscode://schemas/settings/workspace",
-    //     "vscode://schemas/argv",
-    //     "vscode://schemas/color-theme",
-    //     "vscode://schemas/extensions",
-    //     "vscode://schemas/global-snippets",
-    //     "vscode://schemas/icon-theme",
-    //     "vscode://schemas/icons",
-    //     "vscode://schemas/ignoredSettings",
-    //     "vscode://schemas/keybindings",
-    //     "vscode://schemas/language-configuration",
-    //     "vscode://schemas/launch",
-    //     "vscode://schemas/product-icon-theme",
-    //     "vscode://schemas/snippets",
-    //     "vscode://schemas/tasks",
-    //     "vscode://schemas/textmate-colors",
-    //     "vscode://schemas/token-styling",
-    //     "vscode://schemas/vscode-extensions",
-    //     "vscode://schemas/workbench-colors",
-    //     "vscode://schemas/workspaceConfig"
-    // ]
-    //
-    // [versions_compared]
-    // base = ""
-    // head = """#;
-
-    let schema_list: SchemaList = read_schema_list();
-
-    // let mut decoded: SchemaList = schema_lib::compare::read_schema_list();
-    // println!("{:#?}", decoded);
-    //
-    // decoded.versions_compared.base = "69".to_string();
-    // decoded.versions_compared.head = "420".to_string();
-    // schema_lib::compare::write_schema_list(decoded);
-
     // schema_lib::docker::lmao().await;
+
+    // To ensure that all items in schema_paths are valid, vscode-schemas
+    schema_paths = schema_paths
+        .iter()
+        .map(|s| s.clone())
+        .filter(|v| v.contains("vscode://schemas"))
+        .collect();
+
+    schema_paths.sort();
+    info!("SCHEMAS = {:?}", schema_paths);
+
+    schema_list = SchemaList {
+        last_release: last_release_tag_name,
+        schemas: schema_paths,
+    };
+    // write_schema_list(schema_list);
+
+    if Path::new(src_folder.to_str().unwrap()).exists() {
+        fs::remove_dir_all(src_folder.to_str().unwrap()).unwrap();
+    }
+
+    let tar_gz_file_path = extraction_dir.join(&tar_gz_file);
+
+    if Path::new(&tar_gz_file_path).exists() {
+        fs::remove_file(&tar_gz_file_path).unwrap();
+    }
+
+
+    init(long_sha).await;
+
     Ok(())
 }

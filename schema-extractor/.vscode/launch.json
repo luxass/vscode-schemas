@@ -10,8 +10,13 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--ggg=gggggggg"
 			],
+			"env": {
+				"VSCODE_SCHEMAS_AUTO_RUN": "true",
+				"VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST": "gg"
+			},
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
