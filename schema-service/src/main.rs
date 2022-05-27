@@ -5,7 +5,8 @@ use octocrab::params::repos::Reference;
 use octocrab::Octocrab;
 use regex::Regex;
 use schema_lib::{
-    docker::build_dockerfile, read_schema_list, scan_for_ts_files, write_schema_list, SchemaList,
+    docker::{init},
+    read_schema_list, scan_for_ts_files, write_schema_list, SchemaList,
 };
 use std::fs::File;
 use std::io::Cursor;
@@ -167,8 +168,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         fs::remove_file(&tar_gz_file_path).unwrap();
     }
 
-    info!("writing dockerfile");
-    build_dockerfile(long_sha);
+
+    init(long_sha).await;
 
     Ok(())
 }
