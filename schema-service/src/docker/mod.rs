@@ -38,7 +38,7 @@ ENV LANG=C.UTF-8 \
 
 EXPOSE 5000
 
-ENTRYPOINT [ "/bin/sh", "-c", "exec ${{SERVER_ROOT}}/bin/code-server --host 0.0.0.0 --without-connection-token \"${{@}}\"", "--" ]"#,
+ENTRYPOINT [ "/bin/sh", "-c", "exec ${{SERVER_ROOT}}/bin/code-server --host 0.0.0.0 --without-connection-token --install-extension usernamehw.errorlens \"${{@}}\"", "--" ]"#,
         commit = commit
     )
 }
@@ -93,8 +93,6 @@ pub async fn init(commit: String) {
         .start_container(
             "vscode-schema-server",
             None::<StartContainerOptions<String>>,
-        )
-        .await
-        .unwrap();
+        ).await.unwrap()
 
 }

@@ -5,8 +5,7 @@ use octocrab::params::repos::Reference;
 use octocrab::Octocrab;
 use regex::Regex;
 use schema_lib::{
-    docker::{init},
-    read_schema_list, scan_for_ts_files, write_schema_list, SchemaList,
+    docker::init, read_schema_list, scan_for_ts_files, write_schema_list, SchemaList,
 };
 use std::fs::File;
 use std::io::Cursor;
@@ -167,7 +166,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if Path::new(&tar_gz_file_path).exists() {
         fs::remove_file(&tar_gz_file_path).unwrap();
     }
-
 
     init(long_sha).await;
 

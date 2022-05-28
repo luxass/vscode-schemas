@@ -9,10 +9,6 @@ export function activate(context: ExtensionContext) {
     VSCODE_SCHEMA_OUTPUT_PATH,
   } = process.env;
 
-  console.log("Extension 'schema-extractor' is now active!");
-
-  console.log("VSCODE_SCHEMAS_AUTO_RUN:", VSCODE_SCHEMAS_AUTO_RUN);
-
   context.subscriptions.push(
     commands.registerCommand("schema-extractor.extract-all", async () => {
       const workspaces = workspace.workspaceFolders;
