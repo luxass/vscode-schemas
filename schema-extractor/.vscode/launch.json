@@ -15,7 +15,8 @@
 			],
 			"env": {
 				"VSCODE_SCHEMAS_AUTO_RUN": "true",
-				"VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST": "gg"
+				"VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST": "C:/Users/Lucas/Development/vscode-schemas/schema-list.json",
+				"VSCODE_SCHEMA_OUTPUT_PATH": "./schema-extraction-output",
 			},
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"

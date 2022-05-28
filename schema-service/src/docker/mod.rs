@@ -1,7 +1,9 @@
 use bollard::image::BuildImageOptions;
 use bollard::Docker;
 
-use bollard::container::{Config, CreateContainerOptions, StartContainerOptions};
+use bollard::container::{
+    Config, CreateContainerOptions, StartContainerOptions, WaitContainerOptions,
+};
 use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
@@ -19,9 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ARG SERVER_ROOT="/home/.vscode-server"
 
-RUN wget https://update.code.visualstudio.com/commit:{commit}/server-linux-x64/stable && \
+RUN wget -O vscode-server-linux-x64.tar.gz https://update.code.visualstudio.com/commit:{commit}/server-linux-x64/stable && \
     tar -xzf vscode-server-linux-x64.tar.gz && \
-     mv -f vscode-server-linux-x64 ${{SERVER_ROOT}} && \
+    mv -f vscode-server-linux-x64 ${{SERVER_ROOT}}
 
 
 WORKDIR /home/workspace/
@@ -65,7 +67,7 @@ pub async fn init(commit: String) {
         ..Default::default()
     };
 
-    let build_info = docker
+    docker
         .build_image(build_image_options, None, Some(compressed.into()))
         .try_collect::<Vec<_>>()
         .await
@@ -76,7 +78,7 @@ pub async fn init(commit: String) {
         ..Default::default()
     };
 
-    let container_create_response = docker
+    docker
         .create_container(
             Some(create_container_options),
             Config {
@@ -87,7 +89,7 @@ pub async fn init(commit: String) {
         .await
         .unwrap();
 
-    let start_container = docker
+   docker
         .start_container(
             "vscode-schema-server",
             None::<StartContainerOptions<String>>,
@@ -95,49 +97,4 @@ pub async fn init(commit: String) {
         .await
         .unwrap();
 
-
-}
-
-pub async fn lmao() {
-    let docker = Docker::connect_with_socket_defaults().unwrap();
-
-    let mut build_image_args = HashMap::new();
-    build_image_args.insert("dummy", "value");
-
-    let mut build_image_labels = HashMap::new();
-    build_image_labels.insert("maintainer", "somemaintainer");
-
-    let build_image_options = BuildImageOptions {
-
-        dockerfile: "Dockerfile",
-        t: "bollard-build-example",
-        extrahosts: Some("myhost:127.0.0.1"),
-        remote:
-        "https://raw.githubusercontent.com/docker-library/openjdk/master/11/jdk/slim-buster/Dockerfile",
-        q: false,
-        nocache: false,
-        cachefrom: vec![],
-        pull: true,
-        rm: true,
-        forcerm: true,
-        memory: Some(120000000),
-        memswap: Some(120000000),
-
-        cpushares: Some(2),
-        cpusetcpus: "0-3",
-        cpuperiod: Some(2000),
-        cpuquota: Some(1000),
-        buildargs: build_image_args,
-        shmsize: Some(1000000),
-        squash: false,
-        labels: build_image_labels,
-        networkmode: "host",
-        platform: "linux/x86_64",
-    };
-
-    let mut image_build_stream = docker.build_image(build_image_options, None, None);
-
-    while let Some(msg) = image_build_stream.next().await {
-        println!("Message: {:?}", msg);
-    }
 }
