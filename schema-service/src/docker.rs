@@ -21,12 +21,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     sudo
 
-COPY schema-extractor-0.0.1.vsix test.vsix
 ARG SERVER_ROOT="/home/.vscode-server"
 
 RUN wget -O vscode-server-linux-x64.tar.gz https://update.code.visualstudio.com/commit:{commit}/server-linux-x64/stable && \
     tar -xzf vscode-server-linux-x64.tar.gz && \
-    mv -f vscode-server-linux-x64 ${{SERVER_ROOT}}
+    mv -f vscode-server-linux-x64 ${{SERVER_ROOT}} && \
+    wget -O extractor.vsix https://github.com/DeprecatedLuxas/vscode-schemas/raw/main/schema-extractor/schema-extractor-0.0.1.vsix && \
+    mv -f extractor.vsix /home/
 
 
 WORKDIR /home/workspace/
@@ -34,14 +35,9 @@ WORKDIR /home/workspace/
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     HOME=/home/workspace \
-    EDITOR=code \
-    VISUAL=code \
-    GIT_EDITOR="code --wait" \
     SERVER_ROOT=${{SERVER_ROOT}}
 
-EXPOSE 5000
-
-ENTRYPOINT [ "/bin/sh", "-c", "exec ${{SERVER_ROOT}}/bin/code-server --host 0.0.0.0 --without-connection-token \"${{@}}\"", "--" ]"#,
+ENTRYPOINT [ "/bin/sh", "-c", "exec ${{SERVER_ROOT}}/bin/code-server --install-extension esbenp.prettier-vscode --force" ]"#,
         commit = commit
     )
 }
