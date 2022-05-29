@@ -2,8 +2,10 @@ use bollard::image::BuildImageOptions;
 use bollard::Docker;
 
 use bollard::container::{
-    Config, CreateContainerOptions, StartContainerOptions, WaitContainerOptions,
+    Config, CreateContainerOptions, RemoveContainerOptions, StartContainerOptions,
+    WaitContainerOptions,
 };
+use bollard::errors::Error;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
@@ -19,6 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     sudo
 
+COPY schema-extractor-0.0.1.vsix test.vsix
 ARG SERVER_ROOT="/home/.vscode-server"
 
 RUN wget -O vscode-server-linux-x64.tar.gz https://update.code.visualstudio.com/commit:{commit}/server-linux-x64/stable && \
@@ -38,26 +41,26 @@ ENV LANG=C.UTF-8 \
 
 EXPOSE 5000
 
-ENTRYPOINT [ "/bin/sh", "-c", "exec ${{SERVER_ROOT}}/bin/code-server --host 0.0.0.0 --without-connection-token --install-extension usernamehw.errorlens \"${{@}}\"", "--" ]"#,
+ENTRYPOINT [ "/bin/sh", "-c", "exec ${{SERVER_ROOT}}/bin/code-server --host 0.0.0.0 --without-connection-token \"${{@}}\"", "--" ]"#,
         commit = commit
     )
 }
 
-pub async fn init(commit: String) {
+pub async fn init(commit: String) -> Result<(), Error> {
     let docker = Docker::connect_with_socket_defaults().unwrap();
     let dockerfile = build_dockerfile(commit);
     let mut header = tar::Header::new_gnu();
-    header.set_path("Dockerfile").unwrap();
+    header.set_path("Dockerfile")?;
     header.set_size(dockerfile.len() as u64);
     header.set_mode(0o755);
     header.set_cksum();
     let mut tar = tar::Builder::new(Vec::new());
-    tar.append(&header, dockerfile.as_bytes()).unwrap();
+    tar.append(&header, dockerfile.as_bytes())?;
 
-    let uncompressed = tar.into_inner().unwrap();
+    let uncompressed = tar.into_inner()?;
     let mut c = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
-    c.write_all(&uncompressed).unwrap();
-    let compressed = c.finish().unwrap();
+    c.write_all(&uncompressed)?;
+    let compressed = c.finish()?;
 
     let build_image_options = BuildImageOptions {
         dockerfile: "Dockerfile".to_string(),
@@ -67,18 +70,23 @@ pub async fn init(commit: String) {
         ..Default::default()
     };
 
-    docker
-        .build_image(build_image_options, None, Some(compressed.into()))
-        .try_collect::<Vec<_>>()
-        .await
-        .unwrap();
+    let mut image_build_stream = docker.build_image(build_image_options, None, Some(compressed.into()));
+
+    while let Some(msg) = image_build_stream.next().await {
+        println!("Message: {:?}", msg);
+    }
+    //
+    // docker
+    //     .build_image(build_image_options, None, Some(compressed.into()))
+    //     .try_collect::<Vec<_>>()
+    //     .await?;
 
     let create_container_options = CreateContainerOptions {
         name: "vscode-schema-server".to_string(),
         ..Default::default()
     };
 
-    docker
+    let id = docker
         .create_container(
             Some(create_container_options),
             Config {
@@ -86,13 +94,20 @@ pub async fn init(commit: String) {
                 ..Default::default()
             },
         )
-        .await
-        .unwrap();
+        .await?
+        .id;
 
-   docker
+    docker
         .start_container(
-            "vscode-schema-server",
+            &id,
             None::<StartContainerOptions<String>>,
-        ).await.unwrap()
+        )
+        .await?;
 
+    // docker
+    //     .remove_container("vscode-schema-server", None::<RemoveContainerOptions>)
+    //     .await
+    //     .unwrap();
+
+    Ok(())
 }

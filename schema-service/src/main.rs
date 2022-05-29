@@ -16,8 +16,6 @@ use tar::Archive;
 // use markdown_gen::markdown::{AsMarkdown, Markdown};
 // use octocrab::Octocrab;
 // use pulldown_cmark::{html, Options, Parser};
-// use schema_lib::releases::ReleaseHandlerExt;
-// use schema_lib::repo::RepoHandlerExt;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -167,7 +165,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         fs::remove_file(&tar_gz_file_path).unwrap();
     }
 
-    init(long_sha).await;
+    init(long_sha).await.expect("TODO: panic message");
 
+    
     Ok(())
 }
