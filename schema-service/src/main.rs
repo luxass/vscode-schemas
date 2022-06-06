@@ -11,6 +11,7 @@ use std::fs::File;
 use std::io::Cursor;
 use std::path::Path;
 use std::{env, fs, io};
+use markdown_gen::markdown::{AsMarkdown, Markdown};
 use tar::Archive;
 
 // use markdown_gen::markdown::{AsMarkdown, Markdown};
@@ -44,6 +45,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let last_release = repo.releases().get_latest().await?;
     let last_release_tag_name = last_release.tag_name;
 
+    let last_release_tag_name_v = format!("v{}", last_release_tag_name.clone());
     if schema_list.last_release == last_release_tag_name {
         info!("no new releases");
         return Ok(());
@@ -165,8 +167,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         fs::remove_file(&tar_gz_file_path).unwrap();
     }
 
-    init(long_sha).await.expect("TODO: panic message");
+    //init(long_sha).await.expect("TODO: panic message");
 
-    
+
+
+    let schemas_dir = Path::new("../schemas");
+
+    if schemas_dir.join(last_release_tag_name_v).exists() {
+        panic!("Release folder already exists")
+    }
+
+    let schemas_folders = fs::read_dir(schemas_dir)?.filter(|f| {
+        f.as_ref().unwrap().path().is_dir()
+    });
+
+    schemas_folders.for_each(|f| {
+        info!("{:?}", f)
+    });
+
+    let file = File::create(schemas_dir.join("README.md")).unwrap();
+    let mut md = Markdown::new(file);
+
+
+    md.write("Visual Studio Code Schemas".heading(1)).unwrap();
+    md.write("This is a collection of schemas for Visual Studio Code.".quote()).unwrap();
+
+    md.write("Versions".heading(2)).unwrap();
+
     Ok(())
 }
