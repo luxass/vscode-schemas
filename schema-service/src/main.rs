@@ -1,5 +1,6 @@
 use flate2::read::GzDecoder;
-use log::{debug, info};
+use log::{debug, error, info};
+use markdown_gen::markdown::{AsMarkdown, List, Markdown};
 use octocrab::models::repos::{Object, Ref};
 use octocrab::params::repos::Reference;
 use octocrab::Octocrab;
@@ -9,9 +10,10 @@ use schema_lib::{
 };
 use std::fs::File;
 use std::io::Cursor;
-use std::path::Path;
+use std::path::Component::Normal;
+use std::path::{Component, Path};
 use std::{env, fs, io};
-use markdown_gen::markdown::{AsMarkdown, Markdown};
+use std::borrow::{Borrow, BorrowMut};
 use tar::Archive;
 
 // use markdown_gen::markdown::{AsMarkdown, Markdown};
@@ -167,32 +169,46 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         fs::remove_file(&tar_gz_file_path).unwrap();
     }
 
+    // let ducky = ducky::new()
+
     //init(long_sha).await.expect("TODO: panic message");
-
-
 
     let schemas_dir = Path::new("../schemas");
 
-    if schemas_dir.join(last_release_tag_name_v).exists() {
-        panic!("Release folder already exists")
+    let release_folder = schemas_dir.join(last_release_tag_name_v);
+
+    if release_folder.exists() {
+        error!("Release folder already exists");
+        return Ok(());
     }
 
-    let schemas_folders = fs::read_dir(schemas_dir)?.filter(|f| {
-        f.as_ref().unwrap().path().is_dir()
-    });
+    fs::create_dir(release_folder)?;
 
-    schemas_folders.for_each(|f| {
-        info!("{:?}", f)
-    });
+    let schemas_folders =
+        fs::read_dir(schemas_dir)?.filter(|f| f.as_ref().unwrap().path().is_dir());
 
     let file = File::create(schemas_dir.join("README.md")).unwrap();
     let mut md = Markdown::new(file);
-
+    let version_regex = Regex::new(r"^v(\d+\.)?(\d+\.)?(\*|\d+)$").unwrap();
 
     md.write("Visual Studio Code Schemas".heading(1)).unwrap();
-    md.write("This is a collection of schemas for Visual Studio Code.".quote()).unwrap();
+    md.write("This is a collection of schemas for Visual Studio Code.".quote())
+        .unwrap();
 
     md.write("Versions".heading(2)).unwrap();
+
+
+    schemas_folders.for_each(|f| {
+        for component in f.unwrap().path().components() {
+            if let Normal(os_str) = component {
+                if let Some(path) = os_str.to_str() {
+                    if version_regex.is_match(path) {
+                        md.write(path.link_to(path)).unwrap();
+                    }
+                }
+            }
+        }
+    });
 
     Ok(())
 }
