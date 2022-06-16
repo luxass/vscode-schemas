@@ -12,6 +12,8 @@ jobs:
       - name: Checkout Rust
         uses: actions/checkout@v3
       - name: Run
-        run: cargo run
+        run: |
+        cd .. \
+        cargo run
 
 
