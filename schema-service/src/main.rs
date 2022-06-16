@@ -153,7 +153,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .expect("failed to execute process")
     } else {
         Command::new("sh")
-            .current_dir("./")
+            .current_dir("../")
             .arg("-c")
             .arg("ls")
             .arg("echo hello")
