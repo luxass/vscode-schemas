@@ -1,19 +1,18 @@
 use flate2::read::GzDecoder;
 use log::{debug, error, info};
-use markdown_gen::markdown::{AsMarkdown, List, Markdown};
+use markdown_gen::markdown::{AsMarkdown, Markdown};
 use octocrab::models::repos::{Object, Ref};
 use octocrab::params::repos::Reference;
 use octocrab::Octocrab;
 use regex::Regex;
-use schema_lib::{
-    docker::init, read_schema_list, scan_for_ts_files, write_schema_list, SchemaList,
-};
+use schema_lib::{read_schema_list, scan_for_ts_files, write_schema_list, SchemaList};
+use std::borrow::Borrow;
 use std::fs::File;
 use std::io::Cursor;
 use std::path::Component::Normal;
-use std::path::{Component, Path};
+use std::path::Path;
+use std::process::Command;
 use std::{env, fs, io};
-use std::borrow::{Borrow, BorrowMut};
 use tar::Archive;
 
 // use markdown_gen::markdown::{AsMarkdown, Markdown};
@@ -120,29 +119,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         });
     }
 
-    // let markdown_input: &str = "Hello world, this is a ~~complicated~~ *very simple* example.";
-    // println!("Parsing the following markdown string:\n{}", markdown_input);
-    //
-    // // Set up options and parser. Strikethroughs are not part of the CommonMark standard
-    // // and we therefore must enable it explicitly.
-    // let mut options = Options::empty();
-    // options.insert(Options::ENABLE_STRIKETHROUGH);
-    // let parser = Parser::new_ext(markdown_input, options);
-    //
-    // // Write to String buffer.
-    // let mut html_output: String = String::with_capacity(markdown_input.len() * 3 / 2);
-    // html::push_html(&mut html_output, parser);
-    //
-    // // Check that the output is what we expected.
-    // let expected_html: &str =
-    //     "<p>Hello world, this is a <del>complicated</del> <em>very simple</em> example.</p>\n";
-    // assert_eq!(expected_html, &html_output);
-    //
-    // // Write result to stdout.
-    // println!("\nHTML output:\n{}", &html_output);
-
-    // schema_lib::docker::lmao().await;
-
     // To ensure that all items in schema_paths are valid, vscode-schemas
     schema_paths = schema_paths
         .iter()
@@ -159,16 +135,34 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     // write_schema_list(schema_list);
 
-    if Path::new(src_folder.to_str().unwrap()).exists() {
-        fs::remove_dir_all(src_folder.to_str().unwrap()).unwrap();
-    }
+    // if Path::new(src_folder.to_str().unwrap()).exists() {
+    //     fs::remove_dir_all(src_folder.to_str().unwrap()).unwrap();
+    // }
+    //
+    // let tar_gz_file_path = extraction_dir.join(&tar_gz_file);
+    //
+    // if Path::new(&tar_gz_file_path).exists() {
+    //     fs::remove_file(&tar_gz_file_path).unwrap();
+    // }
 
-    let tar_gz_file_path = extraction_dir.join(&tar_gz_file);
+    let output = if cfg!(target_os = "windows") {
+        Command::new("cmd")
+            .current_dir("./")
+            .args(["/C", "dir"])
+            .output()
+            .expect("failed to execute process")
+    } else {
+        Command::new("sh")
+            .current_dir("./")
+            .arg("-c")
+            .arg("ls")
+            .arg("echo hello")
+            .output()
+            .expect("failed to execute process")
+    };
 
-    if Path::new(&tar_gz_file_path).exists() {
-        fs::remove_file(&tar_gz_file_path).unwrap();
-    }
-
+    let h = output.stdout;
+    println!("{:?}", String::from_utf8_lossy(h.as_slice()));
     // let ducky = ducky::new()
 
     //init(long_sha).await.expect("TODO: panic message");
@@ -196,7 +190,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .unwrap();
 
     md.write("Versions".heading(2)).unwrap();
-
 
     schemas_folders.for_each(|f| {
         for component in f.unwrap().path().components() {
