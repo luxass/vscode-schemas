@@ -155,7 +155,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Command::new("sh")
             .current_dir(src_folder)
             .arg("-c")
-            .args(["yarn install"])
+            .args(["yarn install", "ls", "yarn run compile"])
             .output()
             .expect("failed to execute process")
     };
