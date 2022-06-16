@@ -155,7 +155,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Command::new("sh")
             .current_dir(src_folder)
             .arg("-c")
-            .args(["yarn install", "ls", "yarn run compile"])
+            .env("VSCODE_SCHEMAS_AUTO_RUN", "true")
+            .env("VSCODE_SCHEMA_OUTPUT_PATH", "./schema-extraction-output")
+            .env("VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST", "../../schema-list.json")
+            .args(["yarn install", "ls", "yarn run compile", "./scripts/code.sh --install-extension schema-extractor-0.0.1.vsix"])
+            .arg("ls")
             .output()
             .expect("failed to execute process")
     };
