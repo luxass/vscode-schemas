@@ -6,7 +6,17 @@ on:
 
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
   build-rust:
+    needs:
+      - setup
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Rust

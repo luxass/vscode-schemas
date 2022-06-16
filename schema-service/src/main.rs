@@ -153,10 +153,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .expect("failed to execute process")
     } else {
         Command::new("sh")
-            .current_dir("../")
+            .current_dir("../extraction")
             .arg("-c")
-            .arg("ls")
-            .arg("echo hello")
+            .args(["yarn install"])
             .output()
             .expect("failed to execute process")
     };
