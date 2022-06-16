@@ -2,7 +2,7 @@ name: Generate Schemas
 on:
   push:
   schedule:
-    - cron:  '0 */6 * * *'
+    - cron: '0 */6 * * *'
 
 
 jobs:
@@ -15,5 +15,6 @@ jobs:
         run: |
         cd schema-service \
         cargo run
-
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
