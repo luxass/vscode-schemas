@@ -157,21 +157,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .arg("-c")
             .env("VSCODE_SCHEMAS_AUTO_RUN", "true")
             .env("VSCODE_SCHEMA_OUTPUT_PATH", "./schema-extraction-output")
-            .env("VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST", "../../schema-list.json")
-            .args(["yarn install", "ls", "yarn run compile", "./scripts/code.sh --install-extension schema-extractor-0.0.1.vsix"])
-            .arg("ls")
+            .env(
+                "VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST",
+                "../../schema-list.json",
+            )
+            .arg("yarn install && ls && yarn run compile && ./scripts/code.sh --install-extension schema-extractor-0.0.1.vsix && ls")
+            // .arg("ls")
+            // .arg("yarn run compile")
+            // .arg("./scripts/code.sh --install-extension schema-extractor-0.0.1.vsix")
+            // .args([
+            //     "yarn install",
+            //     "ls",
+            //     "yarn run compile",
+            //     "./scripts/code.sh --install-extension schema-extractor-0.0.1.vsix",
+            // ])
+            // .arg("ls")
             .output()
             .expect("failed to execute process")
     };
 
     let h = output.stdout;
-    let g =  String::from_utf8_lossy(h.as_slice());
+    let g = String::from_utf8_lossy(h.as_slice());
     let v: Vec<&str> = g.split("\n").collect();
 
     for x in v {
         println!("{:?}", x)
     }
-
 
     // let ducky = ducky::new()
 
