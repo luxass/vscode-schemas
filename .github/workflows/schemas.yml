@@ -15,9 +15,6 @@ jobs:
         run: |
           cd schema-service
           cargo run
-
-        cd schema-service \
-        cargo run
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
