@@ -2,7 +2,7 @@ name: Generate Schemas
 on:
   push:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron:  '0 */6 * * *'
 
 
 jobs:
@@ -13,6 +13,9 @@ jobs:
         uses: actions/checkout@v3
       - name: Run
         run: |
+          cd schema-service
+          cargo run
+
         cd schema-service \
         cargo run
         with:
