@@ -165,7 +165,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     let h = output.stdout;
-    println!("{:?}", String::from_utf8_lossy(h.as_slice()));
+    let g =  String::from_utf8_lossy(h.as_slice());
+    let v: Vec<&str> = g.split("\n").collect();
+
+    for x in v {
+        println!("{:?}", x)
+    }
+
+
     // let ducky = ducky::new()
 
     //init(long_sha).await.expect("TODO: panic message");
