@@ -161,7 +161,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST",
                 "../../schema-list.json",
             )
-            .arg("yarn install && ls && yarn run compile && ls && ./scripts/code.sh --install-extension schema-extractor-0.0.1.vsix")
+            .arg("yarn install && ls && yarn run compile && ls && ./scripts/code.sh --install-extension ../schema-extractor-0.0.1.vsix")
             // .arg("ls")
             // .arg("yarn run compile")
             // .arg("./scripts/code.sh --install-extension schema-extractor-0.0.1.vsix")
