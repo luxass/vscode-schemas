@@ -27,4 +27,6 @@ jobs:
           cargo run --
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: LS
+        run: ls
 
