@@ -174,7 +174,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("status: {}", output.status);
     } else {
         Command::new("sh")
-            .current_dir(src_folder)
+            .current_dir(src_folder.clone())
             .arg("-c")
             .env("VSCODE_SCHEMAS_AUTO_RUN", "true")
             .env("VSCODE_SCHEMA_OUTPUT_PATH", "./schema-extraction-output")
@@ -183,6 +183,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "../../schema-list.json",
             )
             .arg("./scripts/code.sh --install-extension ../schema-extractor-0.0.1.vsix")
+            .spawn()
+            .expect("failed to execute process");
+    }
+
+
+    if cfg!(target_os = "windows") {
+        println!("status: {}", output.status);
+    } else {
+        Command::new("sh")
+            .current_dir(src_folder)
+            .arg("-c")
+
+            .arg("ls")
             .spawn()
             .expect("failed to execute process");
     }
