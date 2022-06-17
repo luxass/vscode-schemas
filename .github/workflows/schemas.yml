@@ -32,5 +32,5 @@ jobs:
           ls
           ls extraction
           ls schemas
-          ls extraction/microsoft-vscode-1.68.1-0-30d9c6c.tar.gz
+          ls extraction/microsoft-vscode-30d9c6c
 
