@@ -177,7 +177,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .current_dir(src_folder.clone())
             .arg("-c")
             .env("VSCODE_SCHEMAS_AUTO_RUN", "true")
-            .env("VSCODE_SCHEMA_OUTPUT_PATH", "./schema-extraction-output")
+            .env("VSCODE_SCHEMA_OUTPUT_PATH", "../../schema-extraction-output")
             .env(
                 "VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST",
                 "../../schema-list.json",
