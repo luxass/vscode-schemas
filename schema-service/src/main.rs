@@ -155,7 +155,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Command::new("sh")
             .current_dir(src_folder.clone())
             .arg("-c")
-            .arg("yarn install && ls && yarn run compile && ls")
+            .env("VSCODE_SCHEMAS_AUTO_RUN", "true")
+            .env("VSCODE_SCHEMA_OUTPUT_PATH", "../../schema-extraction-output")
+            .env(
+                "VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST",
+                "../../schema-list.json",
+            )
+            .arg("yarn install && ls && yarn run compile && ./scripts/code.sh --install-extension ../schema-extractor-0.0.1.vsix")
             // .arg("ls")
             // .arg("yarn run compile")
             // .arg("./scripts/code.sh --install-extension schema-extractor-0.0.1.vsix")
@@ -170,30 +176,30 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .expect("failed to execute process")
     };
 
-    if cfg!(target_os = "windows") {
-        println!("status: {}", output.status);
-    } else {
-        let gg = Command::new("sh")
-            .current_dir(src_folder.clone())
-            .arg("-c")
-            .env("VSCODE_SCHEMAS_AUTO_RUN", "true")
-            .env("VSCODE_SCHEMA_OUTPUT_PATH", "../../schema-extraction-output")
-            .env(
-                "VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST",
-                "../../schema-list.json",
-            )
-            .arg("./scripts/code.sh --install-extension ../schema-extractor-0.0.1.vsix")
-            .output()
-            .expect("failed to execute process");
-
-        let h = gg.stdout;
-        let g = String::from_utf8_lossy(h.as_slice());
-        let v: Vec<&str> = g.split("\n").collect();
-
-        for x in v {
-            println!("{:?}", x)
-        }
-    }
+    // if cfg!(target_os = "windows") {
+    //     println!("status: {}", output.status);
+    // } else {
+    //     let gg = Command::new("sh")
+    //         .current_dir(src_folder.clone())
+    //         .arg("-c")
+    //         .env("VSCODE_SCHEMAS_AUTO_RUN", "true")
+    //         .env("VSCODE_SCHEMA_OUTPUT_PATH", "../../schema-extraction-output")
+    //         .env(
+    //             "VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST",
+    //             "../../schema-list.json",
+    //         )
+    //         .arg("./scripts/code.sh --install-extension ../schema-extractor-0.0.1.vsix")
+    //         .output()
+    //         .expect("failed to execute process");
+    //
+    //     let h = gg.stdout;
+    //     let g = String::from_utf8_lossy(h.as_slice());
+    //     let v: Vec<&str> = g.split("\n").collect();
+    //
+    //     for x in v {
+    //         println!("{:?}", x)
+    //     }
+    // }
 
 
     if cfg!(target_os = "windows") {
