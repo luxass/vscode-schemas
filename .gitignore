@@ -1,6 +1,2 @@
-.idea
-target
 node_modules
-dist
-vscode.tar.gz
-microsoft-vscode-*
+.env
