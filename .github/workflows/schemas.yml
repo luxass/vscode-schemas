@@ -17,7 +17,7 @@ jobs:
         with:
           deno-version: v1.x
       - name: Run deno
-        run: deno run --allow-read --allow-write --allow-net --allow-env --unstable ./scripts/generate-schemas.ts
+        run: deno run --allow-env --allow-read --allow-net --unstable --allow-run --allow-write src/main.ts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
