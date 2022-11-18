@@ -1,11 +1,12 @@
-import { config } from 'https://deno.land/std@0.165.0/dotenv/mod.ts';
+import "https://deno.land/x/dotenv/load.ts";
 import puppeteer from 'https://deno.land/x/puppeteer@16.2.0/mod.ts';
 import { which } from 'https://deno.land/x/which@0.2.1/mod.ts';
 import VERSION_FILE from '../version.json' assert { type: 'json' };
 import { SPECIFIC_RELEASE_QUERY, FILES_QUERY } from './queries.ts';
 import { FilesResponse, ReleaseResponse } from './types.ts';
 
-const env = await config();
+
+const env = Deno.env.toObject();
 
 if (!env.GITHUB_TOKEN) {
   throw new Error('GITHUB_TOKEN is not set');
