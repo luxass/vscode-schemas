@@ -6,31 +6,18 @@ on:
 
 
 jobs:
-  setup:
+  deno:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-
-  build-rust:
-    needs:
-      - setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Rust
-        uses: actions/checkout@v3
-      - name: Run
-        run: |
-          cd schema-service
-          cargo run --
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - name: Run deno
+        run: deno run --allow-read --allow-write --allow-net --allow-env --unstable ./scripts/generate-schemas.ts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: LS
-        run: |
-          ls
-          ls extraction
-          ls schemas
-          ls extraction/microsoft-vscode-30d9c6c
 
