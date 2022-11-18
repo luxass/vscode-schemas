@@ -20,4 +20,5 @@ jobs:
         run: deno run --allow-env --allow-read --allow-net --unstable --allow-run --allow-write src/main.ts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUPPETEER_PRODUCT: firefox
 

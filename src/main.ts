@@ -1,4 +1,4 @@
-import "https://deno.land/x/dotenv/load.ts";
+import "https://deno.land/x/dotenv@v3.2.0/load.ts";
 import puppeteer from 'https://deno.land/x/puppeteer@16.2.0/mod.ts';
 import { which } from 'https://deno.land/x/which@0.2.1/mod.ts';
 import VERSION_FILE from '../version.json' assert { type: 'json' };
@@ -72,6 +72,12 @@ async function run() {
 
   console.log(schemas);
 
+  const isFirefoxInstalled = await which('firefox');
+  if (!isFirefoxInstalled) {
+    await import('https://deno.land/x/puppeteer@16.2.0/install.ts');
+  }
+
+
   const isServerInstalled = await which('code-server');
 
   console.log('isServerInstalled', isServerInstalled);
@@ -106,9 +112,9 @@ async function run() {
   await delay(8000);
 
   const browser = await puppeteer.launch({
-    product: 'firefox',
-    headless: false
+    product: 'firefox'
   });
+  
   const page = await browser.newPage();
   await page.goto('http://localhost:8000');
 
