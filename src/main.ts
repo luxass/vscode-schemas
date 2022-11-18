@@ -6,6 +6,11 @@ import { SPECIFIC_RELEASE_QUERY, FILES_QUERY } from './queries.ts';
 import { FilesResponse, ReleaseResponse } from './types.ts';
 
 const env = await config();
+
+if (!env.GITHUB_TOKEN) {
+  throw new Error('GITHUB_TOKEN is not set');
+}
+
 const { version } = VERSION_FILE;
 
 async function graphql<R>(
@@ -106,14 +111,14 @@ async function run() {
   const page = await browser.newPage();
   await page.goto('http://localhost:8000');
 
-  await delay(5000)
+  await delay(5000);
   await page.keyboard.down('Control');
   await page.keyboard.down('p');
 
   await page.screenshot({
     path: 'example.png'
   });
-  await delay(10000)
+  await delay(10000);
   await browser.close();
   console.log('done');
 
