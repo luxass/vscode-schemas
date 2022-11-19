@@ -77,101 +77,101 @@ async function run() {
 
   console.log(schemas);
 
-  const isGoogleInstalled = await which('google-chrome');
-  console.log('isGoogleInstalled', isGoogleInstalled);
+  // const isGoogleInstalled = await which('google-chrome');
+  // console.log('isGoogleInstalled', isGoogleInstalled);
 
-  if (!isGoogleInstalled) {
-    const installGoogleCommand = new Deno.Command('deno', {
-      args: [
-        'run',
-        '-A',
-        '--unstable',
-        'https://deno.land/x/puppeteer@16.2.0/install.ts'
-      ]
-    });
+  // if (!isGoogleInstalled) {
+  //   const installGoogleCommand = new Deno.Command('deno', {
+  //     args: [
+  //       'run',
+  //       '-A',
+  //       '--unstable',
+  //       'https://deno.land/x/puppeteer@16.2.0/install.ts'
+  //     ]
+  //   });
 
-    const { stdout: installGoogleCommandStdout } =
-      await installGoogleCommand.output();
-    console.log(installGoogleCommandStdout);
-  }
+  //   const { stdout: installGoogleCommandStdout } =
+  //     await installGoogleCommand.output();
+  //   console.log(installGoogleCommandStdout);
+  // }
 
-  const isServerInstalled = await which('code-server');
+  // const isServerInstalled = await which('code-server');
 
-  console.log('isServerInstalled', isServerInstalled);
+  // console.log('isServerInstalled', isServerInstalled);
 
-  if (!isServerInstalled) {
-    const setupCommand = new Deno.Command('wget', {
-      args: ['-q', '-O-', 'https://aka.ms/install-vscode-server/setup.sh']
-    });
+  // if (!isServerInstalled) {
+  //   const setupCommand = new Deno.Command('wget', {
+  //     args: ['-q', '-O-', 'https://aka.ms/install-vscode-server/setup.sh']
+  //   });
 
-    const { stdout: setupStdout } = await setupCommand.output();
+  //   const { stdout: setupStdout } = await setupCommand.output();
 
-    if (!setupStdout) throw new TypeError('setupStdout is undefined or null');
-    const text = new TextDecoder().decode(setupStdout);
+  //   if (!setupStdout) throw new TypeError('setupStdout is undefined or null');
+  //   const text = new TextDecoder().decode(setupStdout);
 
-    const installCommand = new Deno.Command('sh', {
-      args: ['-c', text]
-    });
+  //   const installCommand = new Deno.Command('sh', {
+  //     args: ['-c', text]
+  //   });
 
-    const { stdout: installStdout } = await installCommand.output();
+  //   const { stdout: installStdout } = await installCommand.output();
 
-    console.log(new TextDecoder().decode(installStdout));
-  }
+  //   console.log(new TextDecoder().decode(installStdout));
+  // }
 
-  const startCommand = new Deno.Command('sh', {
-    args: [
-      '-c',
-      'code-server serve-local --disable-telemetry --without-connection-token --accept-server-license-terms --host 0.0.0.0 --start-server --install-extension extraction/schema-extractor-0.0.1.vsix'
-    ]
-  });
+  // const startCommand = new Deno.Command('sh', {
+  //   args: [
+  //     '-c',
+  //     'code-server serve-local --disable-telemetry --without-connection-token --accept-server-license-terms --host 0.0.0.0 --start-server --install-extension extraction/schema-extractor-0.0.1.vsix'
+  //   ]
+  // });
 
-  startCommand.spawn();
-  await delay(8000);
+  // startCommand.spawn();
+  // await delay(8000);
 
-  const browser = await puppeteer.launch({
-    product: 'chrome',
-    executablePath: isGoogleInstalled
-    // headless: false
-  });
+  // const browser = await puppeteer.launch({
+  //   product: 'chrome',
+  //   executablePath: isGoogleInstalled
+  //   // headless: false
+  // });
 
-  const page = await browser.newPage();
-  await page.goto('http://localhost:8000');
-  await delay(10000);
+  // const page = await browser.newPage();
+  // await page.goto('http://localhost:8000');
+  // await delay(10000);
 
-  await page.keyboard.down('ControlLeft');
-  await page.keyboard.press('KeyK');
-  await page.keyboard.press('KeyO');
+  // await page.keyboard.down('ControlLeft');
+  // await page.keyboard.press('KeyK');
+  // await page.keyboard.press('KeyO');
 
-  await delay(3000);
+  // await delay(3000);
 
-  async function type(text: string) {
-    const chars = text.split('');
-    await Promise.all(
-      chars.map((char) => {
-        return page.keyboard.sendCharacter(char);
-      })
-    );
-  }
+  // async function type(text: string) {
+  //   const chars = text.split('');
+  //   await Promise.all(
+  //     chars.map((char) => {
+  //       return page.keyboard.sendCharacter(char);
+  //     })
+  //   );
+  // }
 
-  await type('work/vscode-schemas/vscode-schemas');
-  // await page.keyboard.type("work/vscode-schemas/vscode-schemas");
-  await page.keyboard.press('Enter');
-  await delay(3000);
-  await page.click(
-    'body > div > div.monaco-dialog-modal-block.dimmed > div > div > div.dialog-buttons-row > div > a:nth-child(1)'
-  );
-  await delay(3000);
-  await page.screenshot({
-    path: 'example.png'
-  });
-  await delay(10000);
-  await browser.close();
-  // console.log('done');
+  // await type('work/vscode-schemas/vscode-schemas');
+  // // await page.keyboard.type("work/vscode-schemas/vscode-schemas");
+  // await page.keyboard.press('Enter');
+  // await delay(3000);
+  // await page.click(
+  //   'body > div > div.monaco-dialog-modal-block.dimmed > div > div > div.dialog-buttons-row > div > a:nth-child(1)'
+  // );
+  // await delay(3000);
+  // await page.screenshot({
+  //   path: 'example.png'
+  // });
+  // await delay(10000);
+  // await browser.close();
+  // // console.log('done');
 
-  // // Close the server after 3 seconds.
-  await delay(3000);
+  // // // Close the server after 3 seconds.
+  // await delay(3000);
 
-  startCommand.kill();
+  // startCommand.kill();
 }
 
 await run();
