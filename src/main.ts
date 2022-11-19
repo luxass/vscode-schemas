@@ -125,7 +125,7 @@ async function run() {
   const browser = await puppeteer.launch({
     product: 'chrome',
     executablePath: isGoogleInstalled,
-    headless: false
+    // headless: false
   });
 
   const page = await browser.newPage();
@@ -156,14 +156,14 @@ async function run() {
   await page.screenshot({
     path: 'example.png'
   });
-  // await delay(10000);
-  // await browser.close();
+  await delay(10000);
+  await browser.close();
   // console.log('done');
 
   // // Close the server after 3 seconds.
-  // await delay(3000);
+  await delay(3000);
 
-  // startCommand.kill();
+  startCommand.kill();
 }
 
 function delay(time: number) {
