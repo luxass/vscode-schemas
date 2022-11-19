@@ -1,7 +1,7 @@
 import 'https://deno.land/x/dotenv@v3.2.0/load.ts';
 import puppeteer from 'https://deno.land/x/puppeteer@16.2.0/mod.ts';
 import { which } from 'https://deno.land/x/which@0.2.1/mod.ts';
-import VERSION_FILE from '../version.json' assert { type: 'json' };
+import METADATA from '../metadata.json' assert { type: 'json' };
 import { SPECIFIC_RELEASE_QUERY, FILES_QUERY } from './queries.ts';
 import { FilesResponse, ReleaseResponse } from './types.ts';
 
@@ -11,7 +11,7 @@ if (!env.GITHUB_TOKEN) {
   throw new Error('GITHUB_TOKEN is not set');
 }
 
-const { version } = VERSION_FILE;
+const { version } = METADATA;
 
 async function graphql<R>(
   query: string,
