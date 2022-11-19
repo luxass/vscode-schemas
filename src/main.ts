@@ -123,7 +123,8 @@ async function run() {
   await delay(8000);
 
   const browser = await puppeteer.launch({
-    product: 'firefox'
+    product: 'firefox',
+    executablePath: isFirefoxInstalled
   });
 
   const page = await browser.newPage();
