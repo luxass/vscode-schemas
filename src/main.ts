@@ -132,12 +132,14 @@ async function run() {
   await page.goto('http://localhost:8000');
 
   await delay(10000);
-  // await page.keyboard.down('Control');
-  // await page.keyboard.down('p');
 
   await page.keyboard.down('ControlLeft');
   await page.keyboard.press('KeyK');
   await page.keyboard.press('KeyO');
+
+  await page.keyboard.type("work/vscode-schemas/vscode-schemas");
+  await page.keyboard.press('Enter');
+
   await delay(3000);
 
   await page.screenshot({
