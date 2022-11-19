@@ -149,7 +149,7 @@ async function run() {
 
   await type('work/vscode-schemas/vscode-schemas');
   // await page.keyboard.type("work/vscode-schemas/vscode-schemas");
-  // await page.keyboard.press('Enter');
+  await page.keyboard.press('Enter');
 
   await delay(3000);
 
