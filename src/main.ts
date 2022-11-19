@@ -124,7 +124,7 @@ async function run() {
 
   const browser = await puppeteer.launch({
     product: 'chrome',
-    executablePath: isGoogleInstalled,
+    executablePath: isGoogleInstalled
     // headless: false
   });
 
@@ -150,9 +150,9 @@ async function run() {
   await type('work/vscode-schemas/vscode-schemas');
   // await page.keyboard.type("work/vscode-schemas/vscode-schemas");
   await page.keyboard.press('Enter');
-
   await delay(3000);
-
+  await page.keyboard.press('Enter');
+  await delay(3000);
   await page.screenshot({
     path: 'example.png'
   });
