@@ -125,34 +125,45 @@ async function run() {
   const browser = await puppeteer.launch({
     product: 'chrome',
     executablePath: isGoogleInstalled,
-    headless: true,
+    headless: false
   });
 
   const page = await browser.newPage();
   await page.goto('http://localhost:8000');
-
   await delay(10000);
 
   await page.keyboard.down('ControlLeft');
   await page.keyboard.press('KeyK');
   await page.keyboard.press('KeyO');
 
-  await page.keyboard.type("work/vscode-schemas/vscode-schemas");
-  await page.keyboard.press('Enter');
+  await delay(3000);
+
+  async function type(text: string) {
+    const chars = text.split('');
+    await Promise.all(
+      chars.map((char) => {
+        return page.keyboard.sendCharacter(char);
+      })
+    );
+  }
+
+  await type('work/vscode-schemas/vscode-schemas');
+  // await page.keyboard.type("work/vscode-schemas/vscode-schemas");
+  // await page.keyboard.press('Enter');
 
   await delay(3000);
 
   await page.screenshot({
-    path: 'example.png',
+    path: 'example.png'
   });
-  await delay(10000);
-  await browser.close();
-  console.log('done');
+  // await delay(10000);
+  // await browser.close();
+  // console.log('done');
 
-  // Close the server after 3 seconds.
-  await delay(3000);
+  // // Close the server after 3 seconds.
+  // await delay(3000);
 
-  startCommand.kill();
+  // startCommand.kill();
 }
 
 function delay(time: number) {
