@@ -33,6 +33,12 @@ async function graphql<R>(
   return (await res.json()) as R;
 }
 
+function delay(time: number) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, time);
+  });
+}
+
 async function run() {
   const {
     data: { repository: release }
@@ -166,12 +172,6 @@ async function run() {
   await delay(3000);
 
   startCommand.kill();
-}
-
-function delay(time: number) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, time);
-  });
 }
 
 await run();
