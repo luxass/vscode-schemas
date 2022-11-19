@@ -71,11 +71,11 @@ async function run() {
 
   console.log(schemas);
 
-  const isFirefoxInstalled = await which('firefox');
-  console.log('isFirefoxInstalled', isFirefoxInstalled);
+  const isGoogleInstalled = await which('google-chrome');
+  console.log('isGoogleInstalled', isGoogleInstalled);
 
-  if (!isFirefoxInstalled) {
-    const installFirefoxCommand = new Deno.Command('deno', {
+  if (!isGoogleInstalled) {
+    const installGoogleCommand = new Deno.Command('deno', {
       args: [
         'run',
         '-A',
@@ -84,9 +84,9 @@ async function run() {
       ]
     });
 
-    const { stdout: installFirefoxStdout } =
-      await installFirefoxCommand.output();
-    console.log(installFirefoxStdout);
+    const { stdout: installGoogleCommandStdout } =
+      await installGoogleCommand.output();
+    console.log(installGoogleCommandStdout);
   }
 
   const isServerInstalled = await which('code-server');
@@ -123,19 +123,25 @@ async function run() {
   await delay(8000);
 
   const browser = await puppeteer.launch({
-    product: 'firefox',
-    executablePath: isFirefoxInstalled
+    product: 'chrome',
+    executablePath: isGoogleInstalled,
+    headless: true,
   });
 
   const page = await browser.newPage();
   await page.goto('http://localhost:8000');
 
-  await delay(5000);
-  await page.keyboard.down('Control');
-  await page.keyboard.down('p');
+  await delay(10000);
+  // await page.keyboard.down('Control');
+  // await page.keyboard.down('p');
+
+  await page.keyboard.down('ControlLeft');
+  await page.keyboard.press('KeyK');
+  await page.keyboard.press('KeyO');
+  await delay(3000);
 
   await page.screenshot({
-    path: 'example.png'
+    path: 'example.png',
   });
   await delay(10000);
   await browser.close();
