@@ -72,6 +72,8 @@ async function run() {
   console.log(schemas);
 
   const isFirefoxInstalled = await which('firefox');
+  console.log('isFirefoxInstalled', isFirefoxInstalled);
+
   if (!isFirefoxInstalled) {
     const installFirefoxCommand = new Deno.Command('deno', {
       args: [
