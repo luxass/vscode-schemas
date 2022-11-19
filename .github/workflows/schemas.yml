@@ -22,10 +22,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUPPETEER_PRODUCT: google
       - name: Commit changes
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: 'example.png'
-          author_name: 'luxass'
-          author_email: 'lucasnrgaard@gmail.com'
+        run: |
+          git config user.name luxass
+          git config user.email lucasnrgaard@gmail.com
+          git add example.png
+          git commit -m "image upload"
+          git push
 
 
