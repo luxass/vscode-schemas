@@ -152,7 +152,7 @@ async function run() {
   await page.keyboard.press('Enter');
   await delay(3000);
   await page.click(
-    'document.querySelector("body > div > div.monaco-dialog-modal-block.dimmed > div > div > div.dialog-buttons-row > div > a:nth-child(1)")'
+    'body > div > div.monaco-dialog-modal-block.dimmed > div > div > div.dialog-buttons-row > div > a:nth-child(1)'
   );
   await delay(3000);
   await page.screenshot({
