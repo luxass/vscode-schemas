@@ -1,0 +1,25 @@
+{
+  "version": "1.73.0",
+  "schemas": [
+    "vscode://schemas/keybindings",
+    "vscode://schemas/keybindings",
+    "vscode://schemas/keybindings",
+    "vscode://schemas/settings/default",
+    "vscode://schemas/settings/user",
+    "vscode://schemas/settings/profile",
+    "vscode://schemas/settings/machine",
+    "vscode://schemas/workspaceConfig",
+    "vscode://schemas/workspaceConfig",
+    "vscode://schemas/argv",
+    "vscode://schemas/settings/folder",
+    "vscode://schemas/launch",
+    "vscode://schemas/tasks",
+    "vscode://schemas/tasks",
+    "vscode://schemas/snippets",
+    "vscode://schemas/snippets",
+    "vscode://schemas/snippets",
+    "vscode://schemas/global-snippets",
+    "vscode://schemas/extensions",
+    "vscode://schemas/vscode-product"
+  ]
+}
