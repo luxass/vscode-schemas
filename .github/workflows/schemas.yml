@@ -21,4 +21,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUPPETEER_PRODUCT: google
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'example.png'
+          author_name: 'luxass'
+          author_email: 'lucasnrgaard@gmail.com'
+
 
