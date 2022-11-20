@@ -87,11 +87,11 @@ pub async fn init() -> Result<(), Error> {
 
     set_default_env("GITHUB_ACTIONS", "false");
     let github_actions = env::var("GITHUB_ACTIONS").expect("GITHUB_ACTIONS not set");
-    let dir = env::var("VS_SCHEMAS_DIR").expect("VS_SCHEMAS_DIR not set");
-
+    
     let volume = if github_actions == "true" {
         "/home/runner/work/vscode-schemas/vscode-schemas:/root/vscode-schemas".to_string()
     } else {
+        let dir = env::var("VS_SCHEMAS_DIR").expect("VS_SCHEMAS_DIR not set");
         format!("{}:/root/vscode-schemas", dir)
     };
 
