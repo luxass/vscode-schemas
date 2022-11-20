@@ -60,9 +60,9 @@ pub async fn init() -> Result<(), Error> {
     let mut image_build_stream =
         docker.build_image(build_image_options, None, Some(compressed.into()));
 
-    while let Some(msg) = image_build_stream.next().await {
-        println!("Message: {:?}", msg);
-    }
+    // while let Some(msg) = image_build_stream.next().await {
+    //     println!("Message: {:?}", msg);
+    // }
     //
     // docker
     //     .build_image(build_image_options, None, Some(compressed.into()))
@@ -117,20 +117,20 @@ pub async fn init() -> Result<(), Error> {
         .start_container(&id, None::<StartContainerOptions<String>>)
         .await?;
 
-    let logs = docker
-        .logs(
-            "vscode-schema-server",
-            Some(LogsOptions::<String> {
-                stdout: true,
-                ..Default::default()
-            }),
-        )
-        .try_collect::<Vec<_>>()
-        .await?;
+    // let logs = docker
+    //     .logs(
+    //         "vscode-schema-server",
+    //         Some(LogsOptions::<String> {
+    //             stdout: true,
+    //             ..Default::default()
+    //         }),
+    //     )
+    //     .try_collect::<Vec<_>>()
+    //     .await?;
 
-    for log in logs {
-        println!("log: {:?}", log);
-    }
+    // for log in logs {
+    //     println!("log: {:?}", log);
+    // }
 
     // docker
     //     .remove_container("vscode-schema-server", None::<RemoveContainerOptions>)

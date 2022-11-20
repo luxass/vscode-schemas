@@ -155,6 +155,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     tokio::time::sleep(std::time::Duration::from_secs(20)).await;
 
     let mut chrome_driver = run_driver();
+    info!("Chrome driver started");
+    info!("id: {}", chrome_driver.id());
     let caps = DesiredCapabilities::chrome();
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
 
