@@ -1,4 +1,4 @@
-use bollard::image::BuildImageOptions;
+use bollard::image::{BuildImageOptions, ListImagesOptions};
 use bollard::Docker;
 
 use bollard::container::{Config, CreateContainerOptions, LogsOptions, StartContainerOptions};
@@ -57,17 +57,26 @@ pub async fn init() -> Result<(), Error> {
         ..Default::default()
     };
 
-    let mut image_build_stream =
-        docker.build_image(build_image_options, None, Some(compressed.into()));
+    docker
+        .build_image(build_image_options, None, Some(compressed.into()))
+        .try_collect::<Vec<_>>()
+        .await?;
 
-    // while let Some(msg) = image_build_stream.next().await {
-    //     println!("Message: {:?}", msg);
-    // }
-    //
-    // docker
-    //     .build_image(build_image_options, None, Some(compressed.into()))
-    //     .try_collect::<Vec<_>>()
-    //     .await?;
+    let images = docker
+        .list_images(Some(ListImagesOptions::<String> {
+            ..Default::default()
+        }))
+        .await?;
+
+    let image = images.iter().find(|image| {
+        image
+            .repo_tags
+            .contains(&"vscode-schema-server".to_string())
+    });
+
+    if image.is_none() {
+        panic!("Image not found");
+    }
 
     let create_container_options = CreateContainerOptions {
         name: "vscode-schema-server".to_string(),
@@ -87,7 +96,7 @@ pub async fn init() -> Result<(), Error> {
 
     set_default_env("GITHUB_ACTIONS", "false");
     let github_actions = env::var("GITHUB_ACTIONS").expect("GITHUB_ACTIONS not set");
-    
+
     let volume = if github_actions == "true" {
         "/home/runner/work/vscode-schemas/vscode-schemas:/root/vscode-schemas".to_string()
     } else {
