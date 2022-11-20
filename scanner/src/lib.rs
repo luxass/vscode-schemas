@@ -1,11 +1,13 @@
-#[macro_use]
 extern crate log;
 
 #[macro_use]
 extern crate serde;
 
+pub mod docker;
+
 use std::fs::{metadata, File};
-use std::io::{Read, Write};
+use std::io::Read;
+use std::process::{Child, Command};
 use walkdir::WalkDir;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -40,4 +42,17 @@ pub fn scan_for_files(dir: &str) -> Result<Vec<String>, std::io::Error> {
     }
 
     Ok(files)
+}
+
+pub fn set_default_env(key: &str, value: &str) {
+    if std::env::var(key).is_err() {
+        std::env::set_var(key, value);
+    }
+}
+
+pub fn run_driver() -> Child {
+    Command::new(String::from("chromedriver"))
+        .arg("--port=9515")
+        .spawn()
+        .expect("failed to run chromedriver")
 }

@@ -1,4 +1,4 @@
-use std::{env, fs, io, path::Path};
+use std::{env, error::Error, fs, io, path::Path, time::Duration};
 
 use anyhow::Result;
 use flate2::read::GzDecoder;
@@ -9,13 +9,18 @@ use octocrab::{
     Octocrab,
 };
 use regex::Regex;
-use scanner_lib::{read_metadata, scan_for_files, Metadata};
+use scanner_lib::{docker, read_metadata, run_driver, scan_for_files, Metadata};
 use std::fs::File;
 use std::io::Cursor;
 use tar::Archive;
+use thirtyfour::{
+    prelude::{ElementQueryable, ElementWaitable},
+    By, DesiredCapabilities, WebDriver,
+};
+use tokio::time;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::builder()
         .filter_module("scanner_lib", log::LevelFilter::Trace)
         .filter_module("scanner", log::LevelFilter::Trace)
@@ -32,6 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         info!("Creating extraction directory");
         std::fs::create_dir(extraction_dir)?;
     }
+
     let github_token = env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN not set");
 
     let octocrab = Octocrab::builder().personal_token(github_token).build()?;
@@ -41,7 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let last_release = repo.releases().get_latest().await?;
     let last_release_tag_name = last_release.tag_name;
 
-    let last_release_tag_name_v = format!("v{}", last_release_tag_name.clone());
+    let _last_release_tag_name_v = format!("v{}", last_release_tag_name.clone());
     if metadata.version == last_release_tag_name {
         info!("no new releases");
         return Ok(());
@@ -131,15 +137,71 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         schemas: schema_paths,
     };
 
+    info!("Metadata {:?}", metadata);
+
     if Path::new(src_folder.to_str().unwrap()).exists() {
         fs::remove_dir_all(src_folder.to_str().unwrap()).unwrap();
     }
-    
+
     let tar_gz_file_path = extraction_dir.join(&tar_gz_file);
-    
+
     if Path::new(&tar_gz_file_path).exists() {
         fs::remove_file(&tar_gz_file_path).unwrap();
     }
+
+    docker::init().await.expect("failed to init docker");
+
+    // Just to be sure, Server is started.
+    tokio::time::sleep(std::time::Duration::from_secs(20)).await;
+
+    let mut chrome_driver = run_driver();
+    let caps = DesiredCapabilities::chrome();
+    let driver = WebDriver::new("http://localhost:9515", caps).await?;
+
+    driver
+        .goto("http://localhost:8000/?folder=/root/vscode-schemas")
+        .await?;
+
+    let body = driver.find(By::Tag("body")).await?;
+
+    // let explorer_open = driver.find(By::Id("workbench.view.explorer")).await;
+
+    // if explorer_open.is_err() {
+    //     info!("explorer not open, opening it");
+    //     time::sleep(Duration::from_secs(2)).await;
+    //     let explorer_toggle = driver
+    //         .find(By::XPath(
+    //             "//*[@id=\"workbench.parts.activitybar\"]/div/div[2]/div/ul/li[1]/a",
+    //         ))
+    //         .await?;
+    //     explorer_toggle.click().await?;
+    // }
+
+    // time::sleep(Duration::from_secs(2)).await;
+
+    // body.send_keys(Key::Control + "k o".to_string()).await?;
+    // info!("opened file picker");
+
+    // let folder_input = body.query(By::Css("div > div.quick-input-widget.show-file-icons > div.quick-input-header > div.quick-input-and-message > div.quick-input-filter > div.quick-input-box > div > div.monaco-inputbox.idle > div > input"))
+    // .single()
+    // .await?;
+
+    // folder_input.wait_until().displayed().await?;
+    // folder_input.send_keys("vscode-schemas/").await?;
+    // folder_input.send_keys("" + Key::Enter).await?;
+
+    let workspace_trust = body.query(By::Css("div > div.monaco-dialog-modal-block.dimmed > div > div > div.dialog-buttons-row > div > a:nth-child(1)"))
+    .single()
+    .await?;
+
+    workspace_trust.wait_until().displayed().await?;
+    workspace_trust.click().await?;
+
+    time::sleep(Duration::from_secs(10)).await;
+    driver.quit().await?;
+    chrome_driver
+        .kill()
+        .expect("chromedriver server process not killed, do manually");
 
     Ok(())
 }
