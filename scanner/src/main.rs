@@ -152,11 +152,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     docker::init().await.expect("failed to init docker");
 
     // Just to be sure, Server is started.
-    tokio::time::sleep(std::time::Duration::from_secs(20)).await;
-
+    
     let mut chrome_driver = run_driver();
     info!("Chrome driver started");
     info!("id: {}", chrome_driver.id());
+    tokio::time::sleep(std::time::Duration::from_secs(20)).await;
     let caps = DesiredCapabilities::chrome();
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
 
