@@ -146,7 +146,4 @@ impl Ducker {
             .await?;
         Ok(())
     }
-    pub async fn test(&self) {
-        self.docker.vol
-    }
 }
