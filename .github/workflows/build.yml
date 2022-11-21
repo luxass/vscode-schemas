@@ -16,17 +16,11 @@ jobs:
         run: |
           cd schema-gen
           cargo build --verbose --release
-  upload:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Create artifact directory
         run: mkdir artifacts
       - name: Copy files
         run: |
-          ls schema-gen
+          ls
           cp schema-gen/target/release/schema-gen artifacts/
       - name: Upload
         uses: actions/upload-artifact@v3
