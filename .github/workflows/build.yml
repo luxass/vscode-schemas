@@ -25,5 +25,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: schema-gen
-          path: scanner/target/release/schema-gen
+          path: schema-gen/target/release/schema-gen
 
