@@ -9,7 +9,9 @@ use octocrab::{
     Octocrab,
 };
 use regex::Regex;
-use scanner_lib::{docker, read_metadata, run_driver, scan_for_files, set_default_env, Metadata};
+use scanner_lib::{
+    docker::Ducker, read_metadata, run_driver, scan_for_files, set_default_env, Metadata,
+};
 use std::fs::File;
 use std::io::Cursor;
 use tar::Archive;
@@ -35,8 +37,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .filter_module("scanner", level_filter)
         .write_style(env_logger::WriteStyle::Always)
         .init();
-
-    debug!("Starting scanner");
 
     info!("Reading metadata");
     let mut metadata: Metadata = read_metadata();
@@ -160,14 +160,28 @@ async fn main() -> Result<(), Box<dyn Error>> {
         fs::remove_file(&tar_gz_file_path).unwrap();
     }
 
-    docker::init().await.expect("failed to init docker");
+    let docker = Ducker::new()?;
 
-    // Just to be sure, Server is started.
+    docker.build_image().await.expect("failed to build image");
+
+    // Create container
+    let create_response = docker
+        .create_container()
+        .await
+        .expect("failed to create container");
+
+    // Start the container
+    docker
+        .start_container(&create_response.id)
+        .await
+        .expect("failed to start container");
 
     let mut chrome_driver = run_driver();
     info!("Chrome driver started");
     info!("id: {}", chrome_driver.id());
-    tokio::time::sleep(std::time::Duration::from_secs(20)).await;
+
+    // Just to be sure that the driver and server is ready.
+    time::sleep(std::time::Duration::from_secs(20)).await;
     let mut caps = ChromeCapabilities::new();
     caps.set_headless()?;
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
