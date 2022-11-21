@@ -160,13 +160,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
         fs::remove_file(&tar_gz_file_path).unwrap();
     }
 
+    let container_name = "vscode-schema-server";
     let docker = Ducker::new()?;
 
     docker.build_image().await.expect("failed to build image");
 
     // Create container
     let create_response = docker
-        .create_container()
+        .create_container(container_name)
         .await
         .expect("failed to create container");
 
@@ -230,6 +231,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     chrome_driver
         .kill()
         .expect("chromedriver server process not killed, do manually");
+
+
+    docker.kill(container_name).await.expect("failed to kill container");
+    time::sleep(Duration::from_secs(5)).await;
+    docker.destroy(container_name).await.expect("failed to remove container");
 
     Ok(())
 }

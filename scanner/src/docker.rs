@@ -2,7 +2,10 @@ use anyhow::Result;
 use bollard::image::BuildImageOptions;
 use bollard::Docker;
 
-use bollard::container::{Config, CreateContainerOptions, StartContainerOptions};
+use bollard::container::{
+    Config, CreateContainerOptions, KillContainerOptions, RemoveContainerOptions,
+    StartContainerOptions,
+};
 use bollard::service::{ContainerCreateResponse, HostConfig, PortBinding, PortMap};
 use log::debug;
 use std::collections::HashMap;
@@ -76,9 +79,12 @@ impl Ducker {
         Ok(())
     }
 
-    pub async fn create_container(&self) -> Result<ContainerCreateResponse, Box<dyn Error>> {
+    pub async fn create_container(
+        &self,
+        container_name: &str,
+    ) -> Result<ContainerCreateResponse, Box<dyn Error>> {
         let create_container_options = CreateContainerOptions {
-            name: "vscode-schema-server".to_string(),
+            name: container_name.to_string(),
 
             ..Default::default()
         };
@@ -126,5 +132,21 @@ impl Ducker {
             .start_container(id, None::<StartContainerOptions<String>>)
             .await?;
         Ok(())
+    }
+
+    pub async fn kill(&self, name: &str) -> Result<(), Box<dyn Error>> {
+        let options = Some(KillContainerOptions { signal: "SIGKILL" });
+        self.docker.kill_container(name, options).await?;
+        Ok(())
+    }
+
+    pub async fn destroy(&self, name: &str) -> Result<(), Box<dyn Error>> {
+        self.docker
+            .remove_container(name, None::<RemoveContainerOptions>)
+            .await?;
+        Ok(())
+    }
+    pub async fn test(&self) {
+        self.docker.vol
     }
 }
