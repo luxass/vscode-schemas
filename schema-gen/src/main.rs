@@ -9,7 +9,7 @@ use octocrab::{
     Octocrab,
 };
 use regex::Regex;
-use scanner_lib::{
+use schema_lib::{
     docker::Ducker, read_metadata, run_driver, scan_for_files, set_default_env, Metadata,
 };
 use std::fs::File;
@@ -33,8 +33,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     };
 
     env_logger::builder()
-        .filter_module("scanner_lib", level_filter)
-        .filter_module("scanner", level_filter)
+        .filter_module("schema_lib", level_filter)
+        .filter_module("schema-gen", level_filter)
         .write_style(env_logger::WriteStyle::Always)
         .init();
 

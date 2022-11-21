@@ -1,10 +1,10 @@
 [package]
-name = "scanner"
+name = "schema-gen"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "scanner_lib"
+name = "schema_lib"
 path = "src/lib.rs"
 
 [dependencies]

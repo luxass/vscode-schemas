@@ -11,17 +11,14 @@ jobs:
     steps:
       - uses: browser-actions/setup-chrome@latest
       - run: chrome --version
-
-  build-rust:
-    needs: download-driver
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Run
-        run: |
-          cd scanner
-          cargo run --
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # run:
+  #   needs: download-driver
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Run
+  #       run: |
+  #         cd schema-gen
+  #         cargo run --release
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -1,0 +1,29 @@
+name: Build Schema Generator
+
+on:
+  push:
+    paths:
+      - "schema-gen/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build
+        run: |
+          cd schema-gen
+          cargo build --verbose --release
+  upload:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create artifact directory
+        run: mkdir artifacts
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: schema-gen
+          path: scanner/target/release/schema-gen
+
