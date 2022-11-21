@@ -76,7 +76,7 @@ pub async fn init() -> Result<(), Error> {
     let image = images.iter().find(|image| {
         image
             .repo_tags
-            .contains(&"vscode-schema-server".to_string())
+            .contains(&"vscode-schema-server:latest".to_string())
     });
 
     if image.is_none() {
