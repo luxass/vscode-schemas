@@ -4,6 +4,7 @@ use bollard::Docker;
 use bollard::container::{Config, CreateContainerOptions, LogsOptions, StartContainerOptions};
 use bollard::errors::Error;
 use bollard::service::{HostConfig, PortBinding, PortMap};
+use log::info;
 use std::collections::HashMap;
 use std::env;
 use std::io::Write;
@@ -57,10 +58,14 @@ pub async fn init() -> Result<(), Error> {
         ..Default::default()
     };
 
-    docker
+    let build_info = docker
         .build_image(build_image_options, None, Some(compressed.into()))
         .try_collect::<Vec<_>>()
         .await?;
+
+    for info in build_info {
+        info!("{:?}", info);
+    }
 
     let images = docker
         .list_images(Some(ListImagesOptions::<String> {
