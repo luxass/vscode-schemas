@@ -16,6 +16,7 @@ jobs:
     needs: download-driver
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
       - uses: actions/checkout@v3
       - name: Run
         run: |
@@ -23,4 +24,5 @@ jobs:
           cargo run --
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUST_LOG: info
 

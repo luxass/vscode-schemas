@@ -9,23 +9,34 @@ use octocrab::{
     Octocrab,
 };
 use regex::Regex;
-use scanner_lib::{docker, read_metadata, run_driver, scan_for_files, Metadata};
+use scanner_lib::{docker, read_metadata, run_driver, scan_for_files, set_default_env, Metadata};
 use std::fs::File;
 use std::io::Cursor;
 use tar::Archive;
 use thirtyfour::{
     prelude::{ElementQueryable, ElementWaitable},
-    By, Capabilities, ChromeCapabilities, DesiredCapabilities, WebDriver,
+    By, ChromeCapabilities, WebDriver,
 };
 use tokio::time;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    set_default_env("GITHUB_ACTIONS", "false");
+    let github_actions = env::var("GITHUB_ACTIONS").expect("GITHUB_ACTIONS not set");
+
+    let level_filter = if github_actions == "true" {
+        log::LevelFilter::Info
+    } else {
+        log::LevelFilter::Trace
+    };
+
     env_logger::builder()
-        .filter_module("scanner_lib", log::LevelFilter::Trace)
-        .filter_module("scanner", log::LevelFilter::Trace)
+        .filter_module("scanner_lib", level_filter)
+        .filter_module("scanner", level_filter)
         .write_style(env_logger::WriteStyle::Always)
         .init();
+
+    debug!("Starting scanner");
 
     info!("Reading metadata");
     let mut metadata: Metadata = read_metadata();

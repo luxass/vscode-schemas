@@ -1,18 +1,15 @@
 use bollard::image::{BuildImageOptions, ListImagesOptions};
 use bollard::Docker;
 
-use bollard::container::{Config, CreateContainerOptions, LogsOptions, StartContainerOptions};
+use bollard::container::{Config, CreateContainerOptions, StartContainerOptions};
 use bollard::errors::Error;
 use bollard::service::{HostConfig, PortBinding, PortMap};
-use log::info;
+use log::debug;
 use std::collections::HashMap;
 use std::env;
 use std::io::Write;
 
-use futures_util::stream::StreamExt;
 use futures_util::TryStreamExt;
-
-use crate::set_default_env;
 
 pub fn build_dockerfile() -> String {
     format!(
@@ -64,7 +61,7 @@ pub async fn init() -> Result<(), Error> {
         .await?;
 
     for info in build_info {
-        info!("{:?}", info);
+        debug!("{:?}", info);
     }
 
     let images = docker
@@ -99,7 +96,6 @@ pub async fn init() -> Result<(), Error> {
     let mut port_map: PortMap = HashMap::new();
     port_map.insert("8000".to_string(), Some(port_bindings));
 
-    set_default_env("GITHUB_ACTIONS", "false");
     let github_actions = env::var("GITHUB_ACTIONS").expect("GITHUB_ACTIONS not set");
 
     let volume = if github_actions == "true" {
