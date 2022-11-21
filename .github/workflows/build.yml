@@ -24,9 +24,13 @@ jobs:
         uses: actions/checkout@v3
       - name: Create artifact directory
         run: mkdir artifacts
+      - name: Copy files
+        run: |
+          ls
+          cp schema-gen/target/release/schema-gen artifacts/
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: schema-gen
-          path: schema-gen/target/release/schema-gen
+          path: artifacts/
 
