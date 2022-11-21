@@ -3,6 +3,7 @@ name: Build Schema Generator
 on:
   push:
     paths:
+      - '.github/workflows/**'
       - "schema-gen/**"
 
 jobs:
