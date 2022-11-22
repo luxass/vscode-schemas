@@ -20,7 +20,6 @@ jobs:
         run: mkdir artifacts
       - name: Copy files
         run: |
-          ls
           cp schema-gen/target/release/schema-gen artifacts/
       - name: Upload
         uses: actions/upload-artifact@v3

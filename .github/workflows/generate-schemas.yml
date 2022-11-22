@@ -22,13 +22,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Download Schema Generator
-        uses: actions/download-artifact@v3
+        id: download-schema-gen
+        uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: build.yml
           name: schema-gen
+          path: artifacts/
       - name: Run
         run: |
           ls
           ./schema-gen/schema-gen
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
   # run:
   #   needs: download-driver
