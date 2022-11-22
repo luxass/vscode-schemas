@@ -28,9 +28,10 @@ jobs:
           workflow: build.yml
           name: schema-gen
           path: artifacts/
+      - name: Make it executable
+        run: chmod +x artifacts/schema-gen
       - name: Run
         run: |
-          ls
           ./artifacts/schema-gen
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
