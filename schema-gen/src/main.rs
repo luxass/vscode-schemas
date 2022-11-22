@@ -38,8 +38,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .write_style(env_logger::WriteStyle::Always)
         .init();
 
+
+    let metadata_path = if github_actions == "true" {
+        Path::new("metadata.json")
+    } else {
+        Path::new("../metadata.json")
+    };
+
     info!("Reading metadata");
-    let mut metadata: Metadata = read_metadata()?;
+    let mut metadata: Metadata = read_metadata(metadata_path)?;
 
     info!("metadata version: {:?}", metadata.version);
     let extraction_dir: &Path = Path::new("../extraction");
@@ -162,7 +169,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let container_name = "vscode-schema-server";
     let docker = Ducker::new()?;
 
-    docker.build_image().await.expect("failed to build image");
+    docker
+        .build_image(metadata_path)
+        .await
+        .expect("failed to build image");
 
     // Create container
     let create_response = docker
@@ -231,15 +241,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .kill()
         .expect("chromedriver server process not killed, do manually");
 
-    docker
-        .kill(container_name)
-        .await
-        .expect("failed to kill container");
-    time::sleep(Duration::from_secs(5)).await;
-    docker
-        .destroy(container_name)
-        .await
-        .expect("failed to remove container");
+    // docker
+    //     .kill(container_name)
+    //     .await
+    //     .expect("failed to kill container");
+    // time::sleep(Duration::from_secs(5)).await;
+    // docker
+    //     .destroy(container_name)
+    //     .await
+    //     .expect("failed to remove container");
 
     Ok(())
 }

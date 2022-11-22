@@ -6,12 +6,15 @@ use bollard::container::{
     Config, CreateContainerOptions, KillContainerOptions, RemoveContainerOptions,
     StartContainerOptions,
 };
-use bollard::service::{ContainerCreateResponse, HostConfig, PortBinding, PortMap};
+use bollard::service::{
+    ContainerCreateResponse, HostConfig, Mount, MountTypeEnum, PortBinding, PortMap,
+};
 use log::debug;
 use std::collections::HashMap;
 use std::env;
 use std::error::Error;
 use std::io::Write;
+use std::path::Path;
 
 use futures_util::TryStreamExt;
 
@@ -26,8 +29,8 @@ impl Ducker {
         })
     }
 
-    pub async fn build_image(&self) -> Result<(), Box<dyn Error>> {
-        let dockerfile = String::from(
+    pub async fn build_image(&self, metadata_path: &Path) -> Result<(), Box<dyn Error>> {
+        let dockerfile = format!(
             r#"FROM ubuntu:22.04
     
         # hadolint ignore=DL3008
@@ -40,11 +43,14 @@ impl Ducker {
             && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
             
         RUN wget -q -O- https://aka.ms/install-vscode-server/setup.sh | sh
-    
+        ENV VSCODE_SCHEMAS_AUTO_RUN=true 
+        ENV VSCODE_SCHEMA_OUTPUT_PATH=./
+        ENV VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST={metadata_path}
         
         ENTRYPOINT [ "/bin/sh", "-c", "code-server serve-local --accept-server-license-terms --disable-telemetry --without-connection-token --host 0.0.0.0 --start-server --install-extension luxass.vscode-schema-extractor" ]
         EXPOSE 8000
     "#,
+            metadata_path = metadata_path.to_str().unwrap()
         );
 
         let mut header = tar::Header::new_gnu();
@@ -101,12 +107,13 @@ impl Ducker {
 
         let github_actions = env::var("GITHUB_ACTIONS").expect("GITHUB_ACTIONS not set");
 
-        let volume = if github_actions == "true" {
-            "/home/runner/work/vscode-schemas/vscode-schemas:/root/vscode-schemas".to_string()
+        let source = if github_actions == "true" {
+            String::from("/home/runner/work/vscode-schemas/vscode-schemas")
         } else {
             let dir = env::var("VS_SCHEMAS_DIR").expect("VS_SCHEMAS_DIR not set");
-            format!("{}:/root/vscode-schemas", dir)
+            dir
         };
+
         let create_res = self
             .docker
             .create_container(
@@ -117,7 +124,14 @@ impl Ducker {
                     host_config: Some(HostConfig {
                         network_mode: Some("host".to_string()),
                         port_bindings: Some(port_map),
-                        binds: Some(vec![volume]),
+                        // binds: Some(vec![volume]),
+                        mounts: Some(vec![Mount {
+                            target: Some(String::from("/root/vscode-schemas")),
+                            source: Some(source),
+                            typ: Some(MountTypeEnum::BIND),
+                            consistency: Some(String::from("default")),
+                            ..Default::default()
+                        }]),
                         ..Default::default()
                     }),
                     ..Default::default()

@@ -5,6 +5,7 @@ extern crate serde;
 
 pub mod docker;
 
+use markdown_gen::markdown::{AsMarkdown, Markdown};
 use std::env;
 use std::fs::{metadata, File};
 use std::io::Read;
@@ -18,14 +19,7 @@ pub struct Metadata {
     pub schemas: Vec<String>,
 }
 
-pub fn read_metadata() -> Result<Metadata, Box<dyn std::error::Error>> {
-    let github_actions = env::var("GITHUB_ACTIONS").expect("GITHUB_ACTIONS not set");
-
-    let metadata_path = if github_actions == "true" {
-        Path::new("metadata.json")
-    } else {
-        Path::new("../metadata.json")
-    };
+pub fn read_metadata(metadata_path: &Path) -> Result<Metadata, Box<dyn std::error::Error>> {
     let mut file = File::open(metadata_path)?;
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
@@ -65,4 +59,23 @@ pub fn run_driver() -> Child {
         .arg("--port=9515")
         .spawn()
         .expect("failed to run chromedriver")
+}
+
+pub fn write_readme() {
+    let github_actions = env::var("GITHUB_ACTIONS").expect("GITHUB_ACTIONS not set");
+
+    let schemas_path = if github_actions == "true" {
+        Path::new("schemas")
+    } else {
+        Path::new("../schemas")
+    };
+
+    // let file = File::create(schemas_dir.join("README.md")).unwrap();
+    // let mut md = Markdown::new(file);
+
+    // md.write("Visual Studio Code Schemas".heading(1)).unwrap();
+    // md.write("This is a collection of schemas for Visual Studio Code.".quote())
+    //     .unwrap();
+
+    // md.write("Versions".heading(2)).unwrap();
 }
