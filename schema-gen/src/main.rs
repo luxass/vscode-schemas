@@ -241,15 +241,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .kill()
         .expect("chromedriver server process not killed, do manually");
 
-    // docker
-    //     .kill(container_name)
-    //     .await
-    //     .expect("failed to kill container");
-    // time::sleep(Duration::from_secs(5)).await;
-    // docker
-    //     .destroy(container_name)
-    //     .await
-    //     .expect("failed to remove container");
+    docker
+        .kill(container_name)
+        .await
+        .expect("failed to kill container");
+    time::sleep(Duration::from_secs(5)).await;
+    docker
+        .destroy(container_name)
+        .await
+        .expect("failed to remove container");
 
     Ok(())
 }
