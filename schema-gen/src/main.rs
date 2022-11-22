@@ -34,7 +34,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     env_logger::builder()
         .filter_module("schema_lib", level_filter)
-        .filter_module("schema-gen", level_filter)
+        .filter_module("schema_gen", level_filter)
         .write_style(env_logger::WriteStyle::Always)
         .init();
 
@@ -42,7 +42,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut metadata: Metadata = read_metadata()?;
 
     info!("metadata version: {:?}", metadata.version);
-
     let extraction_dir: &Path = Path::new("../extraction");
     if !extraction_dir.exists() {
         info!("Creating extraction directory");
@@ -232,10 +231,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .kill()
         .expect("chromedriver server process not killed, do manually");
 
-
-    docker.kill(container_name).await.expect("failed to kill container");
+    docker
+        .kill(container_name)
+        .await
+        .expect("failed to kill container");
     time::sleep(Duration::from_secs(5)).await;
-    docker.destroy(container_name).await.expect("failed to remove container");
+    docker
+        .destroy(container_name)
+        .await
+        .expect("failed to remove container");
 
     Ok(())
 }
