@@ -5,8 +5,10 @@ extern crate serde;
 
 pub mod docker;
 
+use std::env;
 use std::fs::{metadata, File};
 use std::io::Read;
+use std::path::Path;
 use std::process::{Child, Command};
 use walkdir::WalkDir;
 
@@ -16,11 +18,19 @@ pub struct Metadata {
     pub schemas: Vec<String>,
 }
 
-pub fn read_metadata() -> Metadata {
-    let mut file = File::open("../metadata.json").unwrap();
+pub fn read_metadata() -> Result<Metadata, Box<dyn std::error::Error>> {
+    let github_actions = env::var("GITHUB_ACTIONS").expect("GITHUB_ACTIONS not set");
+
+    let metadata_path = if github_actions == "true" {
+        Path::new("metadata.json")
+    } else {
+        Path::new("../metadata.json")
+    };
+    let mut file = File::open(metadata_path)?;
     let mut contents = String::new();
-    file.read_to_string(&mut contents).unwrap();
-    serde_json::from_str::<Metadata>(&contents).unwrap()
+    file.read_to_string(&mut contents)?;
+
+    Ok(serde_json::from_str::<Metadata>(&contents)?)
 }
 
 pub fn scan_for_files(dir: &str) -> Result<Vec<String>, std::io::Error> {

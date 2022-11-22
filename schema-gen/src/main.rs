@@ -39,7 +39,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .init();
 
     info!("Reading metadata");
-    let mut metadata: Metadata = read_metadata();
+    let mut metadata: Metadata = read_metadata()?;
 
     info!("metadata version: {:?}", metadata.version);
 
