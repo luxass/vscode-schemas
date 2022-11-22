@@ -31,7 +31,7 @@ jobs:
       - name: Run
         run: |
           ls
-          ./schema-gen/schema-gen
+          ./artifacts/schema-gen
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
