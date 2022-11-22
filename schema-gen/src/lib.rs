@@ -8,7 +8,7 @@ pub mod docker;
 use markdown_gen::markdown::{AsMarkdown, Markdown};
 use std::env;
 use std::fs::{metadata, File};
-use std::io::Read;
+use std::io::{Read, Write};
 use std::path::Path;
 use std::process::{Child, Command};
 use walkdir::WalkDir;
@@ -25,6 +25,13 @@ pub fn read_metadata(metadata_path: &Path) -> Result<Metadata, Box<dyn std::erro
     file.read_to_string(&mut contents)?;
 
     Ok(serde_json::from_str::<Metadata>(&contents)?)
+}
+
+pub fn write_metadata(metadata: Metadata, metadata_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    let contents = serde_json::to_string_pretty(&metadata)?;
+    let mut file = File::create(metadata_path)?;
+    file.write_all(contents.as_bytes())?;
+    Ok(())
 }
 
 pub fn scan_for_files(dir: &str) -> Result<Vec<String>, std::io::Error> {

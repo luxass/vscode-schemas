@@ -10,7 +10,7 @@ use octocrab::{
 };
 use regex::Regex;
 use schema_lib::{
-    docker::Ducker, read_metadata, run_driver, scan_for_files, set_default_env, Metadata,
+    docker::Ducker, read_metadata, run_driver, scan_for_files, set_default_env, Metadata, write_metadata,
 };
 use std::fs::File;
 use std::io::Cursor;
@@ -154,7 +154,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         schemas: schema_paths,
     };
 
-    info!("Metadata {:?}", metadata);
+    debug!("Metadata {:?}", &metadata);
+    write_metadata(metadata, metadata_path)?;
 
     if Path::new(src_folder.to_str().unwrap()).exists() {
         fs::remove_dir_all(src_folder.to_str().unwrap()).unwrap();
