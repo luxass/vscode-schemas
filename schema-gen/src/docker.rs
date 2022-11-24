@@ -43,7 +43,6 @@ impl Ducker {
             && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
             
         RUN wget -q -O- https://aka.ms/install-vscode-server/setup.sh | sh
-        ENV VSCODE_SCHEMAS_AUTO_RUN=true 
         ENV VSCODE_SCHEMA_OUTPUT_PATH=./
         ENV VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST={metadata_path}
         

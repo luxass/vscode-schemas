@@ -10,14 +10,15 @@ use octocrab::{
 };
 use regex::Regex;
 use schema_lib::{
-    docker::Ducker, read_metadata, run_driver, scan_for_files, set_default_env, Metadata, write_metadata,
+    docker::Ducker, read_metadata, run_driver, scan_for_files, set_default_env, write_metadata,
+    Metadata,
 };
 use std::fs::File;
 use std::io::Cursor;
 use tar::Archive;
 use thirtyfour::{
     prelude::{ElementQueryable, ElementWaitable},
-    By, ChromeCapabilities, WebDriver,
+    By, ChromeCapabilities, Key, WebDriver,
 };
 use tokio::time;
 
@@ -37,7 +38,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .filter_module("schema_gen", level_filter)
         .write_style(env_logger::WriteStyle::Always)
         .init();
-
 
     let metadata_path = if github_actions == "true" {
         Path::new("metadata.json")
@@ -155,7 +155,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     };
 
     debug!("Metadata {:?}", &metadata);
-    write_metadata(metadata, metadata_path)?;
+    // write_metadata(metadata, metadata_path)?;
 
     if Path::new(src_folder.to_str().unwrap()).exists() {
         fs::remove_dir_all(src_folder.to_str().unwrap()).unwrap();
@@ -194,7 +194,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Just to be sure that the driver and server is ready.
     time::sleep(std::time::Duration::from_secs(20)).await;
     let mut caps = ChromeCapabilities::new();
-    caps.set_headless()?;
+    // caps.set_headless()?;
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
 
     driver
@@ -236,7 +236,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     workspace_trust.wait_until().displayed().await?;
     workspace_trust.click().await?;
 
-    time::sleep(Duration::from_secs(10)).await;
+    body.send_keys(Key::Control + "j k".to_string()).await?;
+    debug!("triggered extract schemas");
+
+    time::sleep(Duration::from_secs(20)).await;
     driver.quit().await?;
     chrome_driver
         .kill()
