@@ -3,9 +3,11 @@ extern crate log;
 #[macro_use]
 extern crate serde;
 
+pub mod commands;
 pub mod docker;
 
-use markdown_gen::markdown::{AsMarkdown, Markdown};
+use log::debug;
+use regex::Regex;
 use std::env;
 use std::fs::{metadata, File};
 use std::io::{Read, Write};
@@ -19,15 +21,28 @@ pub struct Metadata {
     pub schemas: Vec<String>,
 }
 
-pub fn read_metadata(metadata_path: &Path) -> Result<Metadata, Box<dyn std::error::Error>> {
-    let mut file = File::open(metadata_path)?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)?;
+pub async fn read_metadata(metadata_url: String) -> Result<Metadata, Box<dyn std::error::Error>> {
+    let url_re = Regex::new(r"https?")?;
 
-    Ok(serde_json::from_str::<Metadata>(&contents)?)
+    let metadata = if url_re.is_match(&metadata_url) {
+        debug!("Fetching file");
+        let res = reqwest::get(metadata_url).await?;
+        res.text().await?
+    } else {
+        debug!("Reading file");
+
+        let mut file = File::open(metadata_url)?;
+        let mut file_contents = String::new();
+        file.read_to_string(&mut file_contents)?;
+        file_contents
+    };
+    Ok(serde_json::from_str::<Metadata>(&metadata)?)
 }
 
-pub fn write_metadata(metadata: Metadata, metadata_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+pub fn write_metadata(
+    metadata: Metadata,
+    metadata_path: &Path,
+) -> Result<(), Box<dyn std::error::Error>> {
     let contents = serde_json::to_string_pretty(&metadata)?;
     let mut file = File::create(metadata_path)?;
     file.write_all(contents.as_bytes())?;
@@ -66,6 +81,10 @@ pub fn run_driver() -> Child {
         .arg("--port=9515")
         .spawn()
         .expect("failed to run chromedriver")
+}
+
+pub fn is_ci() -> bool {
+    env::var("GITHUB_ACTIONS").is_ok()
 }
 
 pub fn write_readme() {

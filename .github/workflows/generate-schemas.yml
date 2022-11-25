@@ -32,10 +32,9 @@ jobs:
         run: chmod +x artifacts/schema-gen
       - name: Run
         run: |
-          ./artifacts/schema-gen
+          ./artifacts/schema-gen generate --metadata-url metadata.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 
   # run:
   #   needs: download-driver
