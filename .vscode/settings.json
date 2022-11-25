@@ -1,3 +1,4 @@
 {
-  "schema-extractor.metadataUri": "./metadata.json"
+  "schema-extractor.metadataUri": "./metadata.json",
+  "schema-extractor.keybindings": true
 }

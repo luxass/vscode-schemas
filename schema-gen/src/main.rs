@@ -194,7 +194,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Just to be sure that the driver and server is ready.
     time::sleep(std::time::Duration::from_secs(20)).await;
     let mut caps = ChromeCapabilities::new();
-    // caps.set_headless()?;
+    caps.set_headless()?;
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
 
     driver
@@ -236,10 +236,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     workspace_trust.wait_until().displayed().await?;
     workspace_trust.click().await?;
 
-    body.send_keys(Key::Control + "j k".to_string()).await?;
+    body.send_keys(Key::Control + Key::Shift + Key::Alt + "s").await?;
     debug!("triggered extract schemas");
 
-    time::sleep(Duration::from_secs(20)).await;
+    time::sleep(Duration::from_secs(10)).await;
     driver.quit().await?;
     chrome_driver
         .kill()
