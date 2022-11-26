@@ -30,4 +30,4 @@ walkdir = "2.3"
 # Misc
 regex = "1.7"
 octocrab = "0.17"
-url = "2.3"
+lazy_static = "1.4"

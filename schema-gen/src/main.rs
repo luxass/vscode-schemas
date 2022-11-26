@@ -11,8 +11,8 @@ use octocrab::{
 };
 use regex::Regex;
 use schema_lib::{
-    commands, docker::Ducker, is_ci, read_metadata, run_driver, scan_for_files, set_default_env,
-    write_metadata, Metadata,
+    commands, docker::Ducker, is_ci, read_metadata, run_driver, scanner::Scanner, write_metadata,
+    Metadata,
 };
 use std::fs::File;
 use std::io::Cursor;
@@ -22,7 +22,6 @@ use thirtyfour::{
     By, ChromeCapabilities, Key, WebDriver,
 };
 use tokio::time;
-use url::Url;
 #[derive(Debug, Parser)]
 #[command(name = "vsschema")]
 #[command(about = "Generate Visual Studio Code Schemas")]
@@ -41,6 +40,12 @@ struct Cli {
 
     #[arg(long, required = false, global = true)]
     verbose: bool,
+
+    #[arg(long, required = false, global = true, default_value = "../extraction")]
+    extract_dir: String,
+
+    #[arg(long, required = false, global = true, value_name = "release")]
+    release: Option<String>,
 }
 
 #[tokio::main]
@@ -69,28 +74,28 @@ async fn main() -> Result<(), Box<dyn Error>> {
     match cli.command {
         commands::Commands::Generate {
             schemas: user_schemas,
-            release: user_release,
-            extract_dir,
         } => {
-            let mut metadata = read_metadata(cli.metadata_url).await?;
+            let metadata = read_metadata(cli.metadata_url).await?;
             let mut schemas = if user_schemas.is_none() {
                 metadata.schemas
             } else {
                 user_schemas.unwrap()
             };
 
+            let schema_urls = metadata.schema_urls;
+
             // Filter out schemas
             schemas.retain(|schema| schema.starts_with("vscode://schemas/"));
 
-            if schemas.len() == 0 {
+            if schemas.len() == 0 && schema_urls.len() == 0 {
                 warn!("No schemas to generate");
                 return Ok(());
             }
 
-            let release = if user_release.is_none() {
+            let release = if cli.release.is_none() {
                 repo.releases().get_latest().await?
             } else {
-                repo.releases().get_by_tag(&user_release.unwrap()).await?
+                repo.releases().get_by_tag(&cli.release.unwrap()).await?
             };
 
             if metadata.version == release.tag_name {
@@ -100,16 +105,88 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
             info!("Generating schemas");
             debug!("Schemas: {:?}", schemas);
+            debug!("Schemas Urls: {:?}", schema_urls);
 
-            info!("latest release: {}", release.tag_name);
+            let container_name = "vscode-schema-server";
+            let docker = Ducker::new()?;
+
+            docker.build_image().await.expect("failed to build image");
+
+            // Create container
+            let create_response = docker
+                .create_container(container_name)
+                .await
+                .expect("failed to create container");
+
+            // Start the container
+            docker
+                .start_container(&create_response.id)
+                .await
+                .expect("failed to start container");
+
+            let mut chrome_driver = run_driver();
+            info!("Chrome driver started");
+            info!("id: {}", chrome_driver.id());
+
+            // Just to be sure that the driver and server is ready.
+            time::sleep(std::time::Duration::from_secs(20)).await;
+            let mut caps = ChromeCapabilities::new();
+            if is_github_actions {
+                caps.set_headless()?;
+            }
+            let driver = WebDriver::new("http://localhost:9515", caps).await?;
+
+            driver
+                .goto("http://localhost:8000/?folder=/root/vscode-schemas")
+                .await?;
+
+            let body = driver.find(By::Tag("body")).await?;
+
+            let workspace_trust = body.query(By::Css("div > div.monaco-dialog-modal-block.dimmed > div > div > div.dialog-buttons-row > div > a:nth-child(1)"))
+            .single()
+            .await?;
+
+            workspace_trust.wait_until().displayed().await?;
+            workspace_trust.click().await?;
+
+            time::sleep(Duration::from_secs(1)).await;
+            body.send_keys(String::from(Key::Control + Key::Shift + Key::Alt + "s"))
+                .await?;
+            debug!("triggered extract schemas");
+
+            time::sleep(Duration::from_secs(10)).await;
+            driver.quit().await?;
+            chrome_driver
+                .kill()
+                .expect("chromedriver server process not killed, do manually");
+
+            docker
+                .kill(container_name)
+                .await
+                .expect("failed to kill container");
+            time::sleep(Duration::from_secs(5)).await;
+            docker
+                .destroy(container_name)
+                .await
+                .expect("failed to remove container");
+        }
+        commands::Commands::Refetch => {
+            let release = if cli.release.is_none() {
+                repo.releases().get_latest().await?
+            } else {
+                repo.releases().get_by_tag(&cli.release.unwrap()).await?
+            };
+
             let tag: Reference = Reference::Tag(release.tag_name.clone());
+            debug!("Tag::Reference: {:?}", tag);
 
             let _ref: Ref = repo.get_ref(&tag).await?;
+            debug!("Ref: {:?}", _ref);
 
-            let long_sha = if let Object::Commit { sha, url: _ } = _ref.object {
+            let long_sha = if let Object::Tag { sha, url: _ } = _ref.object {
                 sha
             } else {
-                panic!("invalid ref");
+                panic!("Not a Tag");
             };
 
             let short_sha = &long_sha[0..7];
@@ -119,7 +196,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             let unpack_name = format!("microsoft-vscode-{}", short_sha);
             info!("unpack_name: {}", unpack_name);
 
-            let extraction_dir: &Path = Path::new(extract_dir.as_str());
+            let extraction_dir: &Path = Path::new(&cli.extract_dir);
             if !extraction_dir.exists() {
                 info!("Creating extraction directory");
                 std::fs::create_dir(extraction_dir)?;
@@ -152,41 +229,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 archive.unpack(extraction_dir.join("."))?;
             }
 
-            let files = scan_for_files(src_folder.to_str().unwrap())?;
-            info!("found {} files.", files.len());
+            let mut scanner = Scanner::new(short_sha.to_string(), release.tag_name.clone());
+            scanner.scan_files(src_folder.to_str().unwrap())?;
 
-            let mut schema_paths = Vec::<String>::new();
+            scanner.parse_files()?;
 
-            let re = Regex::new(r"vscode://schemas(?:/\w+)+").unwrap();
-            for file in files {
-                let contents = fs::read_to_string(&file).expect("failed to read file");
-
-                let lines = contents.lines();
-
-                lines.for_each(|line| {
-                    let captures = re.captures(line);
-                    if let Some(captures) = captures {
-                        let path = captures.get(0).map_or("", |m| m.as_str()).to_string();
-                        debug!("{:?} - {:?}", path, &file);
-                        schema_paths.push(path);
-                    }
-                });
-            }
-
-            schema_paths = schema_paths
-                .iter()
-                .map(|x| x.to_string())
-                .collect::<std::collections::HashSet<_>>()
-                .iter()
-                .map(|x| x.to_string())
-                .collect();
-
-            metadata = Metadata {
+            let metadata = Metadata {
                 version: release.tag_name,
-                schemas: schema_paths,
+                schemas: scanner.schemas,
+                schema_urls: scanner.schema_urls,
             };
 
-            // write_metadata(metadata, metadata_path)?;
+            debug!("Schemas: {:?}", metadata.schemas);
+            debug!("Schemas Urls: {:?}", metadata.schema_urls);
 
             if Path::new(src_folder.to_str().unwrap()).exists() {
                 fs::remove_dir_all(src_folder.to_str().unwrap()).unwrap();
@@ -198,71 +253,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 fs::remove_file(&tar_gz_file_path).unwrap();
             }
 
-            // let container_name = "vscode-schema-server";
-            // let docker = Ducker::new()?;
+            let url_re = Regex::new(r"https?")?;
 
-            // docker
-            //     .build_image(metadata_path)
-            //     .await
-            //     .expect("failed to build image");
+            if url_re.is_match(&cli.metadata_url) {
+                warn!("The option --metadata-url, was not a file located on the filesystem");
+                warn!("We cant write the metadata.");
 
-            // // Create container
-            // let create_response = docker
-            //     .create_container(container_name)
-            //     .await
-            //     .expect("failed to create container");
+                return Ok(());
+            }
 
-            // // Start the container
-            // docker
-            //     .start_container(&create_response.id)
-            //     .await
-            //     .expect("failed to start container");
-
-            // let mut chrome_driver = run_driver();
-            // info!("Chrome driver started");
-            // info!("id: {}", chrome_driver.id());
-
-            // // Just to be sure that the driver and server is ready.
-            // time::sleep(std::time::Duration::from_secs(20)).await;
-            // let mut caps = ChromeCapabilities::new();
-            // if github_actions == "true" {
-            //     caps.set_headless()?;
-            // }
-            // let driver = WebDriver::new("http://localhost:9515", caps).await?;
-
-            // driver
-            //     .goto("http://localhost:8000/?folder=/root/vscode-schemas")
-            //     .await?;
-
-            // let body = driver.find(By::Tag("body")).await?;
-
-            // let workspace_trust = body.query(By::Css("div > div.monaco-dialog-modal-block.dimmed > div > div > div.dialog-buttons-row > div > a:nth-child(1)"))
-            // .single()
-            // .await?;
-
-            // workspace_trust.wait_until().displayed().await?;
-            // workspace_trust.click().await?;
-
-            // time::sleep(Duration::from_secs(1)).await;
-            // body.send_keys(String::from(Key::Control + Key::Shift + Key::Alt + "s"))
-            //     .await?;
-            // debug!("triggered extract schemas");
-
-            // time::sleep(Duration::from_secs(10)).await;
-            // driver.quit().await?;
-            // chrome_driver
-            //     .kill()
-            //     .expect("chromedriver server process not killed, do manually");
-
-            // docker
-            //     .kill(container_name)
-            //     .await
-            //     .expect("failed to kill container");
-            // time::sleep(Duration::from_secs(5)).await;
-            // docker
-            //     .destroy(container_name)
-            //     .await
-            //     .expect("failed to remove container");
+            write_metadata(metadata, cli.metadata_url)?;
         }
     }
 

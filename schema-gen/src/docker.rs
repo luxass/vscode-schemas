@@ -14,7 +14,6 @@ use std::collections::HashMap;
 use std::env;
 use std::error::Error;
 use std::io::Write;
-use std::path::Path;
 
 use futures_util::TryStreamExt;
 
@@ -29,8 +28,8 @@ impl Ducker {
         })
     }
 
-    pub async fn build_image(&self, metadata_path: &Path) -> Result<(), Box<dyn Error>> {
-        let dockerfile = format!(
+    pub async fn build_image(&self) -> Result<(), Box<dyn Error>> {
+        let dockerfile = String::from(
             r#"FROM ubuntu:22.04
     
         # hadolint ignore=DL3008
@@ -43,14 +42,10 @@ impl Ducker {
             && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
             
         RUN wget -q -O- https://aka.ms/install-vscode-server/setup.sh | sh
-        ENV VSCODE_SCHEMA_OUTPUT_PATH=./
-        ENV VSCODE_SCHEMA_OVERWRITE_SCHEMA_LIST={metadata_path}
         
         ENTRYPOINT [ "/bin/sh", "-c", "code-server serve-local --accept-server-license-terms --disable-telemetry --without-connection-token --host 0.0.0.0 --start-server --install-extension luxass.vscode-schema-extractor" ]
         EXPOSE 8000
-    "#,
-            metadata_path = metadata_path.to_str().unwrap()
-        );
+    "#);
 
         let mut header = tar::Header::new_gnu();
         header.set_path("Dockerfile")?;

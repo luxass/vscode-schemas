@@ -1384,6 +1384,7 @@ dependencies = [
  "env_logger",
  "flate2",
  "futures-util",
+ "lazy_static",
  "log",
  "octocrab",
  "regex",
@@ -1393,7 +1394,6 @@ dependencies = [
  "tar",
  "thirtyfour",
  "tokio",
- "url",
  "walkdir",
 ]
 
