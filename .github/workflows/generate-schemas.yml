@@ -30,19 +30,11 @@ jobs:
           path: artifacts/
       - name: Make it executable
         run: chmod +x artifacts/schema-gen
-      - name: Run
+      - name: Refetch Schemas
+        run: |
+          ./artifacts/schema-gen refetch --metadata-url metadata.json
+      - name: Generate Schemas
         run: |
           ./artifacts/schema-gen generate --metadata-url metadata.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # run:
-  #   needs: download-driver
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Run
-  #       run: |
-  #         cd schema-gen
-  #         cargo run --release
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
