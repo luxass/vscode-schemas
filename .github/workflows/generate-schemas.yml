@@ -33,6 +33,8 @@ jobs:
       - name: Refetch Schemas
         run: |
           ./artifacts/schema-gen refetch --metadata-url metadata.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate Schemas
         run: |
           ./artifacts/schema-gen generate --metadata-url metadata.json

@@ -65,7 +65,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let cli = Cli::parse();
 
-    let github_token = env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN not set");
+    let github_token = env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN env not set");
 
     let github = Octocrab::builder().personal_token(github_token).build()?;
 
