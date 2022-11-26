@@ -10,7 +10,7 @@ pub mod scanner;
 use log::debug;
 use regex::Regex;
 use std::env;
-use std::fs::{metadata, File};
+use std::fs::{File};
 use std::io::{Read, Write};
 use std::path::Path;
 use std::process::{Child, Command};

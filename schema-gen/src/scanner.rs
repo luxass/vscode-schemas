@@ -2,7 +2,7 @@ use lazy_static::lazy_static;
 use log::{debug, trace};
 use regex::Regex;
 use serde_json::Value;
-use std::{fs::{self, metadata}, path::{Path, PathBuf}};
+use std::{fs::{self, metadata}, path::{Path}};
 use walkdir::WalkDir;
 
 #[derive(Debug, Clone)]
@@ -40,7 +40,7 @@ pub struct JsonValidation {
 }
 
 lazy_static! {
-    static ref SCHEMA_REGEX: Regex = Regex::new(r#"vscode://schemas/([^"]+)"#).unwrap();
+    static ref SCHEMA_REGEX: Regex = Regex::new(r#"vscode://schemas/([^"']+)"#).unwrap();
 }
 
 #[derive(Debug)]
@@ -118,7 +118,7 @@ impl Scanner {
                                     {
                                         let schema =
                                             captures.get(0).map_or("", |m| m.as_str()).to_string();
-                                        if !self.schemas.contains(&schema) {
+                                        if !self.schemas.contains(&schema) && !schema.starts_with("vscode://schemas/custom") {
                                             debug!("{:?} - {}", schema, &file.name);
                                             self.schemas.push(schema);
                                         }
@@ -136,7 +136,7 @@ impl Scanner {
                                                 release = self.release, 
                                                 clean_path = path.to_str().unwrap()
                                             );
-                                            if !self.schema_urls.contains(&schema) {
+                                            if !self.schema_urls.contains(&schema) && !schema.starts_with("vscode://schemas/custom") {
                                                 debug!("{:?} - {}", schema, &file.name);
                                                 self.schema_urls.push(schema);
                                             }
@@ -151,7 +151,7 @@ impl Scanner {
                         lines.for_each(|line| {
                             if let Some(captures) = SCHEMA_REGEX.captures(line) {
                                 let schema = captures.get(0).map_or("", |m| m.as_str()).to_string();
-                                if !self.schemas.contains(&schema) {
+                                if !self.schemas.contains(&schema) && !schema.starts_with("vscode://schemas/custom") {
                                     debug!("{:?} - {}", schema, &file.name);
                                     self.schemas.push(schema);
                                 }
@@ -166,7 +166,7 @@ impl Scanner {
                     lines.for_each(|line| {
                         if let Some(captures) = SCHEMA_REGEX.captures(line) {
                             let schema = captures.get(0).map_or("", |m| m.as_str()).to_string();
-                            if !self.schemas.contains(&schema) {
+                            if !self.schemas.contains(&schema) && !schema.starts_with("vscode://schemas/custom") {
                                 debug!("{:?} - {}", schema, &file.name);
                                 self.schemas.push(schema);
                             }
