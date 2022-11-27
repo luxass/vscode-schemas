@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "crates/ducker",
+    "crates/schema-core"
+]
