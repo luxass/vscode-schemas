@@ -17,17 +17,12 @@ bollard = "0.13"
 futures-util = "0.3"
 thirtyfour = "0.31"
 clap = { version = "4.0", features = ["derive"] }
-
-# Logging
 log = "0.4"
 env_logger = "0.10"
-
-# IO
 tar = "0.4"
 flate2 = "1.0"
 walkdir = "2.3"
-
-# Misc
 regex = "1.7"
 octocrab = "0.17"
 lazy_static = "1.4"
+semver = "1.0"

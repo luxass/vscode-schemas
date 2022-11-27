@@ -1,6 +1,5 @@
 use anyhow::Result;
 use bollard::image::BuildImageOptions;
-use bollard::Docker;
 
 use bollard::container::{
     Config, CreateContainerOptions, KillContainerOptions, RemoveContainerOptions,
@@ -11,20 +10,19 @@ use bollard::service::{
 };
 use log::debug;
 use std::collections::HashMap;
-use std::env;
 use std::error::Error;
 use std::io::Write;
 
 use futures_util::TryStreamExt;
 
-pub struct Ducker {
-    docker: Docker,
+pub struct Docker {
+    docker: bollard::Docker,
 }
 
-impl Ducker {
+impl Docker {
     pub fn new() -> Result<Self, Box<dyn Error>> {
         Ok(Self {
-            docker: Docker::connect_with_socket_defaults()?,
+            docker: bollard::Docker::connect_with_socket_defaults()?,
         })
     }
 
@@ -45,7 +43,8 @@ impl Ducker {
         
         ENTRYPOINT [ "/bin/sh", "-c", "code-server serve-local --accept-server-license-terms --disable-telemetry --without-connection-token --host 0.0.0.0 --start-server --install-extension luxass.vscode-schema-extractor" ]
         EXPOSE 8000
-    "#);
+    "#,
+        );
 
         let mut header = tar::Header::new_gnu();
         header.set_path("Dockerfile")?;
@@ -82,6 +81,7 @@ impl Ducker {
     pub async fn create_container(
         &self,
         container_name: &str,
+        dir: String,
     ) -> Result<ContainerCreateResponse, Box<dyn Error>> {
         let create_container_options = CreateContainerOptions {
             name: container_name.to_string(),
@@ -99,14 +99,12 @@ impl Ducker {
         let mut port_map: PortMap = HashMap::new();
         port_map.insert("8000".to_string(), Some(port_bindings));
 
-        let github_actions = env::var("GITHUB_ACTIONS").expect("GITHUB_ACTIONS not set");
-
-        let source = if github_actions == "true" {
-            String::from("/home/runner/work/vscode-schemas/vscode-schemas")
-        } else {
-            let dir = env::var("VS_SCHEMAS_DIR").expect("VS_SCHEMAS_DIR not set");
-            dir
-        };
+        // let source = if github_actions {
+        //     String::from("/home/runner/work/vscode-schemas/vscode-schemas")
+        // } else {
+        //     let dir = env::var("VS_SCHEMAS_DIR").expect("VS_SCHEMAS_DIR not set");
+        //     dir
+        // };
 
         let create_res = self
             .docker
@@ -117,11 +115,11 @@ impl Ducker {
                     hostname: Some("vscode".to_string()),
                     host_config: Some(HostConfig {
                         network_mode: Some("host".to_string()),
-                        port_bindings: Some(port_map),
+                        port_bindings: Some(port_map),        
                         // binds: Some(vec![volume]),
                         mounts: Some(vec![Mount {
                             target: Some(String::from("/root/vscode-schemas")),
-                            source: Some(source),
+                            source: Some(dir),
                             typ: Some(MountTypeEnum::BIND),
                             consistency: Some(String::from("default")),
                             ..Default::default()

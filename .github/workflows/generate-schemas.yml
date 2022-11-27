@@ -37,6 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate Schemas
         run: |
-          ./artifacts/schema-gen generate --metadata-url metadata.json
+          echo $GITHUB_WORKSPACE
+          ./artifacts/schema-gen generate --metadata-url metadata.json --dir /home/runner/work/vscode-schemas/vscode-schemas
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
