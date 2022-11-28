@@ -1,6 +1,7 @@
 [workspace]
-
 members = [
     "crates/ducker",
-    "crates/schema-core"
+    "crates/schema-core",
+    "crates/cli",
+    "crates/code-builder"
 ]

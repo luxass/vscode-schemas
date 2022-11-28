@@ -1,0 +1,9 @@
+[package]
+name = "code_builder"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ducker = { path = "../ducker" }
+thiserror = "1.0"
+anyhow = "1.0"
