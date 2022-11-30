@@ -1,5 +1,5 @@
-use clap::{command, Parser};
-use log::info;
+use clap::{arg, command, Parser, ValueEnum};
+use log::{info, LevelFilter};
 mod commands;
 
 #[derive(Debug, Parser)]
@@ -10,10 +10,27 @@ mod commands;
 struct Cli {
     #[command(subcommand)]
     command: commands::Commands,
+
+    #[arg(
+        long,
+        required = false,
+        global = true,
+        value_enum,
+        default_value = "info"
+    )]
+    log: LevelFilter,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let cli = Cli::parse();
+
+    env_logger::builder()
+        .filter_module("cli", cli.log)
+        .filter_module("schema_core", cli.log)
+        .filter_module("code_builder", cli.log)
+        .write_style(env_logger::WriteStyle::Always)
+        .init();
 
     match cli.command {
         commands::Commands::Run {} => {
@@ -27,8 +44,13 @@ fn main() {
             commands::DevCommands::Build => {
                 info!("Dev Build Command");
 
-                code_builder::build_code().unwrap();
-                
+                // code_builder::build_code().unwrap();
+            }
+            commands::DevCommands::BuildAgent {
+                release
+            } => {
+                info!("Dev Build Agent Command");
+                code_builder::build_code_agent(release).await.unwrap();
             }
         },
     }

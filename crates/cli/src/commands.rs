@@ -12,5 +12,10 @@ pub enum Commands {
 
 #[derive(Debug, Subcommand)]
 pub enum DevCommands {
-    Build
+    Build,
+    #[command(name = "build-agent")]
+    BuildAgent {
+        #[arg(long, required = false)]
+        release: Option<String>,
+    }
 }

@@ -1,15 +1,49 @@
 use anyhow::Result;
+use bollard::Docker;
 use errors::Error;
+use log::{debug, info, error};
+use semver::{Version, VersionReq};
 mod errors;
 
-pub fn build_code() -> Result<()> {
-    // let docker = ducker::docker::modname::Docker::connect()?;
-    // docker
-    //     .ping()?;
-    // .map_ok(|_| Ok::<_, ()>(println!("Connected!")));
-    // let docker = Docker::connect_with_socket_defaults()?;
-    // let containers = docker.list_containers2();
-    // println!("{:?}", containers);
+pub async fn build_code_agent(release_arg: Option<String>) -> Result<()> {
+    let release = if release_arg.is_none() {
+        info!("No release specified, using latest");
+        // let release = if cli.release.is_none() {
+        //     repo.releases().get_latest().await?
+        // } else {
+        //     // Release 1.39.0 is the first "correct" release from github.
+        //     // But they are going directly from release 1.39.2 to 1.45.0
+        //     // so we are just gonna accept everything over 1.45.0
+        //     let version = VersionReq::parse(">= 1.45.0")?;
+        //     let release_version = cli.release.unwrap();
+        //     if version.matches(&Version::parse(&release_version)?) {
+        //         debug!("release version: {}", release_version);
+        //         match repo.releases().get_by_tag(&release_version).await {
+        //             Ok(release) => release,
+        //             Err(_) => {
+        //                 error!("Release {} not found", release_version);
+        //                 return Ok(());
+        //             }
+        //         }
+        // } else {
+        //     error!("Release {} is not supported", &release_version);
+        //     return Ok(());
+        // }
+        // };
+    } else {
+        info!("Using release {}", release_arg.unwrap());
+        let version = VersionReq::parse(">= 1.45.0")?;
+        if version.matches(&Version::parse(&release_arg.unwrap())?) {
+            
+        } else {
+            error!("Release {} is not supported", &release_arg.unwrap());
+            return Ok(());
+        }
+    };
+
+    info!("Building Code Agent for release {}", release);
+    let docker = Docker::connect_with_socket_defaults()?;
+
     Ok(())
 }
 
@@ -26,7 +60,7 @@ pub fn build_code() -> Result<()> {
 //             ..Default::default()
 //         })).await.unwrap();
 //         println!("{:?}", containers);
-        
+
 //         1
 //     }
 // }
