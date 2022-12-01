@@ -1,5 +1,5 @@
-use clap::{arg, command, Parser, ValueEnum};
-use log::{info, LevelFilter};
+use clap::{arg, command, Parser};
+use log::{LevelFilter, info};
 mod commands;
 
 #[derive(Debug, Parser)]
@@ -11,6 +11,9 @@ struct Cli {
     #[command(subcommand)]
     command: commands::Commands,
 
+    #[arg(long, required = false, global = true)]
+    release: Option<String>,
+
     #[arg(
         long,
         required = false,
@@ -19,6 +22,9 @@ struct Cli {
         default_value = "info"
     )]
     log: LevelFilter,
+
+    #[arg(long, required = false, global = true)]
+    cleanup: bool,
 }
 
 #[tokio::main]
@@ -28,30 +34,33 @@ async fn main() {
     env_logger::builder()
         .filter_module("cli", cli.log)
         .filter_module("schema_core", cli.log)
-        .filter_module("code_builder", cli.log)
+        .filter_module("code_agent", cli.log)
         .write_style(env_logger::WriteStyle::Always)
         .init();
 
+    let release = schema_core::github::parse_release(cli.release)
+        .await
+        .unwrap();
+
     match cli.command {
-        commands::Commands::Run {} => {
-            info!("Run Command");
+        commands::Commands::Run => {
+            
+            schema_core::agent::run_code_agent(release.clone())
+                .await
+                .unwrap();
         }
         commands::Commands::List => {
-            info!("List Command");
-            // schema_core::list_schemas();
+            schema_core::github::list_schemas();
         }
-        commands::Commands::Dev { command } => match command {
-            commands::DevCommands::Build => {
-                info!("Dev Build Command");
+        commands::Commands::BuildCode => {
+            schema_core::agent::build_code_agent(release.clone())
+                .await
+                .unwrap();
+        }
+    }
 
-                // code_builder::build_code().unwrap();
-            }
-            commands::DevCommands::BuildAgent {
-                release
-            } => {
-                info!("Dev Build Agent Command");
-                code_builder::build_code_agent(release).await.unwrap();
-            }
-        },
+    if cli.cleanup {
+        schema_core::agent::cleanup(release).await.unwrap();
+        info!("Cleanup complete");
     }
 }
