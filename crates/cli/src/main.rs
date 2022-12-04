@@ -1,5 +1,7 @@
+use anyhow::Result;
 use clap::{arg, command, Parser};
 use log::{info, LevelFilter};
+
 mod commands;
 
 #[derive(Parser)]
@@ -7,7 +9,7 @@ mod commands;
 #[command(bin_name = "vsschema")]
 #[command(about = "Generate Visual Studio Code Schemas")]
 #[command(version = "0.1.0")]
-struct Cli {
+struct Args {
     #[command(subcommand)]
     command: commands::Commands,
 
@@ -28,48 +30,44 @@ struct Cli {
 }
 
 #[tokio::main]
-async fn main() {
-    let cli = Cli::parse();
+async fn main() -> Result<()> {
+    let args = Args::parse();
 
     env_logger::builder()
-        .filter_module("cli", cli.log)
-        .filter_module("schema_core", cli.log)
-        .filter_module("code_agent", cli.log)
+        .filter_module("cli", args.log)
+        .filter_module("schema_core", args.log)
+        .filter_module("code_agent", args.log)
         .write_style(env_logger::WriteStyle::Always)
         .init();
 
-    let release = schema_core::github::parse_release(cli.release)
-        .await
-        .unwrap();
+    let release = schema_core::github::parse_release(args.release).await?;
 
-    match cli.command {
+    match args.command {
         commands::Commands::Run => {
-            schema_core::agent::run_code_agent(&release)
-                .await
-                .unwrap();
+            schema_core::agent::run_code_agent(&release).await?;
         }
         commands::Commands::List { show } => match show {
             commands::Show::Releases => {
-                schema_core::github::list_releases().await.unwrap();
+                schema_core::github::list_releases().await?;
             }
             commands::Show::Schemas => {
-                schema_core::github::list_schemas().await.unwrap();
+                schema_core::github::list_schemas().await?;
             }
         },
         commands::Commands::BuildCode => {
             schema_core::agent::build_code_agent(&release)
-                .await
-                .unwrap();
+                .await?;
         }
         commands::Commands::Generate => {
             schema_core::scanner::generate_schemas(&release)
-                .await
-                .unwrap();
+                .await?;
         }
     }
 
-    if cli.cleanup {
-        schema_core::agent::cleanup(&release).await.unwrap();
+    if args.cleanup {
+        schema_core::agent::cleanup(&release).await?;
         info!("Cleanup complete");
     }
+
+    Ok(())
 }

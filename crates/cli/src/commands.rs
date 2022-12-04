@@ -1,5 +1,3 @@
-use std::fmt::Debug;
-
 use clap::{Subcommand, ValueEnum};
 
 #[derive(Subcommand)]
