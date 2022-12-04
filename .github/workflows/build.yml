@@ -1,10 +1,11 @@
-name: Build Schema Generator
+name: Build Schema CLI
 
 on:
   push:
     paths:
       - '.github/workflows/**'
-      - 'schema-gen/**'
+      - 'crates/**/*'
+      - 'Cargo.toml'
 
 jobs:
   build:
@@ -14,16 +15,15 @@ jobs:
         uses: actions/checkout@v3
       - name: Build
         run: |
-          cd schema-gen
           cargo build --verbose --release
       - name: Create artifact directory
         run: mkdir artifacts
       - name: Copy files
         run: |
-          cp schema-gen/target/release/schema-gen artifacts/
+          cp target/release/cli artifacts/
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          name: schema-gen
+          name: vscode-schemas
           path: artifacts/
 

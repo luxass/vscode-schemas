@@ -8,7 +8,7 @@ use log::info;
 
 use crate::{errors::Error, image};
 
-pub async fn build_code_agent(release: String) -> Result<(), Error> {
+pub async fn build_code_agent(release: &String) -> Result<(), Error> {
     info!("Building Code Agent for release {}", release);
     let docker = Docker::connect_with_socket_defaults()?;
     let exists = image::check_for_image(&docker, format!("vscode-build-agent:{}", release)).await?;
@@ -24,7 +24,7 @@ pub async fn build_code_agent(release: String) -> Result<(), Error> {
     Ok(())
 }
 
-pub async fn run_code_agent(release: String) -> Result<(), Error> {
+pub async fn run_code_agent(release: &String) -> Result<(), Error> {
     info!("Running Code Agent for release {}", release);
     let docker = Docker::connect_with_socket_defaults()?;
 
@@ -33,7 +33,7 @@ pub async fn run_code_agent(release: String) -> Result<(), Error> {
     let exists = image::check_for_image(&docker, tag.clone()).await?;
     if !exists {
         info!("Image does not exist, building");
-        image::build_code_image(&docker, release.clone()).await?;
+        image::build_code_image(&docker, &release).await?;
     }
 
     docker
@@ -68,7 +68,7 @@ pub async fn run_code_agent(release: String) -> Result<(), Error> {
     Ok(())
 }
 
-pub async fn cleanup(release: String) -> Result<(), Error> {
+pub async fn cleanup(release: &String) -> Result<(), Error> {
     let docker = Docker::connect_with_socket_defaults()?;
 
     let image_name = format!("vscode-build-agent:{}", release);

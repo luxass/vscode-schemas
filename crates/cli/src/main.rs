@@ -1,8 +1,8 @@
 use clap::{arg, command, Parser};
-use log::{LevelFilter, info};
+use log::{info, LevelFilter};
 mod commands;
 
-#[derive(Debug, Parser)]
+#[derive(Parser)]
 #[command(name = "vsschema")]
 #[command(bin_name = "vsschema")]
 #[command(about = "Generate Visual Studio Code Schemas")]
@@ -44,23 +44,32 @@ async fn main() {
 
     match cli.command {
         commands::Commands::Run => {
-            
-            schema_core::agent::run_code_agent(release.clone())
+            schema_core::agent::run_code_agent(&release)
                 .await
                 .unwrap();
         }
-        commands::Commands::List => {
-            schema_core::github::list_schemas();
-        }
+        commands::Commands::List { show } => match show {
+            commands::Show::Releases => {
+                schema_core::github::list_releases().await.unwrap();
+            }
+            commands::Show::Schemas => {
+                schema_core::github::list_schemas().await.unwrap();
+            }
+        },
         commands::Commands::BuildCode => {
-            schema_core::agent::build_code_agent(release.clone())
+            schema_core::agent::build_code_agent(&release)
+                .await
+                .unwrap();
+        }
+        commands::Commands::Generate => {
+            schema_core::scanner::generate_schemas(&release)
                 .await
                 .unwrap();
         }
     }
 
     if cli.cleanup {
-        schema_core::agent::cleanup(release).await.unwrap();
+        schema_core::agent::cleanup(&release).await.unwrap();
         info!("Cleanup complete");
     }
 }

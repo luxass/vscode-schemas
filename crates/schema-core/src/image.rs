@@ -1,7 +1,4 @@
-use std::{
-    collections::HashMap,
-    io::{Read, Write},
-};
+use std::{collections::HashMap, io::Write};
 
 use bollard::{
     image::{BuildImageOptions, ListImagesOptions},
@@ -12,10 +9,60 @@ use log::trace;
 
 use crate::errors::Error;
 
-pub async fn build_code_image(docker: &Docker, release: String) -> Result<(), Error> {
-    let mut file = std::fs::File::open("Dockerfile")?;
-    let mut dockerfile = String::new();
-    file.read_to_string(&mut dockerfile)?;
+pub async fn build_code_image(docker: &Docker, release: &String) -> Result<(), Error> {
+    // let mut file = std::fs::File::open("Dockerfile")?;
+    // let mut dockerfile = String::new();
+    // file.read_to_string(&mut dockerfile)?;
+
+    let dockerfile = r#"
+FROM buildpack-deps:20.04-curl
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    build-essential \
+    libsecret-1-dev \
+    libx11-dev \
+    libxkbfile-dev \
+    libnss3 \
+    libatk1.0-0 \
+    sudo
+
+# Install Node.js
+RUN curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - && \
+      sudo apt-get install -y nodejs
+
+
+# Install Yarn
+RUN npm install -g yarn
+
+ARG tag_name
+
+# Clone VSCode Source Code
+RUN git clone --depth 1 --branch $tag_name https://github.com/microsoft/vscode.git /vscode
+
+
+# Clone VSCode Schemas Source Code
+RUN git clone --depth 1 --branch v2 https://github.com/luxass/vscode-schemas.git /vscode-schemas
+
+# Move Patches to VSCode
+RUN mv /vscode-schemas/patches /vscode/patches
+
+WORKDIR /vscode
+
+# Apply Patches
+RUN patch -u src/vs/platform/windows/electron-main/windowImpl.ts -i patches/windowImpl.patch
+
+# Install Yarn Dependencies
+RUN yarn --frozen-lockfile install -y
+
+# Build VSCode
+RUN yarn compile
+
+# Install Extension
+RUN ./scripts/code.sh --install-extension luxass.vscode-schema-extractor
+
+CMD [ "./scripts/code.sh" ]
+    "#;
 
     let mut header = tar::Header::new_gnu();
     header.set_path("Dockerfile")?;
@@ -32,9 +79,8 @@ pub async fn build_code_image(docker: &Docker, release: String) -> Result<(), Er
 
     let tag = format!("vscode-build-agent:{}", release);
 
-
     let mut buildargs = HashMap::new();
-    buildargs.insert(String::from("tag_name"), release);
+    buildargs.insert(String::from("tag_name"), release.to_string());
 
     let build_image_options = BuildImageOptions {
         dockerfile: "Dockerfile".to_string(),
@@ -55,7 +101,6 @@ pub async fn build_code_image(docker: &Docker, release: String) -> Result<(), Er
             }
         }
     }
-
     Ok(())
 }
 

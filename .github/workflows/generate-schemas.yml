@@ -2,27 +2,23 @@ name: Generate Schemas
 
 on:
   workflow_run:
-    workflows: ["Build Schema Generator"]
+    workflows: ["Build Schema CLI"]
     types:
       - completed
   schedule:
     - cron: "0 */6 * * *"
 
-jobs:
-  download-driver:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: browser-actions/setup-chrome@latest
-      - run: chrome --version
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  run:
-    needs: download-driver
+jobs:
+  generate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Download Schema Generator
-        id: download-schema-gen
+      - name: Download Schema CLI
+        id: download-schema-cli
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: build.yml
@@ -33,11 +29,7 @@ jobs:
       - name: Refetch Schemas
         run: |
           ./artifacts/schema-gen refetch --metadata-url metadata.json
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate Schemas
         run: |
           echo $GITHUB_WORKSPACE
           ./artifacts/schema-gen generate --metadata-url metadata.json --dir /home/runner/work/vscode-schemas/vscode-schemas
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

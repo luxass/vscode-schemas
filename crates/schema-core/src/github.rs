@@ -61,3 +61,7 @@ pub async fn parse_release(release_arg: Option<String>) -> Result<String, Error>
 pub async fn list_schemas() -> Result<(), Error> {
     Ok(())
 }
+
+pub async fn list_releases() -> Result<(), Error> {
+    Ok(())
+}
