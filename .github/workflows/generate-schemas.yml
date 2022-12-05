@@ -22,10 +22,10 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: build.yml
-          name: schema-gen
+          name: vscode-schema
           path: artifacts/
       - name: Make it executable
-        run: chmod +x artifacts/schema-gen
+        run: chmod +x artifacts/vscode-schema
       - name: Refetch Schemas
         run: |
           ./artifacts/schema-gen refetch --metadata-url metadata.json
