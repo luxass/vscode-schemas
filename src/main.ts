@@ -5,12 +5,14 @@ import {
   Secret,
   Command
 } from "https://deno.land/x/cliffy@v0.25.5/mod.ts";
+import { generateCommand } from "./commands/generate.ts";
 import { listCommand } from "./commands/list.ts";
 
 await new Command()
   .name("vscode-schemas")
   .version("0.1.0")
   .description("A CLI for downloading vscode schemas")
+  .globalOption("-r, --release [release:string]", "Release to use")
   .command("download [url]")
   .description("Download a schema from a url")
   .option("-o, --output [output:string]", "Output file")
@@ -47,5 +49,5 @@ await new Command()
     );
   })
   .command("list", listCommand)
-
+  .command("generate", generateCommand)
   .parse(Deno.args);

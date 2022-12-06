@@ -6,11 +6,12 @@ import {
 const show = new EnumType(["schemas", "releases"]);
 import { octokit } from "../deps.ts";
 
-export const listCommand = new Command()
-  .description("")
+export const listCommand = new Command<{
+  release: true | string | undefined;
+}>()
+  .description("List possible releases or schemas")
   .type("show", show)
   .option("-s, --show [show:show]", "Show schemas or releases")
-  .option("-r, --release [type:string]", "Release to show")
   .action(async ({ show, release }) => {
     if (show === "releases") {
       const releases = await octokit.paginate(
@@ -68,25 +69,25 @@ export const listCommand = new Command()
         if (!file.path) return acc;
 
         const [group] = file.path.split("/");
-        if (!acc[group] && group !== release) {
+        if (!acc[group]) {
           acc[group] = [];
         }
         if (file.path !== group) acc[group].push(file);
         return acc;
       }, {} as Record<string, typeof files>);
 
-      // if (release) {
-      //   if (!groups[release]) {
-      //     console.log("No schemas found");
-      //     return;
-      //   } else {
-      //     console.log(colors.green(release));
-      //     for (const file of groups[release]) {
-      //       console.log(`  ${file.path?.split("/")[1]}`);
-      //     }
-      //     return;
-      //   }
-      // }
+      if (release) {
+        if (!groups[release]) {
+          console.log("No schemas found");
+          return;
+        } else {
+          console.log(colors.green(release));
+          for (const file of groups[release]) {
+            console.log(`  ${file.path?.split("/")[1]}`);
+          }
+          return;
+        }
+      }
 
       for (const [group, files] of Object.entries(groups)) {
         console.log(colors.green(group));
