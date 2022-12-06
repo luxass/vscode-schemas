@@ -30,7 +30,7 @@ jobs:
         run: ./src/main.ts scan --skip-out --dir vscode
 
       - name: Generate Schemas
-        run: ./src/main.ts --code-src vscode
+        run: ./src/main.ts generate --code-src vscode
 
       - name: Update Schemas README
         run: ./scripts/write-markdown.ts
