@@ -1,13 +1,60 @@
-import { Command } from "https://deno.land/x/cliffy@v0.25.5/mod.ts";
 import { generateCommand } from "./commands/generate.ts";
 import { listCommand } from "./commands/list.ts";
 import { scanCommand } from "./commands/scan.ts";
+import { Command, SemVer, colors, octokit } from "./deps.ts";
 
 await new Command()
   .name("vscode-schemas")
   .version("0.1.0")
   .description("A CLI for downloading vscode schemas")
-  .globalOption("-r, --release [release:string]", "Release to use")
+  .globalOption("-r, --release [release:string]", "Release to use", {
+    default: await (async () => {
+      const r = await octokit.request(
+        "GET /repos/{owner}/{repo}/releases/latest",
+        {
+          owner: "microsoft",
+          repo: "vscode"
+        }
+      );
+      return r.data.tag_name;
+    })(),
+    action: ({ release }) => {
+      if (typeof release === "boolean") {
+        console.error(
+          colors.red("Release is a boolean, please provide a correct version")
+        );
+        Deno.exit(1);
+      }
+
+      const semver = new SemVer(release);
+      if (semver.compare("1.45.0") === -1) {
+        console.error(colors.red("Release must be >= 1.45.0"));
+        Deno.exit(1);
+      }
+      console.log(release);
+
+      return release;
+    }
+  })
+  .globalOption(
+    "--code-src [codeSrc:string]",
+    "Location of VSCode Source Code",
+    {
+      action: ({ codeSrc }) => {
+        if (typeof codeSrc === "boolean") {
+          console.error(
+            colors.red("Code Source is a boolean, please provide a string")
+          );
+          Deno.exit(1);
+        }
+        return codeSrc;
+      }
+    }
+  )
+  .globalOption(
+    "-d, --dir [dir:string]",
+    "Directory to place VSCode Source Code"
+  )
   .command("list", listCommand)
   .command("generate", generateCommand)
   .command("scan", scanCommand)

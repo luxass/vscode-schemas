@@ -1,23 +1,14 @@
-import {
-  Command as GG,
-  colors,
-  Confirm,
-  Input
-} from "https://deno.land/x/cliffy@v0.25.5/mod.ts";
-import { join } from "https://deno.land/std@0.167.0/path/mod.ts";
+import { Command, colors, join, Confirm, Input, which } from "../deps.ts";
 import { scanFiles, writeSchemasUris } from "../scanner.ts";
+import { CommandGlobalOptions } from "../utils.ts";
 
-export const scanCommand = new GG<{
-  release: true | string | undefined;
-}>()
+export const scanCommand = new Command<CommandGlobalOptions>()
   .description("Scan for Schemas")
   .option("-cs, --code-src [codeSrc:string]", "Location of VSCode Source Code")
   .option("-d, --dir [dir:string]", "Directory to place VSCode Source Code")
   .option("-o, --out [out:string]", "Output dir to place uris")
   .action(async ({ codeSrc, release, dir }) => {
     let codeSrcPath = codeSrc as string | undefined;
-    release = release as string | undefined;
-
     if (codeSrcPath) {
       console.log(
         `Using ${colors.green.underline(codeSrcPath)} as VSCode Source Code`
@@ -69,8 +60,12 @@ export const scanCommand = new GG<{
       }
 
       console.log("Downloading VSCode Source Code");
-
-      const command = new Deno.Command("git", {
+      const gitBin = await which("git");
+      if (!gitBin) {
+        console.log(colors.red("Git is not installed"));
+        Deno.exit(1);
+      }
+      const command = new Deno.Command(gitBin, {
         args: [
           "clone",
           "--depth",

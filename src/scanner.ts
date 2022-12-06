@@ -1,5 +1,4 @@
-import { walk } from "https://deno.land/std@0.167.0/fs/mod.ts";
-import { extname } from "https://deno.land/std@0.167.0/path/mod.ts";
+import { walk, extname } from "./deps.ts";
 
 enum FileType {
   JSON,

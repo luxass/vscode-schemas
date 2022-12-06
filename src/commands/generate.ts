@@ -1,83 +1,80 @@
+import { Command, colors, which } from "../deps.ts";
 import {
-  Command,
-  colors,
-  Confirm,
-  Input
-} from "https://deno.land/x/cliffy@v0.25.5/mod.ts";
-import { join } from "https://deno.land/std@0.167.0/path/mod.ts";
-import { scanFiles, writeSchemasUris } from "../scanner.ts";
+  checkVersion,
+  CommandGlobalOptions,
+  downloadCodeSource
+} from "../utils.ts";
 
-export const generateCommand = new Command<{
-  release: true | string | undefined;
-}>()
+export const generateCommand = new Command<CommandGlobalOptions>()
   .description("Generate schemas")
-  .option("-cs, --code-src [codeSrc:string]", "Location of VSCode Source Code")
-  
-  .action(async ({ codeSrc, release }) => {
-    const codeSrcPath = codeSrc as string | undefined;
-    if (codeSrcPath) {
-      console.log(
-        `Using ${colors.green.underline(codeSrcPath)} as VSCode Source Code`
-      );
+  .option("--no-install", "Don't install dependencies")
+  .option("--no-build", "Don't build", {
+    prepend: true
+  })
+  .action(async ({ codeSrc, release, dir, install, build }) => {
+    console.log(release);
 
-      try {
-        const contents = await Deno.readTextFile(
-          join(codeSrcPath, "package.json")
-        );
-
-        const pkgJSON = JSON.parse(contents);
-
-        if (typeof pkgJSON.version !== "string") {
-          console.log(
-            colors.red(
-              `Invalid package.json - expected a string, recieved type ${typeof pkgJSON.version}`
-            )
-          );
-          return;
-        }
-
-        if (release && release !== pkgJSON.version) {
-          console.log(
-            colors.red(
-              `Invalid version - expected ${release}, recieved ${pkgJSON.version}`
-            )
-          );
-          return;
-        }
-
-        const scannedFiles = await scanFiles(codeSrcPath);
-
-        const schemas = await writeSchemasUris(scannedFiles);
-        console.log(
-          `Scanned ${colors.yellow.underline(
-            scannedFiles.length.toString()
-          )} files - found ${colors.yellow.underline(
-            schemas.length.toString()
-          )} schemas`
-        );
-      } catch (error) {
-        console.log(error);
-
-        console.log("Invalid VSCode Source Code");
-      }
-    } else {
-      console.log("No VSCode Source Code provided");
-
-      const wantToDownload = await Confirm.prompt("Do you want to download?");
-
-      if (!wantToDownload) {
-        console.log(colors.red("Aborting."));
-        return;
-      }
-
-      const downloadPath = await Input.prompt(
-        {
-          message: "Where do you want to download VSCode Source Code?",
-          default: "vscode",
-        }
-      );
-
-      console.log("Downloading VSCode Source Code");
-      
+    if (!codeSrc) {
+      codeSrc = await downloadCodeSource(release, dir);
     }
+    console.log(
+      `Using ${colors.green.underline(codeSrc)} as VSCode Source Code`
+    );
+
+    const nodeBin = await which("node");
+    if (!nodeBin) {
+      console.log(colors.red("Node is not installed"));
+      return;
+    }
+
+    const yarnBin = await which("yarn");
+    if (!yarnBin) {
+      console.log(colors.red("Yarn is not installed"));
+      return;
+    }
+    const nodeVersion = await checkVersion(nodeBin, "node.js", ">=16.14.x <17");
+    const yarnVersion = await checkVersion(yarnBin, "yarn", ">=1.10.1 <2");
+
+    if (!nodeVersion || !yarnVersion) {
+      Deno.exit(1);
+    }
+
+    if (install) {
+      console.log("Installing dependencies");
+
+      const installCommand = new Deno.Command(yarnBin, {
+        args: ["install"],
+        cwd: codeSrc
+      });
+
+      const { code } = await installCommand.output();
+      if (code !== 0) {
+        console.error(colors.red("Failed to install dependencies"));
+        Deno.exit(1);
+      }
+    }
+
+    if (build) {
+      console.log("Building code");
+
+      const buildCommand = new Deno.Command(yarnBin, {
+        args: ["compile"],
+        cwd: codeSrc
+      });
+
+      const { code, stderr } = await buildCommand.output();
+      if (code !== 0) {
+        console.error(
+          colors.red("Failed to build code - received following error")
+        );
+        const err = new TextDecoder().decode(stderr);
+        console.error(err);
+        Deno.exit(1);
+      }
+    }
+
+    console.log("Running Code");
+
+    
+    
   });

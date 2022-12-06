@@ -1,14 +1,8 @@
-import {
-  EnumType,
-  Command,
-  colors
-} from "https://deno.land/x/cliffy@v0.25.5/mod.ts";
+import { colors, Command, EnumType, octokit } from "../deps.ts";
+import { CommandGlobalOptions } from "../utils.ts";
 const show = new EnumType(["schemas", "releases"]);
-import { octokit } from "../deps.ts";
 
-export const listCommand = new Command<{
-  release: true | string | undefined;
-}>()
+export const listCommand = new Command<CommandGlobalOptions>()
   .description("List possible releases or schemas")
   .type("show", show)
   .option("-s, --show [show:show]", "Show schemas or releases")
@@ -61,9 +55,6 @@ export const listCommand = new Command<{
       );
 
       const files = schemas.tree.filter((file) => file?.path !== "README.md");
-
-      // @ts-ignore - just forget it.
-      if (typeof release === "boolean") Deno.exit(1);
 
       const groups = files.reduce((acc, file) => {
         if (!file.path) return acc;
