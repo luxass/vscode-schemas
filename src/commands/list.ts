@@ -6,7 +6,8 @@ export const listCommand = new Command<CommandGlobalOptions>()
   .description("List possible releases or schemas")
   .type("show", show)
   .option("-s, --show [show:show]", "Show schemas or releases")
-  .action(async ({ show, release }) => {
+  .option("-a, --all", "Show all releases")
+  .action(async ({ show, release, all }) => {
     if (show === "releases") {
       const releases = await octokit.paginate(
         "GET /repos/{owner}/{repo}/releases",
@@ -57,7 +58,8 @@ export const listCommand = new Command<CommandGlobalOptions>()
       const files = schemas.tree.filter((file) => file?.path !== "README.md");
 
       const groups = files.reduce((acc, file) => {
-        if (!file.path) return acc;
+        if (!file.path || file.path.includes(".vscode-schemas.json"))
+          return acc;
 
         const [group] = file.path.split("/");
         if (!acc[group]) {
@@ -67,7 +69,14 @@ export const listCommand = new Command<CommandGlobalOptions>()
         return acc;
       }, {} as Record<string, typeof files>);
 
-      if (release) {
+      if (all) {
+        for (const [group, files] of Object.entries(groups)) {
+          console.log(colors.green(group));
+          for (const file of files) {
+            console.log(`  ${file.path?.split("/")[1]}`);
+          }
+        }
+      } else {
         if (!groups[release]) {
           console.log("No schemas found");
           return;
@@ -77,13 +86,6 @@ export const listCommand = new Command<CommandGlobalOptions>()
             console.log(`  ${file.path?.split("/")[1]}`);
           }
           return;
-        }
-      }
-
-      for (const [group, files] of Object.entries(groups)) {
-        console.log(colors.green(group));
-        for (const file of files) {
-          console.log(`  ${file.path?.split("/")[1]}`);
         }
       }
     }
