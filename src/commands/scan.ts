@@ -100,7 +100,7 @@ export const scanCommand = new Command<CommandGlobalOptions>()
     );
 
     const outDir = await Input.prompt({
-      message: "Where do you want to save the schemas?",
+      message: "Where do you want to save the schemas uris?",
       default: `schemas/${release}`
     });
 
@@ -108,6 +108,9 @@ export const scanCommand = new Command<CommandGlobalOptions>()
 
     await Deno.writeTextFile(
       join(outDir, ".vscode-schemas.json"),
-      JSON.stringify(schemas.sort(), null, 2)
+      JSON.stringify({
+        version: release,
+        schemas: schemas.sort()
+      }, null, 2)
     );
   });

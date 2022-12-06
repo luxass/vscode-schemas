@@ -1,10 +1,11 @@
-# vscode-schemas
-A repository to store all of Visual Studio Code schemas
+# Visual Studio Code Schemas
 
-Click [here](/schemas) to go to the schemas.
+> This is a collection of schemas for Visual Studio Code.
 
-
-## Installation
-```bash
-cargo install vscode-schemas
-```
+## Versions
+- [src](./schemas/src)
+- [.github](./schemas/.github)
+- [.vscode](./schemas/.vscode)
+- [.git](./schemas/.git)
+- [scripts](./schemas/scripts)
+- [schemas](./schemas/schemas)

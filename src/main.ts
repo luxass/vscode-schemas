@@ -1,3 +1,5 @@
+#!/usr/bin/env -S deno run --allow-read --allow-write --allow-net --unstable --allow-env --allow-run
+
 import { generateCommand } from "./commands/generate.ts";
 import { listCommand } from "./commands/list.ts";
 import { scanCommand } from "./commands/scan.ts";

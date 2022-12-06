@@ -19,5 +19,17 @@ jobs:
         uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
+
+      - name: Add Permissions
+        run: |
+          chmod +x ./src/main.ts
+          chmod +x ./scripts/write-markdown.ts
+
+      - name: Scan for Schemas
+        run: ./src/main.ts
+      
       - name: Generate Schemas
         run: deno run --allow-read --allow-write --allow-net --allow-env --unstable ./src/main.ts --help
+      
+      - name: Update Schemas README
+        run: ./scripts/write-markdown.ts
