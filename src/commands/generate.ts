@@ -12,8 +12,6 @@ export const generateCommand = new Command<CommandGlobalOptions>()
     prepend: true
   })
   .action(async ({ codeSrc, release, dir, install, build }) => {
-    console.log(release);
-
     if (!codeSrc) {
       codeSrc = await downloadCodeSource(release, dir);
     }
