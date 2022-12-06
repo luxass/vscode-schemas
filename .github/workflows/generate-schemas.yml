@@ -25,12 +25,12 @@ jobs:
         run: |
           chmod +x ./src/main.ts
           chmod +x ./scripts/write-markdown.ts
-
+  
       - name: Scan for Schemas
         run: ./src/main.ts scan --skip-out --dir vscode
 
       - name: Generate Schemas
-        run: ./src/main.ts --help
+        run: ./src/main.ts --code-src vscode
 
       - name: Update Schemas README
         run: ./scripts/write-markdown.ts
