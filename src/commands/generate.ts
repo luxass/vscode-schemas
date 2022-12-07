@@ -8,9 +8,7 @@ import {
 export const generateCommand = new Command<CommandGlobalOptions>()
   .description("Generate schemas")
   .option("--no-install", "Don't install dependencies")
-  .option("--no-build", "Don't build", {
-    prepend: true
-  })
+  .option("--no-build", "Don't build")
   .action(async ({ codeSrc, release, out, install, build }) => {
     if (!codeSrc) {
       codeSrc = await downloadCodeSource(release, out);
@@ -72,7 +70,4 @@ export const generateCommand = new Command<CommandGlobalOptions>()
     }
 
     console.log("Running Code");
-
-    
-    
   });
