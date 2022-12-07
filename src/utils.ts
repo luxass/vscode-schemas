@@ -1,9 +1,25 @@
 import { colors, Confirm, Input, satisfies, which } from "./deps.ts";
 
+export async function isDirectoryEmpty(dir: string): Promise<boolean> {
+  try {
+    const items = [];
+    for await (const dirEntry of Deno.readDir(dir)) {
+      items.push(dirEntry);
+    }
+
+    return items.length === 0;
+  } catch (error) {
+    if (!(error instanceof Deno.errors.NotFound)) {
+      throw error;
+    }
+    return true;
+  }
+}
+
 export type CommandGlobalOptions = {
   release: string;
   codeSrc: string | undefined;
-  dir: string | undefined;
+  out: string | undefined;
 };
 
 export async function downloadCodeSource(
@@ -16,7 +32,7 @@ export async function downloadCodeSource(
 
     if (!wantToDownload) {
       console.log(colors.red("Aborting."));
-      Deno.exit(1)
+      Deno.exit(1);
     }
     dir = await Input.prompt({
       message: "Where do you want to download VSCode Source Code?",
