@@ -4,7 +4,7 @@ import { downloadCommand } from "./commands/download.ts";
 import { generateCommand } from "./commands/generate.ts";
 import { listCommand } from "./commands/list.ts";
 import { scanCommand } from "./commands/scan.ts";
-import { Command, SemVer, colors, octokit } from "./deps.ts";
+import { Command, SemVer, octokit } from "./deps.ts";
 import { error } from "./log.ts";
 
 await new Command()
@@ -43,9 +43,7 @@ await new Command()
     {
       action: ({ codeSrc }) => {
         if (typeof codeSrc === "boolean") {
-          console.error(
-            colors.red("Code Source is a boolean, please provide a string")
-          );
+          error("Code Source is a boolean, please provide a string");
           Deno.exit(1);
         }
         return codeSrc;
@@ -60,7 +58,7 @@ await new Command()
     this.showHelp();
   })
   .command("list", listCommand)
-  // .command("generate", generateCommand)
-  // .command("scan", scanCommand)
+  .command("generate", generateCommand)
+  .command("scan", scanCommand)
   .command("download", downloadCommand)
   .parse(Deno.args);

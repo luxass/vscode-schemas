@@ -11,9 +11,9 @@ export const generateCommand = new Command<CommandGlobalOptions>()
   .option("--no-build", "Don't build", {
     prepend: true
   })
-  .action(async ({ codeSrc, release, dir, install, build }) => {
+  .action(async ({ codeSrc, release, out, install, build }) => {
     if (!codeSrc) {
-      codeSrc = await downloadCodeSource(release, dir);
+      codeSrc = await downloadCodeSource(release, out);
     }
     console.log(
       `Using ${colors.green.underline(codeSrc)} as VSCode Source Code`

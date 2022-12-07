@@ -4,11 +4,10 @@ import { CommandGlobalOptions, downloadCodeSource } from "../utils.ts";
 
 export const scanCommand = new Command<CommandGlobalOptions>()
   .description("Scan for Schemas")
-  .option("-o, --out [out:string]", "Output dir to place uris")
-  .option("--skip-out", "Skip output dir prompt")
-  .action(async ({ codeSrc, release, dir, out, skipOut }) => {
+  .option("--default-out", "Use default value in out prompt")
+  .action(async ({ codeSrc, release, out, defaultOut }) => {
     if (!codeSrc) {
-      codeSrc = await downloadCodeSource(release, dir);
+      codeSrc = await downloadCodeSource(release, out);
     }
     console.log(
       `Using ${colors.green.underline(codeSrc)} as VSCode Source Code`
@@ -24,14 +23,13 @@ export const scanCommand = new Command<CommandGlobalOptions>()
         schemas.length.toString()
       )} schemas`
     );
-    let outDir = skipOut ? `schemas/${release}` : out as string | undefined;
+    let outDir = defaultOut ? `schemas/${release}` : (out as string | undefined);
     if (!outDir) {
       outDir = await Input.prompt({
         message: "Where do you want to save the schemas uris?",
         default: `schemas/${release}`
       });
     }
-
 
     await Deno.mkdir(outDir, { recursive: true });
 

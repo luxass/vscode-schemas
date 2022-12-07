@@ -25,7 +25,7 @@ export async function clone(out: string) {
 
 export async function hasChanges(out: string) {
   const { status, output } = await git(["status", "--porcelain"], {
-    path: out,
+    path: out
   });
   return status && output.length > 0;
 }
@@ -34,7 +34,7 @@ export async function hasChanges(out: string) {
  * Checkout a release.
  * @param release The release to checkout
  * @param out Directory to checkout the release in.
- * @returns 
+ * @returns
  */
 export async function checkout(release: string, out: string) {
   const { status } = await git(["checkout", release], {
@@ -80,7 +80,7 @@ type GitResult = {
 /**
  * Run a git command.
  * @param cmd The git command to run.
- * @param path The directory to run the command in.
+ * @param options Options for the command.
  * @returns The status and output of the command.
  */
 async function git(
