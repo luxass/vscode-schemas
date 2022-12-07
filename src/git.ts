@@ -1,4 +1,4 @@
-import { which } from "https://deno.land/x/which@0.2.1/mod.ts";
+import { which } from "./deps.ts";
 import { error } from "./log.ts";
 
 /**

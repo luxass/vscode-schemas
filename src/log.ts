@@ -1,4 +1,4 @@
-import { colors } from "https://deno.land/x/cliffy@v0.25.5/ansi/colors.ts";
+import { colors } from "./deps.ts";
 
 export const error = (message: string) =>
   console.error(`${colors.red("ERR: ")} ${message}`);
