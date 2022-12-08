@@ -8,22 +8,21 @@ let README = `
 ## Versions
 `;
 
-const cwd = Deno.cwd();
-
-const schemasDir = cwd.endsWith("schemas") ? cwd : `${cwd}/schemas`;
-
 async function run() {
+  const cwd = Deno.cwd();
+  const schemasDir = cwd.endsWith("/schemas") ? cwd : `${cwd}/schemas`;
+
   const schemas: Array<string> = [];
   for await (const release of Deno.readDir(schemasDir)) {
+    
     if (release.isDirectory) {
       schemas.push(release.name);
     }
   }
 
-  // Write README.md
-  schemas.reverse().forEach(schema => {
+  schemas.sort().reverse().forEach((schema) => {
     README += `- [${schema}](./schemas/${schema})\n`;
-  })
+  });
 
   await Deno.writeTextFile(`${schemasDir}/README.md`, README.trim());
 }
