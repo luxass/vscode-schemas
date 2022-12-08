@@ -25,6 +25,8 @@ jobs:
         run: |
           chmod +x ./src/main.ts
           chmod +x ./scripts/write-markdown.ts
+          chmod +x ./scripts/run-all-generate.ts
+          chmod +x ./scripts/run-all-scans.ts
 
       - name: Download Source Code
         run: ./src/main.ts download --out vscode

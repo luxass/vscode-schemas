@@ -67,4 +67,18 @@ export const generateCommand = new Command<CommandGlobalOptions>()
     info("Running Code");
 
     // TODO: Patch the code to generate the schemas
+    const runCommand = new Deno.Command("./scripts/code.sh", {
+      args: [],
+      cwd: codeSrc
+    });
+
+    
+    const { pid, kill } = runCommand.spawn();
+    
+    console.log(pid);
+
+    new Promise((r) => setTimeout(r, 5000));
+
+    kill();
+    
   });
