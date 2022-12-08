@@ -12,13 +12,14 @@ import { isDirectoryEmpty } from "./utils.ts";
 type DownloadOptions = {
   out?: string;
   codeSrc?: string;
+  skipCheckout?: boolean;
 };
 
 export async function downloadCodeSource(
   release: string,
   options: DownloadOptions
 ): Promise<string> {
-  const { out, codeSrc } = options;
+  const { out, codeSrc, skipCheckout } = options;
 
   let path: string | undefined = codeSrc || out;
   if (!codeSrc && !out) {
@@ -35,7 +36,7 @@ export async function downloadCodeSource(
   }
 
   if (!path) throw new TypeError("No path provided. Please report this");
-  
+
   const isOutEmpty = await isDirectoryEmpty(path);
   if (isOutEmpty) {
     info("Downloading VSCode Source Code");
@@ -52,9 +53,11 @@ export async function downloadCodeSource(
         info("Please commit or stash your changes first.");
         Deno.exit(1);
       }
-      await checkout(release, path);
+      if (!skipCheckout) {
+        await checkout(release, path);
+      }
     }
   }
 
-  return "path";
+  return path;
 }

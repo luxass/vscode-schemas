@@ -1,31 +1,26 @@
 import { Command, colors, which } from "../deps.ts";
-import {
-  checkVersion,
-  CommandGlobalOptions,
-  downloadCodeSource
-} from "../utils.ts";
+import { downloadCodeSource } from "../download.ts";
+import { error, info, success } from "../log.ts";
+import { checkVersion, CommandGlobalOptions } from "../utils.ts";
 
 export const generateCommand = new Command<CommandGlobalOptions>()
   .description("Generate schemas")
   .option("--no-install", "Don't install dependencies")
   .option("--no-build", "Don't build")
   .action(async ({ codeSrc, release, out, install, build }) => {
-    if (!codeSrc) {
-      codeSrc = await downloadCodeSource(release, out);
-    }
-    console.log(
-      `Using ${colors.green.underline(codeSrc)} as VSCode Source Code`
-    );
+    codeSrc = await downloadCodeSource(release, { out, codeSrc });
+
+    info(`Using ${colors.green.underline(codeSrc)} as VSCode Source Code`);
 
     const nodeBin = await which("node");
     if (!nodeBin) {
-      console.log(colors.red("Node is not installed"));
+      error("Node is not installed");
       return;
     }
 
     const yarnBin = await which("yarn");
     if (!yarnBin) {
-      console.log(colors.red("Yarn is not installed"));
+      error("Yarn is not installed");
       return;
     }
     const nodeVersion = await checkVersion(nodeBin, "node.js", ">=16.14.x <17");
@@ -36,7 +31,7 @@ export const generateCommand = new Command<CommandGlobalOptions>()
     }
 
     if (install) {
-      console.log("Installing dependencies");
+      info("Installing dependencies");
 
       const installCommand = new Deno.Command(yarnBin, {
         args: ["install"],
@@ -45,14 +40,14 @@ export const generateCommand = new Command<CommandGlobalOptions>()
 
       const { code } = await installCommand.output();
       if (code !== 0) {
-        console.error(colors.red("Failed to install dependencies"));
+        error("Failed to install dependencies");
         Deno.exit(1);
       }
+      success("Installed dependencies");
     }
 
     if (build) {
-      console.log("Building code");
-
+      info("Building code");
       const buildCommand = new Deno.Command(yarnBin, {
         args: ["compile"],
         cwd: codeSrc
@@ -60,14 +55,16 @@ export const generateCommand = new Command<CommandGlobalOptions>()
 
       const { code, stderr } = await buildCommand.output();
       if (code !== 0) {
-        console.error(
-          colors.red("Failed to build code - received following error")
-        );
+        error("Failed to build code - received following error");
+
         const err = new TextDecoder().decode(stderr);
         console.error(err);
         Deno.exit(1);
       }
+      success("Built Code");
     }
 
-    console.log("Running Code");
+    info("Running Code");
+
+    // TODO: Patch the code to generate the schemas
   });

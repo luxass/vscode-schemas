@@ -52,7 +52,7 @@ export async function fetchTags(out: string) {
   const { status } = await git(["fetch", "--tags"], {
     path: out
   });
-
+  
   if (!status) {
     throw new Error(`Unsuccessful response for 'git fetch --tags'.`);
   }
@@ -111,7 +111,8 @@ async function git(
   const status = await process.status();
 
   if (!status.success && (options?.throwOnFailure ?? true)) {
-    throw new Error(`Command '${cmd.join(" ")}' has failed.`);
+    error(`Command '${cmd.join(" ")}' has failed.`);
+    throw new Error(`Output: ${output}`);
   }
 
   return {
