@@ -1,7 +1,7 @@
 import { Command, colors, join, Input } from "../deps.ts";
-import { downloadCodeSource } from "../download.ts";
+import { downloadCodeSource } from "../internal/download.ts";
 import { info, success } from "../log.ts";
-import { scanFiles, writeSchemasUris } from "../scanner.ts";
+import { scanFiles, writeSchemasUris } from "../internal/scan.ts";
 import { CommandGlobalOptions } from "../utils.ts";
 
 export const scanCommand = new Command<CommandGlobalOptions>()
@@ -13,13 +13,19 @@ export const scanCommand = new Command<CommandGlobalOptions>()
 
     const scannedFiles = await scanFiles(codeSrc);
 
-    const schemas = await writeSchemasUris(scannedFiles);
+    const { schemas, externalSchemas } = await writeSchemasUris(
+      scannedFiles,
+      release,
+      codeSrc
+    );
     info(
       `Scanned ${colors.yellow.underline(
         scannedFiles.length.toString()
       )} files - found ${colors.yellow.underline(
         schemas.length.toString()
-      )} schemas`
+      )} schemas and ${colors.yellow.underline(
+        externalSchemas.length.toString()
+      )} external schemas`
     );
     let outDir = defaultOut
       ? `schemas/${release}`
@@ -38,7 +44,8 @@ export const scanCommand = new Command<CommandGlobalOptions>()
       JSON.stringify(
         {
           version: release,
-          schemas: schemas.sort()
+          schemas: schemas.sort(),
+          externalSchemas: externalSchemas.sort()
         },
         null,
         2

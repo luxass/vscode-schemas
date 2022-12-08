@@ -9,9 +9,10 @@ import {
   Input
 } from "https://deno.land/x/cliffy@v0.25.5/mod.ts";
 import { SemVer, satisfies } from "https://deno.land/std@0.167.0/semver/mod.ts";
-import { join, extname } from "https://deno.land/std@0.167.0/path/mod.ts";
+import { join, extname, dirname } from "https://deno.land/std@0.167.0/path/mod.ts";
 import { walk } from "https://deno.land/std@0.167.0/fs/mod.ts";
 import { which } from "https://deno.land/x/which@0.2.1/mod.ts";
+import { URI } from "https://esm.sh/vscode-uri@3.0.6";
 
 const Octokit = _Octokit.plugin(restEndpointMethods, paginateRest);
 const octokit = new Octokit({
@@ -33,5 +34,7 @@ export {
   join,
   extname,
   walk,
-  which
+  which,
+  URI,
+  dirname
 };

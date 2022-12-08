@@ -1,5 +1,5 @@
-import { which } from "./deps.ts";
-import { error } from "./log.ts";
+import { which } from "../deps.ts";
+import { error } from "../log.ts";
 
 /**
  * Find the path to the git binary.

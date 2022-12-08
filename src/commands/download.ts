@@ -1,5 +1,5 @@
 import { Command } from "../deps.ts";
-import { downloadCodeSource } from "../download.ts";
+import { downloadCodeSource } from "../internal/download.ts";
 import { CommandGlobalOptions } from "../utils.ts";
 
 export const downloadCommand = new Command<CommandGlobalOptions>()

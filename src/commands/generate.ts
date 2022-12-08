@@ -1,5 +1,5 @@
 import { Command, colors, which } from "../deps.ts";
-import { downloadCodeSource } from "../download.ts";
+import { downloadCodeSource } from "../internal/download.ts";
 import { error, info, success } from "../log.ts";
 import { checkVersion, CommandGlobalOptions } from "../utils.ts";
 

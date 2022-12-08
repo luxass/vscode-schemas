@@ -7,7 +7,10 @@ export const listCommand = new Command<CommandGlobalOptions>()
   .type("show", show)
   .option("-s, --show [show:show]", "Show schemas or releases")
   .option("-a, --all", "Show all releases")
-  .action(async ({ show, release, all }) => {
+  .option("--branch [branch:string]", "Branch to use for schemas listing", {
+    default: "main"
+  })
+  .action(async ({ show, release, all, branch }) => {
     if (show === "releases") {
       const releases = await octokit.paginate(
         "GET /repos/{owner}/{repo}/releases",
@@ -21,13 +24,15 @@ export const listCommand = new Command<CommandGlobalOptions>()
         console.log(colors.green(release.tag_name));
       }
     } else {
+      // Remove this goddamn stupid true type.
+      branch = (branch || "main") as string;
       const { data } = (await octokit.request(
         "GET /repos/{owner}/{repo}/contents/{path}",
         {
           owner: "luxass",
           repo: "vscode-schemas",
           path: ".",
-          ref: "luxass/rewrite-in-deno"
+          ref: branch
         }
         // For some reason, Octokit didn't give me the correct type.
       )) as {

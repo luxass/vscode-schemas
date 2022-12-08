@@ -1,4 +1,4 @@
-import { Confirm, Input } from "./deps.ts";
+import { Confirm, Input } from "../deps.ts";
 import {
   checkout,
   clone,
@@ -6,8 +6,8 @@ import {
   hasChanges,
   isInitialized
 } from "./git.ts";
-import { info, warn } from "./log.ts";
-import { isDirectoryEmpty } from "./utils.ts";
+import { info, warn } from "../log.ts";
+import { isDirectoryEmpty } from "../utils.ts";
 
 type DownloadOptions = {
   out?: string;
