@@ -29,7 +29,17 @@ async function run() {
   await Deno.writeTextFile(`${schemasDir}/README.md`, README.trim());
   await Deno.writeTextFile(
     `${schemasDir}/.vscode-schemas.json`,
-    JSON.stringify(schemas.sort().reverse(), null, 2)
+    JSON.stringify(
+      schemas
+        .sort()
+        .reverse()
+        .map(
+          (release) =>
+            `https://raw.githubusercontent.com/luxass/vscode-schemas/main/schemas/${release}/.vscode-schemas.json`
+        ),
+      null,
+      2
+    )
   );
 }
 
