@@ -72,13 +72,12 @@ export const generateCommand = new Command<CommandGlobalOptions>()
       cwd: codeSrc
     });
 
-    
-    const { pid, kill } = runCommand.spawn();
-    
-    console.log(pid);
+    const { pid } = runCommand.spawn();
 
-    new Promise((r) => setTimeout(r, 5000));
+    await new Promise((r) => setTimeout(r, 5000));
 
-    kill();
+    Deno.kill(pid, "SIGTERM")
+    
+    console.log("Done");
     
   });

@@ -1,7 +1,12 @@
 import { walk, extname, URI, join, dirname, colors, Input } from "../deps.ts";
-import { info,success } from "../log.ts";
+import { info, success } from "../log.ts";
 
-export async function scan(codeSrc: string, release: string, out?: string, defaultOut?: boolean) {
+export async function scan(
+  codeSrc: string,
+  release: string,
+  out?: string,
+  defaultOut?: boolean
+) {
   info(`Using ${colors.green.underline(codeSrc)} as VSCode Source Code`);
 
   const scannedFiles = await scanFiles(codeSrc);
@@ -144,12 +149,13 @@ export async function writeSchemasUris(
                 externalSchemas.push(validation.url);
               }
             } else if (scheme === "file") {
-              const schemaPath = join(
-                "https://raw.githubusercontent.com/microsoft/vscode",
+              // Normalizing the path, would remove // at https:
+              const schemaPath = "https://raw.githubusercontent.com/microsoft/vscode/" + join(
                 release,
                 dirname(file.path.replace(codeSrc, "")),
                 validation.url
               );
+
               if (!externalSchemas.includes(schemaPath)) {
                 externalSchemas.push(schemaPath);
               }

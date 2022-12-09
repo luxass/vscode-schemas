@@ -30,13 +30,13 @@
   "externalSchemas": [
     "https://raw.githubusercontent.com/microsoft/vscode-css-languageservice/master/docs/customData.schema.json",
     "https://raw.githubusercontent.com/microsoft/vscode-html-languageservice/master/docs/customData.schema.json",
-    "https:/raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/configuration-editing/schemas/attachContainer.schema.json",
-    "https:/raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/configuration-editing/schemas/devContainer.schema.generated.json",
-    "https:/raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/css-language-features/schemas/package.schema.json",
-    "https:/raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/html-language-features/schemas/package.schema.json",
-    "https:/raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/markdown-language-features/schemas/package.schema.json",
-    "https:/raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/typescript-language-features/schemas/jsconfig.schema.json",
-    "https:/raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/typescript-language-features/schemas/package.schema.json",
-    "https:/raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/typescript-language-features/schemas/tsconfig.schema.json"
+    "https://raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/configuration-editing/schemas/attachContainer.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/configuration-editing/schemas/devContainer.schema.generated.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/css-language-features/schemas/package.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/html-language-features/schemas/package.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/markdown-language-features/schemas/package.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/typescript-language-features/schemas/jsconfig.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/typescript-language-features/schemas/package.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.54.3/extensions/typescript-language-features/schemas/tsconfig.schema.json"
   ]
 }

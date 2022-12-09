@@ -24,7 +24,7 @@ async function run() {
       const version = new SemVer(release.tag_name);
       return version.major >= 1 && version.minor >= 45;
     })
-    .map((release) => release.tag_name);
+    .map((release) => release.tag_name).reverse();
 
   info(`Found ${releases.length} releases`);
   for (const release of releases) {
