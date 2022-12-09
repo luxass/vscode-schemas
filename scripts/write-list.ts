@@ -12,31 +12,26 @@ async function run() {
   const cwd = Deno.cwd();
   const schemasDir = cwd.endsWith("/schemas") ? cwd : `${cwd}/schemas`;
 
-  const schemas: Array<string> = [];
+  let schemas: Array<string> = [];
   for await (const release of Deno.readDir(schemasDir)) {
     if (release.isDirectory) {
       schemas.push(release.name);
     }
   }
 
-  schemas
-    .sort()
-    .reverse()
-    .forEach((schema) => {
-      README += `- [${schema}](./schemas/${schema})\n`;
-    });
+  schemas = schemas.sort().reverse();
+  schemas.forEach((schema) => {
+    README += `- [${schema}](./schemas/${schema})\n`;
+  });
 
   await Deno.writeTextFile(`${schemasDir}/README.md`, README.trim());
   await Deno.writeTextFile(
     `${schemasDir}/.vscode-schemas.json`,
     JSON.stringify(
-      schemas
-        .sort()
-        .reverse()
-        .map(
-          (release) =>
-            `https://raw.githubusercontent.com/luxass/vscode-schemas/main/schemas/${release}/.vscode-schemas.json`
-        ),
+      schemas.map((release) => ({
+        name: release,
+        url: `https://raw.githubusercontent.com/luxass/vscode-schemas/main/schemas/${release}/.vscode-schemas.json`
+      })),
       null,
       2
     )
