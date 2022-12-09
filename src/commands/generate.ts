@@ -72,12 +72,22 @@ export const generateCommand = new Command<CommandGlobalOptions>()
       cwd: codeSrc
     });
 
-    const { pid } = runCommand.spawn();
+    const { pid, stdout, stderr } = runCommand.spawn();
 
-    await new Promise((r) => setTimeout(r, 5000));
-
-    Deno.kill(pid, "SIGTERM")
+    // To ensure that it is started and generated the schemas, we wait for 60 seconds
+    await new Promise((r) => setTimeout(r, 60000));
     
-    console.log("Done");
+    
+    stdout.pipeTo(Deno.openSync("./output.txt", {
+      create: true,
+      write: true,
+      read: true
+    }).writable);
+    stderr.pipeTo(Deno.openSync("./errput.txt", {
+      create: true,
+      write: true,
+      read: true
+    }).writable);
+    Deno.kill(pid, "SIGTERM");
     
   });

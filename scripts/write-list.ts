@@ -14,17 +14,23 @@ async function run() {
 
   const schemas: Array<string> = [];
   for await (const release of Deno.readDir(schemasDir)) {
-    
     if (release.isDirectory) {
       schemas.push(release.name);
     }
   }
 
-  schemas.sort().reverse().forEach((schema) => {
-    README += `- [${schema}](./schemas/${schema})\n`;
-  });
+  schemas
+    .sort()
+    .reverse()
+    .forEach((schema) => {
+      README += `- [${schema}](./schemas/${schema})\n`;
+    });
 
   await Deno.writeTextFile(`${schemasDir}/README.md`, README.trim());
+  await Deno.writeTextFile(
+    `${schemasDir}/.vscode-schemas.json`,
+    JSON.stringify(schemas.sort().reverse(), null, 2)
+  );
 }
 
 await run();

@@ -24,7 +24,7 @@ jobs:
       - name: Add Permissions
         run: |
           chmod +x ./src/main.ts
-          chmod +x ./scripts/write-markdown.ts
+          chmod +x ./scripts/write-list.ts
           chmod +x ./scripts/run-all-generate.ts
           chmod +x ./scripts/run-all-scans.ts
 
@@ -37,5 +37,5 @@ jobs:
       - name: Generate Schemas
         run: ./src/main.ts generate --code-src vscode
 
-      - name: Update Schemas README
-        run: ./scripts/write-markdown.ts
+      - name: Update Schemas README & Write .schemas-list.json
+        run: ./scripts/write-list.ts
