@@ -1,4 +1,5 @@
 {
-  "schema-extractor.metadataUri": "./metadata.json",
-  "schema-extractor.keybindings": true
+  "deno.enable": true,
+  "deno.unstable": true,
+  "deno.lint": true
 }

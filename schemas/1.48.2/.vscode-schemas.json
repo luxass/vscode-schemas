@@ -1,0 +1,42 @@
+{
+  "version": "1.48.2",
+  "schemas": [
+    "vscode://schemas/argv",
+    "vscode://schemas/color-theme",
+    "vscode://schemas/extensions",
+    "vscode://schemas/global-snippets",
+    "vscode://schemas/icon-theme",
+    "vscode://schemas/icons",
+    "vscode://schemas/ignoredExtensions",
+    "vscode://schemas/ignoredSettings",
+    "vscode://schemas/keybindings",
+    "vscode://schemas/language-configuration",
+    "vscode://schemas/launch",
+    "vscode://schemas/product-icon-theme",
+    "vscode://schemas/settings/default",
+    "vscode://schemas/settings/folder",
+    "vscode://schemas/settings/machine",
+    "vscode://schemas/settings/resourceLanguage",
+    "vscode://schemas/settings/user",
+    "vscode://schemas/settings/workspace",
+    "vscode://schemas/snippets",
+    "vscode://schemas/tasks",
+    "vscode://schemas/textmate-colors",
+    "vscode://schemas/token-styling",
+    "vscode://schemas/vscode-extensions",
+    "vscode://schemas/workbench-colors",
+    "vscode://schemas/workspaceConfig"
+  ],
+  "externalSchemas": [
+    "https://raw.githubusercontent.com/Microsoft/vscode-css-languageservice/master/docs/customData.schema.json",
+    "https://raw.githubusercontent.com/Microsoft/vscode-html-languageservice/master/docs/customData.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.48.2/extensions/configuration-editing/schemas/attachContainer.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.48.2/extensions/configuration-editing/schemas/devContainer.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.48.2/extensions/css-language-features/schemas/package.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.48.2/extensions/html-language-features/schemas/package.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.48.2/extensions/markdown-language-features/schemas/package.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.48.2/extensions/typescript-language-features/schemas/jsconfig.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.48.2/extensions/typescript-language-features/schemas/package.schema.json",
+    "https://raw.githubusercontent.com/microsoft/vscode/1.48.2/extensions/typescript-language-features/schemas/tsconfig.schema.json"
+  ]
+}

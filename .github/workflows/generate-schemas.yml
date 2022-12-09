@@ -1,10 +1,8 @@
 name: Generate Schemas
 
 on:
-  workflow_run:
-    workflows: ["Build Schema CLI"]
-    types:
-      - completed
+  pull_request:
+  workflow_dispatch:
   schedule:
     - cron: "0 */6 * * *"
 
@@ -17,19 +15,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Download Schema CLI
-        id: download-schema-cli
-        uses: dawidd6/action-download-artifact@v2
+
+      - name: Setup deno
+        uses: denoland/setup-deno@v1
         with:
-          workflow: build.yml
-          name: vscode-schema
-          path: artifacts/
-      - name: Make it executable
-        run: chmod +x artifacts/vscode-schema
-      - name: Refetch Schemas
+          deno-version: v1.x
+
+      - name: Add Permissions
         run: |
-          ./artifacts/schema-gen refetch --metadata-url metadata.json
+          chmod +x ./src/main.ts
+          chmod +x ./scripts/write-list.ts
+          chmod +x ./scripts/run-all-generate.ts
+          chmod +x ./scripts/run-all-scans.ts
+
+      - name: Download Source Code
+        run: ./src/main.ts download --out vscode
+
+      - name: Scan for Schemas
+        run: ./src/main.ts scan --default-out --code-src vscode
+
       - name: Generate Schemas
-        run: |
-          echo $GITHUB_WORKSPACE
-          ./artifacts/schema-gen generate --metadata-url metadata.json --dir /home/runner/work/vscode-schemas/vscode-schemas
+        run: ./src/main.ts generate --code-src vscode
+
+      - name: Update Schemas README & Write .schemas-list.json
+        run: ./scripts/write-list.ts
