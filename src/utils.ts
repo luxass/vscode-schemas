@@ -43,9 +43,11 @@ export async function checkVersion(bin: string, name: string, range: string) {
   return true;
 }
 
-export async function detectArch() {
+export async function getArchitechture() {
   if (Deno.build.arch === "x86_64") {
     return "x64";
+  } else if (Deno.build.arch == "aarch64") {
+    return "arm64";
   }
 
   if (Deno.build.os === "darwin") {
@@ -62,7 +64,9 @@ export async function detectArch() {
       isWOW64 = sysRoot
         ? !!(await Deno.stat(join(sysRoot, "sysnative")))
         : false;
-    } catch (err) {}
+    } catch (e) {
+      console.log(e);
+    }
 
     return isWOW64 ? "x64" : "x86";
   }

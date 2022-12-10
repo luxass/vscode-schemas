@@ -7,16 +7,16 @@ import { listCommand } from "./commands/list.ts";
 import { scanCommand } from "./commands/scan.ts";
 import { Command, SemVer, octokit } from "./deps.ts";
 import { error } from "./log.ts";
-import { detectArch } from "./utils.ts";
+import { getArchitechture } from "./utils.ts";
 
-const arch = await detectArch();
+const architecture = await getArchitechture();
 
 await new Command()
   .name("vscode-schemas")
   .version("0.1.0")
   .description("A CLI for downloading vscode schemas")
   .globalOption("-a, --arch [arch:string]", "Architecture to use", {
-    default: arch,
+    default: architecture,
     action: ({ arch }) => {
       if (typeof arch === "boolean") {
         error("Arch is a boolean, please provide a string");
