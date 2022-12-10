@@ -1,14 +1,30 @@
+#!/usr/bin/env -S deno run --allow-read --allow-write --allow-net --unstable --allow-env --allow-run
+
+import { devCommand } from "./commands/dev.ts";
 import { downloadCommand } from "./commands/download.ts";
 import { generateCommand } from "./commands/generate.ts";
 import { listCommand } from "./commands/list.ts";
 import { scanCommand } from "./commands/scan.ts";
 import { Command, SemVer, octokit } from "./deps.ts";
 import { error } from "./log.ts";
+import { detectArch } from "./utils.ts";
+
+const arch = await detectArch();
 
 await new Command()
   .name("vscode-schemas")
   .version("0.1.0")
   .description("A CLI for downloading vscode schemas")
+  .globalOption("-a, --arch [arch:string]", "Architecture to use", {
+    default: arch,
+    action: ({ arch }) => {
+      if (typeof arch === "boolean") {
+        error("Arch is a boolean, please provide a string");
+        Deno.exit(1);
+      }
+      return arch;
+    }
+  })
   .globalOption("-r, --release [release:string]", "Release to use", {
     default: await (async () => {
       const r = await octokit.request(
@@ -59,4 +75,5 @@ await new Command()
   .command("generate", generateCommand)
   .command("scan", scanCommand)
   .command("download", downloadCommand)
+  .command("dev", devCommand)
   .parse(Deno.args);

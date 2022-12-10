@@ -1,4 +1,4 @@
-import { colors, satisfies } from "./deps.ts";
+import { colors, satisfies, join } from "./deps.ts";
 
 export async function isDirectoryEmpty(dir: string): Promise<boolean> {
   try {
@@ -20,6 +20,7 @@ export type CommandGlobalOptions = {
   release: string;
   codeSrc: string | undefined;
   out: string | undefined;
+  arch: string;
 };
 
 export async function checkVersion(bin: string, name: string, range: string) {
@@ -40,4 +41,37 @@ export async function checkVersion(bin: string, name: string, range: string) {
     return false;
   }
   return true;
+}
+
+export async function detectArch() {
+  if (Deno.build.arch === "x86_64") {
+    return "x64";
+  }
+
+  if (Deno.build.os === "darwin") {
+    return "x64";
+  }
+
+  if (Deno.build.os === "windows") {
+    const systemRoot = Deno.env.get("SystemRoot");
+    const sysRoot =
+      systemRoot && (await Deno.stat(systemRoot)) ? systemRoot : "C:\\Windows";
+
+    let isWOW64 = false;
+    try {
+      isWOW64 = sysRoot
+        ? !!(await Deno.stat(join(sysRoot, "sysnative")))
+        : false;
+    } catch (err) {}
+
+    return isWOW64 ? "x64" : "x86";
+  }
+
+  if (Deno.build.os === "linux") {
+    const process = Deno.run({ cmd: ["getconf", "LONG_BIT"], stdout: "piped" });
+    const output = new TextDecoder("utf-8").decode(await process.output());
+    return output === "64\n" ? "x64" : "x86";
+  }
+
+  return "x86";
 }
