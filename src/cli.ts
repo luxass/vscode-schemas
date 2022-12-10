@@ -11,6 +11,10 @@ import { getArchitechture } from "./utils.ts";
 
 const architecture = await getArchitechture();
 
+if (architecture === "arm64" && Deno.build.os === "darwin") {
+  console.warn("Some features will not be available on arm64 macos");
+}
+
 await new Command()
   .name("vscode-schemas")
   .version("0.1.0")
