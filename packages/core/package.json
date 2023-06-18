@@ -1,0 +1,40 @@
+{
+  "name": "vscode-schema-core",
+  "type": "module",
+  "version": "0.1.0",
+  "packageManager": "pnpm@8.6.0",
+  "description": "",
+  "author": {
+    "name": "Lucas Nørgård",
+    "email": "lucasnrgaard@gmail.com",
+    "url": "https://luxass.dev"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/luxass/vscode-schemas",
+  "repository": "https://github.com/luxass/vscode-schemas",
+  "bugs": {
+    "url": "https://github.com/luxass/vscode-schemas/issues"
+  },
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@octokit/core": "^4.2.4",
+    "@octokit/plugin-paginate-rest": "^7.1.2",
+    "semver": "^7.5.2"
+  },
+  "devDependencies": {
+    "@types/semver": "^7.5.0"
+  }
+}
