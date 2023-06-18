@@ -1,6 +1,9 @@
 import {
   defineConfig
 } from "tsup";
+import {
+  version
+} from "./package.json";
 
 export default defineConfig({
   format: [
@@ -9,5 +12,14 @@ export default defineConfig({
   entry: [
     "src/cli.ts"
   ],
-  treeshake: true
+  outExtension(ctx) {
+    return {
+      js: ctx.format === "cjs" ? ".cjs" : ".mjs"
+    };
+  },
+  treeshake: true,
+  clean: true,
+  define: {
+    VERSION: JSON.stringify(version)
+  }
 });

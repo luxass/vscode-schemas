@@ -1,4 +1,4 @@
-import { colors, satisfies, join } from "./deps.ts";
+import { colors, join, satisfies } from "./deps.ts";
 
 export async function isDirectoryEmpty(dir: string): Promise<boolean> {
   try {
@@ -17,10 +17,10 @@ export async function isDirectoryEmpty(dir: string): Promise<boolean> {
 }
 
 export type CommandGlobalOptions = {
-  release: string;
-  codeSrc: string | undefined;
-  out: string | undefined;
-  arch: string;
+  release: string
+  codeSrc: string | undefined
+  out: string | undefined
+  arch: string
 };
 
 export async function checkVersion(bin: string, name: string, range: string) {
@@ -61,9 +61,9 @@ export async function getArchitechture() {
 
     let isWOW64 = false;
     try {
-      isWOW64 = sysRoot
-        ? !!(await Deno.stat(join(sysRoot, "sysnative")))
-        : false;
+      isWOW64 = sysRoot ?
+          !!(await Deno.stat(join(sysRoot, "sysnative"))) :
+        false;
     } catch (e) {
       console.log(e);
     }

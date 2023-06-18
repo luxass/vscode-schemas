@@ -1,26 +1,12 @@
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
-import { version } from "../package.json";
+import cac from "cac";
 
+declare const VERSION: string;
 
+const cli = cac("vscode-schema");
 
-void yargs(hideBin(process.argv))
-  .scriptName("vscode-schema")
-  .usage("$0 [args]")
-  .command(
-    "download",
-    "Download schemas/src from vscode",
-    (args) => {
-      console.log("ARGS 1", args);
+cli.command("init", "Initialize a new schema project");
 
-    },
-    async args => {
-      console.log("ARGS 2", args);
-    }
-  )
-  .showHelpOnFail(false)
-  .alias("h", "help")
-  .version("version", version)
-  .alias("v", "version")
-  .help()
-  .argv;
+cli.help();
+cli.version(VERSION);
+
+cli.parse();
