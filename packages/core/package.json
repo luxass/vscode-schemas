@@ -33,11 +33,9 @@
     "@octokit/core": "^4.2.4",
     "@octokit/plugin-paginate-rest": "^7.1.2",
     "execa": "^7.1.1",
-    "semver": "^7.5.2",
     "which": "^3.0.1"
   },
   "devDependencies": {
-    "@types/semver": "^7.5.0",
     "@types/which": "^3.0.0"
   }
 }

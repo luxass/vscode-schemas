@@ -1,8 +1,6 @@
 import { cwd } from "node:process";
-import {
-  execa
-} from "execa";
 
+import { $ } from "execa";
 import which from "which";
 
 /**
@@ -46,17 +44,16 @@ async function git(
   if (!gitBin) {
     throw new Error("Git is not installed.");
   }
-
-  const process = await execa(gitBin, cmd, {
+  const process = await $({
     cwd: options?.path ?? cwd(),
     stderr: "pipe",
     stdout: "pipe"
-  });
+  })`${gitBin} ${cmd}`;
+  console.log(process);
 
-  let output = "";
-  console.log(process.stdout);
+  const output = "";
 
-  await readLines([process.stdout, process.stderr], true, (token) => {
+  /*   await readLines([process.stdout, process.stderr], true, (token) => {
     output += token;
   });
 
@@ -65,10 +62,10 @@ async function git(
   if (process.failed) {
     error(`Command '${cmd.join(" ")}' has failed.`);
     throw new Error(`Output: ${output}`);
-  }
+  } */
 
   return {
-    status: status.success,
+    status: true,
     output
   };
 }

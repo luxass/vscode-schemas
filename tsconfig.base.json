@@ -12,8 +12,7 @@
     "noUnusedLocals": true,
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
-    "noErrorTruncation": true,
-    "composite": true
+    "noErrorTruncation": true
   },
   "exclude": [
     "**/node_modules/**",
