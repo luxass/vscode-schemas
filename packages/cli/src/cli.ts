@@ -44,9 +44,14 @@ cli.command("download [release] [out]", "Download ")
 
 cli.command("download-src [release] [out]", "Download VSCode Source Code")
   .option("--out [out]", "Outdir to place the source code", {
-    default: "vscode-src"
+    default: ".vscode-src"
   })
-  .action(async (release: string, out: string, options: GlobalCLIOptions) => {
+  .option("-f, --force", "Force download source code (will delete files in out)", {
+    default: false
+  })
+  .action(async (release: string, out: string, options: GlobalCLIOptions & {
+    force: boolean
+  }) => {
     if (!release) {
       release = await $fetch("https://latest-vscode-release.luxass.dev", {
         parseResponse: txt => txt
@@ -62,7 +67,8 @@ cli.command("download-src [release] [out]", "Download VSCode Source Code")
     }
 
     await downloadCodeSource(release as Release, {
-      outDir: out || options.out
+      out: out || options.out,
+      force: options.force || false
     });
   });
 
