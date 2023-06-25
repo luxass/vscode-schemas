@@ -5,7 +5,7 @@ import {
 import semver from "semver";
 import type { Release } from "vscode-schema-core";
 import {
-  download
+  downloadCodeSource
 } from "vscode-schema-core";
 
 declare const VERSION: string;
@@ -13,17 +13,16 @@ declare const VERSION: string;
 const cli = cac("vscode-schema");
 
 export type GlobalCLIOptions = {
-};
-
-export type DownloadCLIOptions = GlobalCLIOptions & {
   out?: string
 };
 
+
+
 cli.command("download [release] [out]", "Download ")
-  .option("--out [out]", "Outdir to place the source code", {
-    default: "vscode-src"
+  .option("--out [out]", "Outdir to place the schema files in", {
+    default: ".vscode-schemas"
   })
-  .action(async (release: string, out: string, options: DownloadCLIOptions) => {
+  .action(async (release: string, out: string, options: GlobalCLIOptions) => {
     if (!release) {
       release = await $fetch("https://latest-vscode-release.luxass.dev", {
         parseResponse: txt => txt
@@ -38,55 +37,46 @@ cli.command("download [release] [out]", "Download ")
       });
     }
 
-    await download(release as Release, {
+    // await download(release as Release, {
+    //   outDir: out || options.out
+    // });
+  });
+
+cli.command("download-src [release] [out]", "Download VSCode Source Code")
+  .option("--out [out]", "Outdir to place the source code", {
+    default: "vscode-src"
+  })
+  .action(async (release: string, out: string, options: GlobalCLIOptions) => {
+    if (!release) {
+      release = await $fetch("https://latest-vscode-release.luxass.dev", {
+        parseResponse: txt => txt
+      });
+    }
+
+    if (!semver.gte(release, "1.45.0")) {
+      // set release to lastest, and notify user
+      console.warn("The release you specified is not supported, using latest instead.");
+      release = await $fetch("https://latest-vscode-release.luxass.dev", {
+        parseResponse: txt => txt
+      });
+    }
+
+    await downloadCodeSource(release as Release, {
       outDir: out || options.out
     });
   });
+
 
 cli.command("scan [folder]", "Scan folder for source code ")
   .option("--out [type]", "Output file to place the result")
-  .action(async (folder: string, out: string, options: GlobalOptions) => {
-    if (!release) {
-      release = await $fetch("https://latest-vscode-release.luxass.dev", {
-        parseResponse: txt => txt
-      });
-    }
+  .action(async (folder: string, options: GlobalCLIOptions) => {
 
-    if (!semver.gte(release, "1.45.0")) {
-      // set release to lastest, and notify user
-      console.warn("The release you specified is not supported, using latest instead.");
-      release = await $fetch("https://latest-vscode-release.luxass.dev", {
-        parseResponse: txt => txt
-      });
-    }
-
-    await download(release as Release, {
-      outDir: out || options.out
-    });
   });
 
-cli.command("download [release] [out]", "Download ")
-  .option("--out [out]", "Outdir to place the source code", {
-    default: "vscode-src"
-  })
-  .action(async (release: string, out: string, options: GlobalOptions) => {
-    if (!release) {
-      release = await $fetch("https://latest-vscode-release.luxass.dev", {
-        parseResponse: txt => txt
-      });
-    }
+cli.command("[root]", "Download and start schema generation")
+  .option("--out [type]", "Output file to place the result")
+  .action(async (folder: string, options: GlobalCLIOptions) => {
 
-    if (!semver.gte(release, "1.45.0")) {
-      // set release to lastest, and notify user
-      console.warn("The release you specified is not supported, using latest instead.");
-      release = await $fetch("https://latest-vscode-release.luxass.dev", {
-        parseResponse: txt => txt
-      });
-    }
-
-    await download(release as Release, {
-      outDir: out || options.out
-    });
   });
 
 cli.help();

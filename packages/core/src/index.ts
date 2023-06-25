@@ -1,5 +1,5 @@
 export {
-  download,
+  downloadCodeSource,
   DownloadOptions
 } from "./download";
 export {

@@ -33,9 +33,11 @@
     "@octokit/core": "^4.2.4",
     "@octokit/plugin-paginate-rest": "^7.1.2",
     "execa": "^7.1.1",
+    "tar": "^6.1.15",
     "which": "^3.0.1"
   },
   "devDependencies": {
+    "@types/tar": "^6.1.5",
     "@types/which": "^3.0.0"
   }
 }

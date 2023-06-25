@@ -22,6 +22,10 @@
     "test": "turbo run test",
     "typecheck": "turbo run typecheck"
   },
+  "dependencies": {
+    "ofetch": "^1.1.1",
+    "semver": "^7.5.2"
+  },
   "devDependencies": {
     "@luxass/eslint-config": "^3.2.2",
     "@types/node": "^20.3.1",
@@ -36,8 +40,5 @@
   "workspaces": [
     "packages/**",
     "apps/*"
-  ],
-  "dependencies": {
-    "semver": "^7.5.2"
-  }
+  ]
 }
