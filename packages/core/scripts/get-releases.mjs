@@ -1,5 +1,4 @@
 // @ts-check
-import "dotenv/config";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
