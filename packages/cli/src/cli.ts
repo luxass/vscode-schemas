@@ -75,15 +75,21 @@ cli.command("download-src [release] [out]", "Download VSCode Source Code")
   });
 
 
+export type ScanCLIOptions = GlobalCLIOptions & {
+  type?: "schemas" | "extension-schemas" | "both"
+};
+
 cli.command("scan [folder]", "Scan source code folder for schemas")
   .option("--out [type]", "Output file to place the result")
-  .action(async (folder: string, options: GlobalCLIOptions) => {
+  .option("--type [type]", "Type of schemas to scan for")
+  .action(async (folder: string, options: ScanCLIOptions) => {
     if (!folder) {
       folder = ".vscode-src";
     }
 
     await scan(folder, {
-      out: options.out
+      out: options.out,
+      scan: options.type
     });
   });
 

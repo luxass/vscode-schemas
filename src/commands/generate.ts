@@ -1,7 +1,8 @@
 import { Command, colors, which } from "../deps.ts";
 import { downloadCodeSource } from "../internal/download.ts";
 import { error, info, success } from "../log.ts";
-import { checkVersion, CommandGlobalOptions } from "../utils.ts";
+import type { CommandGlobalOptions } from "../utils.ts";
+import { checkVersion } from "../utils.ts";
 
 export const generateCommand = new Command<CommandGlobalOptions>()
   .description("Generate schemas")
@@ -76,8 +77,8 @@ export const generateCommand = new Command<CommandGlobalOptions>()
 
     // To ensure that it is started and generated the schemas, we wait for 60 seconds
     await new Promise((r) => setTimeout(r, 60000));
-    
-    
+
+
     stdout.pipeTo(Deno.openSync("./output.txt", {
       create: true,
       write: true,
@@ -89,5 +90,5 @@ export const generateCommand = new Command<CommandGlobalOptions>()
       read: true
     }).writable);
     Deno.kill(pid, "SIGTERM");
-    
+
   });

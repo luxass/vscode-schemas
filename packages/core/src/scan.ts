@@ -3,6 +3,7 @@ import { join } from "node:path";
 
 export type ScanOptions = {
   out?: string
+  scan?: "schemas" | "extension-schemas" | "both"
 };
 
 export async function scan(
@@ -13,13 +14,12 @@ export async function scan(
   for await (const entry of walk(codeSrc)) {
     if (entry.isFile) {
       console.log(entry.path);
+
+      // use ripgrep binary, will be published at @luxass/klow in the near future.
+
     }
   }
 }
-
-
-
-
 
 type Entry = {
   name: string
@@ -31,7 +31,7 @@ type Entry = {
 export async function* walk(dir: string): AsyncIterableIterator<Entry> {
   try {
     const dirs = await readdir(dir, { withFileTypes: true });
-    for await (const entry of dirs) {
+    for (const entry of dirs) {
       const path = join(dir, entry.name);
       if (entry.isDirectory()) {
         yield * walk(path);
