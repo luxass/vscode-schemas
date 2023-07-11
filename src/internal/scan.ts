@@ -1,4 +1,4 @@
-import { walk, extname, URI, join, dirname, colors, Input } from "../deps.ts";
+import { Input, URI, colors, dirname, extname, join, walk } from "../deps.ts";
 import { info, success } from "../log.ts";
 
 export async function scan(
@@ -56,22 +56,22 @@ enum FileType {
 }
 
 type File = {
-  name: string;
-  path: string;
-  type: FileType;
+  name: string
+  path: string
+  type: FileType
 };
 
 type PackageJson = {
-  contributes?: Contributes;
+  contributes?: Contributes
 };
 
 type Contributes = {
-  jsonValidation?: Array<JsonValidation>;
+  jsonValidation?: Array<JsonValidation>
 };
 
 type JsonValidation = {
-  fileMatch: Array<string> | string;
-  url: string;
+  fileMatch: Array<string> | string
+  url: string
 };
 
 const URI_REGEX = /vscode:\/\/schemas\/([^"']+)/gm;
@@ -121,8 +121,8 @@ export async function writeSchemasUris(
   release: string,
   codeSrc: string
 ): Promise<{
-  schemas: Array<string>;
-  externalSchemas: Array<string>;
+  schemas: Array<string>
+  externalSchemas: Array<string>
 }> {
   const schemas: Array<string> = [];
   const externalSchemas: Array<string> = [];
@@ -150,11 +150,11 @@ export async function writeSchemasUris(
               }
             } else if (scheme === "file") {
               // Normalizing the path, would remove // at https:
-              const schemaPath = "https://raw.githubusercontent.com/microsoft/vscode/" + join(
+              const schemaPath = `https://raw.githubusercontent.com/microsoft/vscode/${join(
                 release,
                 dirname(file.path.replace(codeSrc, "")),
                 validation.url
-              );
+              )}`;
 
               if (!externalSchemas.includes(schemaPath)) {
                 externalSchemas.push(schemaPath);

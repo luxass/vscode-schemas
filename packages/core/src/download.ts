@@ -32,7 +32,7 @@ export type DownloadOptions = {
 export async function downloadCodeSource(release: Release, {
   out = ".vscode-src",
   force = false
-}: DownloadOptions) {
+}: DownloadOptions): Promise<void> {
 
   if (!out) out = ".vscode-src";
 

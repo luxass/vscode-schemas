@@ -34,10 +34,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "vscode-schema-core": "workspace:*"
-  },
-  "devDependencies": {
     "cac": "^6.7.14",
-    "picocolors": "^1.0.0"
+    "picocolors": "^1.0.0",
+    "vscode-schema-core": "workspace:*"
   }
 }

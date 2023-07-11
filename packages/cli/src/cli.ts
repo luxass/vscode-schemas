@@ -5,10 +5,10 @@ import {
 import semver from "semver";
 import type { Release } from "vscode-schema-core";
 import {
-  downloadCodeSource
+  downloadCodeSource, scan
 } from "vscode-schema-core";
-
-declare const VERSION: string;
+import pc from "picocolors";
+import { version } from "../package.json";
 
 const cli = cac("vscode-schema");
 
@@ -70,13 +70,21 @@ cli.command("download-src [release] [out]", "Download VSCode Source Code")
       out: out || options.out,
       force: options.force || false
     });
+
+    console.log(`Downloaded source code to ${pc.green(out || options.out)}`);
   });
 
 
-cli.command("scan [folder]", "Scan folder for source code ")
+cli.command("scan [folder]", "Scan source code folder for schemas")
   .option("--out [type]", "Output file to place the result")
   .action(async (folder: string, options: GlobalCLIOptions) => {
+    if (!folder) {
+      folder = ".vscode-src";
+    }
 
+    await scan(folder, {
+      out: options.out
+    });
   });
 
 cli.command("[root]", "Download and start schema generation")
@@ -86,6 +94,6 @@ cli.command("[root]", "Download and start schema generation")
   });
 
 cli.help();
-cli.version(VERSION);
+cli.version(version);
 
 cli.parse();
