@@ -14,26 +14,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-
-      - name: Add Permissions
+      - name: Setup Node
         run: |
-          chmod +x ./src/main.ts
-          chmod +x ./scripts/write-list.ts
-          chmod +x ./scripts/run-all-generate.ts
-          chmod +x ./scripts/run-all-scans.ts
+          echo "Hey"
+      # - name: Setup deno
+      #   uses: denoland/setup-deno@v1
+      #   with:
+      #     deno-version: v1.x
 
-      - name: Download Source Code
-        run: ./src/main.ts download --out vscode
+      # - name: Add Permissions
+      #   run: |
+      #     chmod +x ./src/main.ts
+      #     chmod +x ./scripts/write-list.ts
+      #     chmod +x ./scripts/run-all-generate.ts
+      #     chmod +x ./scripts/run-all-scans.ts
 
-      - name: Scan for Schemas
-        run: ./src/main.ts scan --default-out --code-src vscode
+      # - name: Download Source Code
+      #   run: ./src/main.ts download --out vscode
 
-      - name: Generate Schemas
-        run: ./src/main.ts generate --code-src vscode
+      # - name: Scan for Schemas
+      #   run: ./src/main.ts scan --default-out --code-src vscode
 
-      - name: Update Schemas README & Write .schemas-list.json
-        run: ./scripts/write-list.ts
+      # - name: Generate Schemas
+      #   run: ./src/main.ts generate --code-src vscode
+
+      # - name: Update Schemas README & Write .schemas-list.json
+      #   run: ./scripts/write-list.ts
