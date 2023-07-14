@@ -27,11 +27,10 @@
     "dev": "tsup --watch",
     "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "test": "vitest"
+    "test": "vitest",
+    "build-releases-type": "node scripts/build-releases-type.mjs"
   },
   "dependencies": {
-    "@octokit/core": "^4.2.4",
-    "@octokit/plugin-paginate-rest": "^7.1.2",
     "execa": "^7.1.1",
     "tar": "^6.1.15",
     "which": "^3.0.1"
