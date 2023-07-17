@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import cac from "cac";
 import {
   $fetch
@@ -76,21 +78,32 @@ cli.command("download-src [release] [out]", "Download VSCode Source Code")
 
 
 export type ScanCLIOptions = GlobalCLIOptions & {
-  type?: "schemas" | "extension-schemas" | "both"
+  type?: "builtin" | "extension" | "all"
 };
 
 cli.command("scan [folder]", "Scan source code folder for schemas")
-  .option("--out [type]", "Output file to place the result")
+  .option("--out [out]", "Output file to place the result", {
+    default: ".vscode-scan-result.json"
+  })
   .option("--type [type]", "Type of schemas to scan for")
   .action(async (folder: string, options: ScanCLIOptions) => {
     if (!folder) {
       folder = ".vscode-src";
     }
 
-    await scan(folder, {
-      out: options.out,
-      scan: options.type
-    });
+    const result = await scan(folder, options.type);
+
+    if (!options.out) {
+      options.out = ".vscode-scan-result.json";
+    }
+
+    if (existsSync(options.out)) {
+      console.warn(`File ${pc.yellow(options.out)} already exists, writing to file skipped.`);
+      return;
+    }
+
+    await writeFile(options.out, JSON.stringify(result, null, 2), "utf8");
+    console.log(`Wrote scan result to ${pc.green(options.out)}`);
   });
 
 cli.command("[root]", "Download and start schema generation")
@@ -102,4 +115,12 @@ cli.command("[root]", "Download and start schema generation")
 cli.help();
 cli.version(version);
 
-cli.parse();
+try {
+  cli.parse(process.argv, { run: false });
+  await cli.runMatchedCommand();
+} catch (err) {
+  console.error(`\n${pc.red(pc.bold(pc.inverse(" Unhandled Error ")))}`);
+  console.error(err);
+  console.error("\n\n");
+  process.exit(1);
+}
