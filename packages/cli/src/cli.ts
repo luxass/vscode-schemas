@@ -42,6 +42,8 @@ cli.command("download [release] [out]", "Download ")
     // await download(release as Release, {
     //   outDir: out || options.out
     // });
+
+    console.log("Currently not implemented.");
   });
 
 cli.command("download-src [release] [out]", "Download VSCode Source Code")
@@ -110,6 +112,7 @@ cli.command("[root]", "Download and start schema generation")
   .option("--out [type]", "Output file to place the result")
   .action(async (folder: string, options: GlobalCLIOptions) => {
 
+    console.log("Currently not implemented.");
   });
 
 cli.help();
