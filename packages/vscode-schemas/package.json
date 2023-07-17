@@ -1,5 +1,5 @@
 {
-  "name": "vscode-schema-core",
+  "name": "vscode-schemas",
   "type": "module",
   "version": "0.1.0",
   "packageManager": "pnpm@8.6.8",
@@ -14,7 +14,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/luxass/vscode-schemas.git",
-    "directory": "packages/core"
+    "directory": "packages/vscode-schemas"
   },
   "bugs": {
     "url": "https://github.com/luxass/vscode-schemas/issues"
@@ -26,21 +26,11 @@
     "dist"
   ],
   "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "dev": "tsup --watch",
-    "build": "tsup",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest",
-    "build-releases-type": "node scripts/build-releases-type.mjs"
-  },
-  "dependencies": {
-    "execa": "^7.1.1",
-    "tar": "^6.1.15",
-    "which": "^3.0.1"
-  },
-  "devDependencies": {
-    "@types/tar": "^6.1.5",
-    "@types/which": "^3.0.0"
+    "typecheck": "tsc --noEmit"
   }
 }

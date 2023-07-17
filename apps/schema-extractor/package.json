@@ -1,0 +1,65 @@
+{
+  "publisher": "luxass",
+  "name": "vscode-schema-extractor",
+  "displayName": "Schema Extractor",
+  "version": "0.3.1",
+  "description": "A extension used to extract Visual Studio Code Schemas",
+  "author": {
+    "name": "Lucas Nørgård",
+    "url": "https://luxass.dev",
+    "email": "lucasnrgaard@gmail.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luxass/vscode-schemas.git",
+    "directory": "apps/schema-extractor"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "icon": "media/icon.png",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "browser": "./dist/browser/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "schema-extractor.extract-all",
+        "title": "Extract Schemas",
+        "category": "Schema Extractor"
+      },
+      {
+        "command": "schema-extractor.extract-one",
+        "title": "Extract Schema",
+        "category": "Schema Extractor"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "tsup --minify",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "browser": "vscode-test-web --extensionDevelopmentPath=. --folder-uri=vscode-vfs://github/luxass/vscode-schemas",
+    "web:serve": "npx serve --cors -l 5000",
+    "web:tunnel": "npx localtunnel -p 5000",
+    "package": "pnpm vsce package --no-dependencies",
+    "release": "pnpm vsce publish --no-dependencies",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.70.0",
+    "@vscode/test-web": "^0.0.32",
+    "@vscode/vsce": "^2.19.0"
+  },
+  "capabilities": {
+    "virtualWorkspaces": true
+  }
+}
