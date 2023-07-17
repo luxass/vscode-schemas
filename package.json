@@ -1,0 +1,43 @@
+{
+  "name": "@vscode-schemas/monorepo",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@8.6.7",
+  "author": {
+    "name": "Lucas Nørgård",
+    "email": "lucasnrgaard@gmail.com",
+    "url": "https://luxass.dev"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/luxass/vscode-schemas",
+  "repository": "https://github.com/luxass/vscode-schemas",
+  "bugs": {
+    "url": "https://github.com/luxass/vscode-schemas/issues"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck"
+  },
+  "dependencies": {
+    "ofetch": "^1.1.1",
+    "semver": "^7.5.4"
+  },
+  "devDependencies": {
+    "@luxass/eslint-config": "^3.2.2",
+    "@types/node": "^18.16.19",
+    "@types/semver": "^7.5.0",
+    "eslint": "^8.44.0",
+    "tsup": "^7.1.0",
+    "turbo": "^1.10.7",
+    "typescript": "^5.1.6",
+    "vitest": "^0.32.4"
+  },
+  "workspaces": [
+    "packages/**",
+    "apps/*"
+  ]
+}

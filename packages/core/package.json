@@ -1,0 +1,42 @@
+{
+  "name": "vscode-schema-core",
+  "type": "module",
+  "version": "0.1.0",
+  "packageManager": "pnpm@8.6.7",
+  "description": "",
+  "author": {
+    "name": "Lucas Nørgård",
+    "email": "lucasnrgaard@gmail.com",
+    "url": "https://luxass.dev"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/luxass/vscode-schemas",
+  "repository": "https://github.com/luxass/vscode-schemas",
+  "bugs": {
+    "url": "https://github.com/luxass/vscode-schemas/issues"
+  },
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "build-releases-type": "node scripts/build-releases-type.mjs"
+  },
+  "dependencies": {
+    "execa": "^7.1.1",
+    "tar": "^6.1.15",
+    "which": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/tar": "^6.1.5",
+    "@types/which": "^3.0.0"
+  }
+}

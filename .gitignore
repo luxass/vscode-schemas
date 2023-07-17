@@ -1,3 +1,15 @@
+.turbo
+.vscode-src
+.output
+.nuxt
+.nitro
+.cache
+dist
 node_modules
+logs
+*.log
+.DS_Store
 .env
-vscode
+.env.*
+!.env.example
+.vscode-scan-result.json

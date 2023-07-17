@@ -1,0 +1,129 @@
+import { existsSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
+import cac from "cac";
+import {
+  $fetch
+} from "ofetch";
+import semver from "semver";
+import type { Release } from "vscode-schema-core";
+import {
+  downloadCodeSource, scan
+} from "vscode-schema-core";
+import pc from "picocolors";
+import { version } from "../package.json";
+
+const cli = cac("vscode-schema");
+
+export type GlobalCLIOptions = {
+  out?: string
+};
+
+
+
+cli.command("download [release] [out]", "Download ")
+  .option("--out [out]", "Outdir to place the schema files in", {
+    default: ".vscode-schemas"
+  })
+  .action(async (release: string, out: string, options: GlobalCLIOptions) => {
+    if (!release) {
+      release = await $fetch("https://latest-vscode-release.luxass.dev", {
+        parseResponse: txt => txt
+      });
+    }
+
+    if (!semver.gte(release, "1.45.0")) {
+      // set release to lastest, and notify user
+      console.warn("The release you specified is not supported, using latest instead.");
+      release = await $fetch("https://latest-vscode-release.luxass.dev", {
+        parseResponse: txt => txt
+      });
+    }
+
+    // await download(release as Release, {
+    //   outDir: out || options.out
+    // });
+
+    console.log("Currently not implemented.");
+  });
+
+cli.command("download-src [release] [out]", "Download VSCode Source Code")
+  .option("--out [out]", "Outdir to place the source code", {
+    default: ".vscode-src"
+  })
+  .option("-f, --force", "Force download source code (will delete files in out)", {
+    default: false
+  })
+  .action(async (release: string, out: string, options: GlobalCLIOptions & {
+    force: boolean
+  }) => {
+    if (!release) {
+      release = await $fetch("https://latest-vscode-release.luxass.dev", {
+        parseResponse: txt => txt
+      });
+    }
+
+    if (!semver.gte(release, "1.45.0")) {
+      // set release to lastest, and notify user
+      console.warn("The release you specified is not supported, using latest instead.");
+      release = await $fetch("https://latest-vscode-release.luxass.dev", {
+        parseResponse: txt => txt
+      });
+    }
+
+    await downloadCodeSource(release as Release, {
+      out: out || options.out,
+      force: options.force || false
+    });
+
+    console.log(`Downloaded source code to ${pc.green(out || options.out)}`);
+  });
+
+
+export type ScanCLIOptions = GlobalCLIOptions & {
+  type?: "builtin" | "extension" | "all"
+};
+
+cli.command("scan [folder]", "Scan source code folder for schemas")
+  .option("--out [out]", "Output file to place the result", {
+    default: ".vscode-scan-result.json"
+  })
+  .option("--type [type]", "Type of schemas to scan for")
+  .action(async (folder: string, options: ScanCLIOptions) => {
+    if (!folder) {
+      folder = ".vscode-src";
+    }
+
+    const result = await scan(folder, options.type);
+
+    if (!options.out) {
+      options.out = ".vscode-scan-result.json";
+    }
+
+    if (existsSync(options.out)) {
+      console.warn(`File ${pc.yellow(options.out)} already exists, writing to file skipped.`);
+      return;
+    }
+
+    await writeFile(options.out, JSON.stringify(result, null, 2), "utf8");
+    console.log(`Wrote scan result to ${pc.green(options.out)}`);
+  });
+
+cli.command("[root]", "Download and start schema generation")
+  .option("--out [type]", "Output file to place the result")
+  .action(async (folder: string, options: GlobalCLIOptions) => {
+
+    console.log("Currently not implemented.");
+  });
+
+cli.help();
+cli.version(version);
+
+try {
+  cli.parse(process.argv, { run: false });
+  await cli.runMatchedCommand();
+} catch (err) {
+  console.error(`\n${pc.red(pc.bold(pc.inverse(" Unhandled Error ")))}`);
+  console.error(err);
+  console.error("\n\n");
+  process.exit(1);
+}
