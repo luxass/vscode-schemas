@@ -3,26 +3,21 @@
   "tasks": [
     {
       "type": "npm",
-      "script": "watch",
+      "script": "dev",
       "group": "build",
-      "problemMatcher": [
-        {
-          "base": "$tsup-watch",
-          "background": {
-            "beginsPattern": "^your-pkg-name:(.*): (ESM|CJS) Build start$",
-            "endsPattern": "^your-pkg-name:(.*): (ESM|CJS) .* Build success|^your-pkg-name:(.*): (ESM|CJS) Build failed"
-          }
-        },
-        {
-          "base": "$tsup-dts-watch",
-          "background": {
-            "beginsPattern": "^your-pkg-name:(.*): DTS Build start$",
-            "endsPattern": "^your-pkg-name:(.*): DTS .* Build success|^your-pkg-name:(.*): DTS Build failed"
-          }
-        }
-      ],
+      "path": "apps/schema-extractor",
+      "problemMatcher": "$tsup-cjs-watch",
       "isBackground": true,
-      "label": "npm: watch"
+      "label": "Build Extension (Schema Extractor)"
+    },
+    {
+      "type": "npm",
+      "script": "dev",
+      "group": "build",
+      "path": "apps/schema-extractor-internal",
+      "problemMatcher": "$tsup-cjs-watch",
+      "isBackground": true,
+      "label": "Build Extension (Schema Extractor Internal)"
     }
   ]
 }
