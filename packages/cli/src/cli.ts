@@ -90,16 +90,18 @@ cli.command("download-src [release] [out]", "Download VSCode Source Code")
   });
 
 
-export type ScanCLIOptions = GlobalCLIOptions & {
-  type?: "builtin" | "extension" | "all"
-};
-
 cli.command("scan [folder]", "Scan source code folder for schemas")
   .option("--out [out]", "Output file to place the result", {
     default: ".vscode-scan-result.json"
   })
   .option("--type [type]", "Type of schemas to scan for")
-  .action(async (folder: string, options: ScanCLIOptions) => {
+  .option("-f, --force", "Forcefully write scan results", {
+    default: false
+  })
+  .action(async (folder: string, options: GlobalCLIOptions & {
+    type?: "builtin" | "extension" | "all"
+    force: boolean
+  }) => {
     if (!folder) {
       folder = ".vscode-src";
     }
@@ -110,7 +112,7 @@ cli.command("scan [folder]", "Scan source code folder for schemas")
       options.out = ".vscode-scan-result.json";
     }
 
-    if (existsSync(options.out)) {
+    if (existsSync(options.out) && !options.force) {
       console.warn(`File ${yellow(options.out || ".vscode-scan-result.json")} already exists, writing to file skipped.`);
       return;
     }
