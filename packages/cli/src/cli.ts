@@ -9,7 +9,7 @@ import type { Release } from "vscode-schema-core";
 import {
   downloadCodeSource, scan
 } from "vscode-schema-core";
-import pc from "picocolors";
+import { bold, green, inverse, red, yellow } from "colorette";
 import { version } from "../package.json";
 
 const cli = cac("vscode-schema");
@@ -17,8 +17,6 @@ const cli = cac("vscode-schema");
 export type GlobalCLIOptions = {
   out?: string
 };
-
-
 
 cli.command("download [release] [out]", "Download ")
   .option("--out [out]", "Outdir to place the schema files in", {
@@ -69,13 +67,26 @@ cli.command("download-src [release] [out]", "Download VSCode Source Code")
         parseResponse: txt => txt
       });
     }
+    try {
+      await downloadCodeSource(release as Release, {
+        out: out || options.out,
+        force: options.force || false
+      });
+      console.log(`Downloaded source code to ${green(out || options.out || ".vscode-src")}`);
+    } catch (err) {
+      if (typeof err === "string") {
+        console.error(err);
+      }
 
-    await downloadCodeSource(release as Release, {
-      out: out || options.out,
-      force: options.force || false
-    });
+      if (err instanceof Error && err.message === `outDir "${out || options.out}" is not empty`) {
+        console.error(
+          `The outDir "${out || options.out}" is not empty, use --force to force download source code.`
+        );
+        return;
+      }
 
-    console.log(`Downloaded source code to ${pc.green(out || options.out)}`);
+      throw err;
+    }
   });
 
 
@@ -100,12 +111,12 @@ cli.command("scan [folder]", "Scan source code folder for schemas")
     }
 
     if (existsSync(options.out)) {
-      console.warn(`File ${pc.yellow(options.out)} already exists, writing to file skipped.`);
+      console.warn(`File ${yellow(options.out || ".vscode-scan-result.json")} already exists, writing to file skipped.`);
       return;
     }
 
     await writeFile(options.out, JSON.stringify(result, null, 2), "utf8");
-    console.log(`Wrote scan result to ${pc.green(options.out)}`);
+    console.log(`Wrote scan result to ${green(options.out)}`);
   });
 
 cli.command("[root]", "Download and start schema generation")
@@ -122,7 +133,7 @@ try {
   cli.parse(process.argv, { run: false });
   await cli.runMatchedCommand();
 } catch (err) {
-  console.error(`\n${pc.red(pc.bold(pc.inverse(" Unhandled Error ")))}`);
+  console.error(`\n${red(bold(inverse(" Unhandled Error ")))}`);
   console.error(err);
   console.error("\n\n");
   process.exit(1);

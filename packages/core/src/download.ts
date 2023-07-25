@@ -29,30 +29,41 @@ export type DownloadOptions = {
   force?: boolean
 };
 
-export async function downloadCodeSource(release: Release, {
-  out = ".vscode-src",
-  force = false
-}: DownloadOptions): Promise<void> {
+/**
+ * Download the source code of a specific release.
+ * @param {Release} release The release to download the source code from.
+ * @param {DownloadOptions} options The options for downloading the source code.
+ *
+ * NOTE:
+ * This function throws if the outDir is not empty, and force is not set to true.
+ */
+export async function downloadCodeSource(release: Release, options?: DownloadOptions): Promise<void> {
+  if (!options) {
+    options = {
+      out: ".vscode-src",
+      force: false
+    };
+  }
 
-  if (!out) out = ".vscode-src";
+  if (!options?.out) options.out = ".vscode-src";
 
-  if (!existsSync(out)) {
-    await mkdir(out, {
+  if (!existsSync(options.out)) {
+    await mkdir(options.out, {
       recursive: true
     });
   }
 
-  if ((await readdir(out)).length > 0) {
-    if (!force) {
-      throw new Error(`outDir "${out}" is not empty`);
+  if ((await readdir(options.out)).length > 0) {
+    if (!options.force) {
+      throw new Error(`outDir "${options.out}" is not empty`);
     }
 
     // delete all files in out
-    await rm(out, {
+    await rm(options.out, {
       recursive: true
     });
 
-    await mkdir(out, {
+    await mkdir(options.out, {
       recursive: true
     });
   }
@@ -69,7 +80,7 @@ export async function downloadCodeSource(release: Release, {
 
   await tar.x({
     file: tmpFile,
-    cwd: out,
+    cwd: options.out,
     strip: 1
   });
 
