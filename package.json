@@ -2,7 +2,7 @@
   "name": "@vscode-schemas/monorepo",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@8.6.11",
+  "packageManager": "pnpm@8.6.12",
   "author": {
     "name": "Lucas Nørgård",
     "email": "lucasnrgaard@gmail.com",
@@ -34,7 +34,7 @@
     "tsup": "^7.1.0",
     "turbo": "^1.10.7",
     "typescript": "^5.1.6",
-    "vitest": "^0.33.0"
+    "vitest": "^0.34.0"
   },
   "workspaces": [
     "packages/**",
