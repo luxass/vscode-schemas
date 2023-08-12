@@ -15,6 +15,7 @@
     "@nuxt/devtools": "latest",
     "@unocss/nuxt": "^0.55.0",
     "@vueuse/nuxt": "^10.3.0",
-    "nuxt": "^3.6.5"
+    "nuxt": "^3.6.5",
+    "nuxt-icon": "^0.5.0"
   }
 }

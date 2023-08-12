@@ -1,6 +1,3 @@
 <template>
-  <div>
-    <slot />
-    <p>Hey</p>
-  </div>
+  <slot />
 </template>
