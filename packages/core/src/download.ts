@@ -6,13 +6,13 @@ import { join } from "node:path";
 import { mkdir, readdir, rm, unlink } from "node:fs/promises";
 import tar from "tar";
 import {
-  $fetch
+  $fetch,
 } from "ofetch";
 import type { Release } from "./releases";
 
 const pipeline = promisify(Stream.pipeline);
 
-export type DownloadOptions = {
+export interface DownloadOptions {
   /**
    * The directory to download the source code to.
    * @default ".vscode-src"
@@ -27,7 +27,7 @@ export type DownloadOptions = {
    * @default false
    */
   force?: boolean
-};
+}
 
 /**
  * Download the source code of a specific release.
@@ -41,7 +41,7 @@ export async function downloadCodeSource(release: Release, options?: DownloadOpt
   if (!options) {
     options = {
       out: ".vscode-src",
-      force: false
+      force: false,
     };
   }
 
@@ -49,7 +49,7 @@ export async function downloadCodeSource(release: Release, options?: DownloadOpt
 
   if (!existsSync(options.out)) {
     await mkdir(options.out, {
-      recursive: true
+      recursive: true,
     });
   }
 
@@ -60,20 +60,19 @@ export async function downloadCodeSource(release: Release, options?: DownloadOpt
 
     // delete all files in out
     await rm(options.out, {
-      recursive: true
+      recursive: true,
     });
 
     await mkdir(options.out, {
-      recursive: true
+      recursive: true,
     });
   }
 
   // https://github.com/microsoft/vscode/archive/refs/tags/1.45.0.tar.gz
   // https://codeload.github.com/microsoft/vscode/tar.gz/refs/tags/1.45.0
   const tarFile = await $fetch(`https://codeload.github.com/microsoft/vscode/tar.gz/refs/tags/${release}`, {
-    responseType: "blob"
+    responseType: "blob",
   });
-
 
   const tmpFile = join(tmpdir(), `vscode-src-${release}.tar.gz`);
   await pipeline(tarFile.stream(), createWriteStream(tmpFile));
@@ -81,7 +80,7 @@ export async function downloadCodeSource(release: Release, options?: DownloadOpt
   await tar.x({
     file: tmpFile,
     cwd: options.out,
-    strip: 1
+    strip: 1,
   });
 
   await unlink(tmpFile);

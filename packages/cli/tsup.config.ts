@@ -1,5 +1,5 @@
 import {
-  defineConfig
+  defineConfig,
 } from "tsup";
 
 export default defineConfig({
@@ -9,7 +9,7 @@ export default defineConfig({
   treeshake: true,
   outExtension(ctx) {
     return {
-      js: ctx.format === "cjs" ? ".cjs" : ".mjs"
+      js: ctx.format === "cjs" ? ".cjs" : ".mjs",
     };
-  }
+  },
 });

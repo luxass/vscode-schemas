@@ -35,7 +35,6 @@
     "build-releases-type": "node scripts/build-releases-type.mjs"
   },
   "dependencies": {
-    "execa": "^7.2.0",
     "tar": "^6.1.15",
     "which": "^3.0.1"
   },

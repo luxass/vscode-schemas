@@ -1,31 +1,32 @@
 import { existsSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
+import process from "node:process";
 import cac from "cac";
 import {
-  $fetch
+  $fetch,
 } from "ofetch";
 import semver from "semver";
 import type { Release } from "vscode-schema-core";
 import {
-  downloadCodeSource, scan
+  downloadCodeSource, scan,
 } from "vscode-schema-core";
 import { bold, green, inverse, red, yellow } from "colorette";
 import { version } from "../package.json";
 
 const cli = cac("vscode-schema");
 
-export type GlobalCLIOptions = {
+export interface GlobalCLIOptions {
   out?: string
-};
+}
 
 cli.command("download [release] [out]", "Download ")
   .option("--out [out]", "Outdir to place the schema files in", {
-    default: ".vscode-schemas"
+    default: ".vscode-schemas",
   })
   .action(async (release: string, out: string, options: GlobalCLIOptions) => {
     if (!release) {
       release = await $fetch("https://latest-vscode-release.luxass.dev", {
-        parseResponse: txt => txt
+        parseResponse: txt => txt,
       });
     }
 
@@ -33,7 +34,7 @@ cli.command("download [release] [out]", "Download ")
       // set release to lastest, and notify user
       console.warn("The release you specified is not supported, using latest instead.");
       release = await $fetch("https://latest-vscode-release.luxass.dev", {
-        parseResponse: txt => txt
+        parseResponse: txt => txt,
       });
     }
 
@@ -46,17 +47,17 @@ cli.command("download [release] [out]", "Download ")
 
 cli.command("download-src [release] [out]", "Download VSCode Source Code")
   .option("--out [out]", "Outdir to place the source code", {
-    default: ".vscode-src"
+    default: ".vscode-src",
   })
   .option("-f, --force", "Force download source code (will delete files in out)", {
-    default: false
+    default: false,
   })
   .action(async (release: string, out: string, options: GlobalCLIOptions & {
     force: boolean
   }) => {
     if (!release) {
       release = await $fetch("https://latest-vscode-release.luxass.dev", {
-        parseResponse: txt => txt
+        parseResponse: txt => txt,
       });
     }
 
@@ -64,13 +65,13 @@ cli.command("download-src [release] [out]", "Download VSCode Source Code")
       // set release to lastest, and notify user
       console.warn("The release you specified is not supported, using latest instead.");
       release = await $fetch("https://latest-vscode-release.luxass.dev", {
-        parseResponse: txt => txt
+        parseResponse: txt => txt,
       });
     }
     try {
       await downloadCodeSource(release as Release, {
         out: out || options.out,
-        force: options.force || false
+        force: options.force || false,
       });
       console.log(`Downloaded source code to ${green(out || options.out || ".vscode-src")}`);
     } catch (err) {
@@ -80,7 +81,7 @@ cli.command("download-src [release] [out]", "Download VSCode Source Code")
 
       if (err instanceof Error && err.message === `outDir "${out || options.out}" is not empty`) {
         console.error(
-          `The outDir "${out || options.out}" is not empty, use --force to force download source code.`
+          `The outDir "${out || options.out}" is not empty, use --force to force download source code.`,
         );
         return;
       }
@@ -89,14 +90,13 @@ cli.command("download-src [release] [out]", "Download VSCode Source Code")
     }
   });
 
-
 cli.command("scan [folder]", "Scan source code folder for schemas")
   .option("--out [out]", "Output file to place the result", {
-    default: ".vscode-scan-result.json"
+    default: ".vscode-scan-result.json",
   })
   .option("--type [type]", "Type of schemas to scan for")
   .option("-f, --force", "Forcefully write scan results", {
-    default: false
+    default: false,
   })
   .action(async (folder: string, options: GlobalCLIOptions & {
     type?: "builtin" | "extension" | "all"
@@ -124,7 +124,6 @@ cli.command("scan [folder]", "Scan source code folder for schemas")
 cli.command("[root]", "Download and start schema generation")
   .option("--out [type]", "Output file to place the result")
   .action(async (folder: string, options: GlobalCLIOptions) => {
-
     console.log("Currently not implemented.");
   });
 

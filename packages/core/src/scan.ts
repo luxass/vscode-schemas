@@ -10,14 +10,14 @@ const ALLOWED_FILES_EXTENSIONS: string[] = [
   "mjs",
   "cjs",
   "json",
-  "jsonc"
+  "jsonc",
 ];
 
 const URI_REGEX = /vscode:\/\/schemas\/([^"']+)/gm;
 
 export async function scan(
   codeSrc: string,
-  type?: "builtin" | "extension" | "all"
+  type?: "builtin" | "extension" | "all",
 ): Promise<Schema[]> {
   const schemas: Schema[] = [];
   for await (const entry of walk(codeSrc)) {
@@ -43,14 +43,14 @@ export async function scan(
       if (matches) {
         for (const schemaMatch of matches) {
           if (schemaMatch.includes("vscode://schemas/custom")) {
-            console.log(`Skipping custom schema "${schemaMatch}" in file "${entry.path}"`);
+            console.warn(`Skipping custom schema "${schemaMatch}" in file "${entry.path}"`);
             continue;
           }
 
           if (!schemas.find((schema) => schema.name === schemaMatch)) {
             schemas.push({
               kind: "extension",
-              name: schemaMatch
+              name: schemaMatch,
             });
           }
         }
@@ -63,12 +63,12 @@ export async function scan(
   return schemas;
 }
 
-type Entry = {
+interface Entry {
   name: string
   isFile: boolean
   isDirectory: boolean
   path: string
-};
+}
 
 export async function* walk(dir: string): AsyncIterableIterator<Entry> {
   try {
@@ -82,7 +82,7 @@ export async function* walk(dir: string): AsyncIterableIterator<Entry> {
           name: entry.name,
           isFile: entry.isFile(),
           isDirectory: entry.isDirectory(),
-          path
+          path,
         };
       }
     }

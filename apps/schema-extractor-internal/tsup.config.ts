@@ -1,5 +1,5 @@
 import {
-  defineConfig
+  defineConfig,
 } from "tsup";
 
 export default defineConfig({
@@ -7,5 +7,5 @@ export default defineConfig({
   format: ["cjs"],
   clean: true,
   treeshake: true,
-  external: ["vscode"]
+  external: ["vscode"],
 });
