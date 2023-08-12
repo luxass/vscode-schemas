@@ -2,7 +2,7 @@
   "name": "vscode-schema-core",
   "type": "module",
   "version": "0.1.0",
-  "packageManager": "pnpm@8.6.11",
+  "packageManager": "pnpm@8.6.12",
   "description": "",
   "author": {
     "name": "Lucas Nørgård",
@@ -35,7 +35,7 @@
     "build-releases-type": "node scripts/build-releases-type.mjs"
   },
   "dependencies": {
-    "execa": "^7.1.1",
+    "execa": "^7.2.0",
     "tar": "^6.1.15",
     "which": "^3.0.1"
   },

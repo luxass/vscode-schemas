@@ -2,7 +2,7 @@
   "name": "@vscode-schemas/monorepo",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@8.6.11",
+  "packageManager": "pnpm@8.6.12",
   "author": {
     "name": "Lucas Nørgård",
     "email": "lucasnrgaard@gmail.com",
@@ -27,14 +27,14 @@
     "semver": "^7.5.4"
   },
   "devDependencies": {
-    "@luxass/eslint-config": "^3.2.2",
+    "@luxass/eslint-config": "^3.3.1",
     "@types/node": "^18.16.19",
     "@types/semver": "^7.5.0",
-    "eslint": "^8.45.0",
-    "tsup": "^7.1.0",
-    "turbo": "^1.10.7",
+    "eslint": "^8.47.0",
+    "tsup": "^7.2.0",
+    "turbo": "^1.10.12",
     "typescript": "^5.1.6",
-    "vitest": "^0.33.0"
+    "vitest": "^0.34.1"
   },
   "workspaces": [
     "packages/**",

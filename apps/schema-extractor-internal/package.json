@@ -57,7 +57,7 @@
   "devDependencies": {
     "@types/vscode": "^1.70.0",
     "@vscode/test-web": "^0.0.44",
-    "@vscode/vsce": "^2.19.0"
+    "@vscode/vsce": "^2.20.1"
   },
   "capabilities": {
     "virtualWorkspaces": true
