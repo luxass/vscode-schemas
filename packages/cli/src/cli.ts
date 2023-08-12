@@ -94,19 +94,17 @@ cli.command("scan [folder]", "Scan source code folder for schemas")
   .option("--out [out]", "Output file to place the result", {
     default: ".vscode-scan-result.json",
   })
-  .option("--type [type]", "Type of schemas to scan for")
   .option("-f, --force", "Forcefully write scan results", {
     default: false,
   })
   .action(async (folder: string, options: GlobalCLIOptions & {
-    type?: "builtin" | "extension" | "all"
     force: boolean
   }) => {
     if (!folder) {
       folder = ".vscode-src";
     }
 
-    const result = await scan(folder, options.type);
+    const result = await scan(folder);
 
     if (!options.out) {
       options.out = ".vscode-scan-result.json";

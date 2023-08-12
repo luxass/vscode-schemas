@@ -1,6 +1,15 @@
 import { readFile, readdir } from "node:fs/promises";
-import { join } from "node:path";
-import type { Schema } from "./types";
+import { dirname, join } from "node:path";
+import _URI from "vscode-uri";
+
+const {
+  URI,
+} = _URI;
+
+const EXTERNAL_SCHEMES: string[] = [
+  "http",
+  "https",
+];
 
 const ALLOWED_FILES_EXTENSIONS: string[] = [
   "ts",
@@ -17,9 +26,9 @@ const URI_REGEX = /vscode:\/\/schemas\/([^"']+)/gm;
 
 export async function scan(
   codeSrc: string,
-  type?: "builtin" | "extension" | "all",
-): Promise<Schema[]> {
-  const schemas: Schema[] = [];
+): Promise<string[]> {
+  const release = JSON.parse(await readFile(join(codeSrc, "package.json"), "utf-8")).version;
+  const schemas: string[] = [];
   for await (const entry of walk(codeSrc)) {
     if (entry.isDirectory) continue;
     // if file is inside a test dir or file is a .test.* file, skip it
@@ -34,6 +43,42 @@ export async function scan(
 
     const contents = await readFile(entry.path, "utf-8");
     if (ext === "json" || ext === "jsonc") {
+      if (!entry.name.includes("package.json")) {
+        const match = contents.match(URI_REGEX);
+        if (match) {
+          console.warn("Skipping a json file, that includes a schema. Please fix.", entry.path);
+        }
+        continue;
+      }
+      const pkg = JSON.parse(contents);
+      if (pkg.contributes?.jsonValidation) {
+        for (const validation of pkg.contributes.jsonValidation) {
+          const match = validation.url.match(URI_REGEX);
+          if (match) {
+            if (match.includes("vscode://schemas/custom")) continue;
+
+            if (!schemas.includes(match[0])) {
+              schemas.push(match[0]);
+            }
+          } else {
+            const { scheme, authority } = URI.parse(validation.url);
+            if (EXTERNAL_SCHEMES.includes(scheme) && authority === "raw.githubusercontent.com") {
+              if (!schemas.includes(validation.url)) {
+                schemas.push(validation.url);
+              }
+            } else if (scheme === "file") {
+              const schemaPath = `https://raw.githubusercontent.com/microsoft/vscode/${join(
+                release,
+                dirname(entry.path.replace(codeSrc, "")),
+                validation.url,
+              )}`;
+              if (!schemas.includes(schemaPath)) {
+                schemas.push(schemaPath);
+              }
+            }
+          }
+        }
+      }
       continue;
     }
 
@@ -47,11 +92,8 @@ export async function scan(
             continue;
           }
 
-          if (!schemas.find((schema) => schema.name === schemaMatch)) {
-            schemas.push({
-              kind: "extension",
-              name: schemaMatch,
-            });
+          if (!schemas.find((schema) => schema === schemaMatch)) {
+            schemas.push(schemaMatch);
           }
         }
       }

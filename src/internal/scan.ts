@@ -5,7 +5,7 @@ export async function scan(
   codeSrc: string,
   release: string,
   out?: string,
-  defaultOut?: boolean
+  defaultOut?: boolean,
 ) {
   info(`Using ${colors.green.underline(codeSrc)} as VSCode Source Code`);
 
@@ -14,22 +14,22 @@ export async function scan(
   const { schemas, externalSchemas } = await writeSchemasUris(
     scannedFiles,
     release,
-    codeSrc
+    codeSrc,
   );
   info(
     `Scanned ${colors.yellow.underline(
-      scannedFiles.length.toString()
+      scannedFiles.length.toString(),
     )} files - found ${colors.yellow.underline(
-      schemas.length.toString()
+      schemas.length.toString(),
     )} schemas and ${colors.yellow.underline(
-      externalSchemas.length.toString()
-    )} external schemas`
+      externalSchemas.length.toString(),
+    )} external schemas`,
   );
   let outDir = defaultOut ? `schemas/${release}` : (out as string | undefined);
   if (!outDir) {
     outDir = await Input.prompt({
       message: "Where do you want to save the schemas uris?",
-      default: `schemas/${release}`
+      default: `schemas/${release}`,
     });
   }
 
@@ -41,38 +41,38 @@ export async function scan(
       {
         version: release,
         schemas: schemas.sort(),
-        externalSchemas: externalSchemas.sort()
+        externalSchemas: externalSchemas.sort(),
       },
       null,
-      2
-    )
+      2,
+    ),
   );
   success(`Saved schemas uris to ${outputFile}`);
 }
 
 enum FileType {
   JSON,
-  Script
+  Script,
 }
 
-type File = {
+interface File {
   name: string
   path: string
   type: FileType
-};
+}
 
-type PackageJson = {
+interface PackageJson {
   contributes?: Contributes
-};
+}
 
-type Contributes = {
+interface Contributes {
   jsonValidation?: Array<JsonValidation>
-};
+}
 
-type JsonValidation = {
+interface JsonValidation {
   fileMatch: Array<string> | string
   url: string
-};
+}
 
 const URI_REGEX = /vscode:\/\/schemas\/([^"']+)/gm;
 
@@ -97,7 +97,7 @@ export async function scanFiles(dir: string): Promise<Array<File>> {
           paths.push({
             name: entry.name,
             path: entry.path,
-            type: FileType.JSON
+            type: FileType.JSON,
           });
           break;
         case ".js":
@@ -107,7 +107,7 @@ export async function scanFiles(dir: string): Promise<Array<File>> {
           paths.push({
             name: entry.name,
             path: entry.path,
-            type: FileType.Script
+            type: FileType.Script,
           });
           break;
       }
@@ -119,7 +119,7 @@ export async function scanFiles(dir: string): Promise<Array<File>> {
 export async function writeSchemasUris(
   files: Array<File>,
   release: string,
-  codeSrc: string
+  codeSrc: string,
 ): Promise<{
   schemas: Array<string>
   externalSchemas: Array<string>
@@ -142,8 +142,8 @@ export async function writeSchemasUris(
           } else {
             const { scheme, authority } = URI.parse(validation.url);
             if (
-              ["http", "https"].includes(scheme) &&
-              authority === "raw.githubusercontent.com"
+              ["http", "https"].includes(scheme)
+              && authority === "raw.githubusercontent.com"
             ) {
               if (!externalSchemas.includes(validation.url)) {
                 externalSchemas.push(validation.url);
@@ -153,7 +153,7 @@ export async function writeSchemasUris(
               const schemaPath = `https://raw.githubusercontent.com/microsoft/vscode/${join(
                 release,
                 dirname(file.path.replace(codeSrc, "")),
-                validation.url
+                validation.url,
               )}`;
 
               if (!externalSchemas.includes(schemaPath)) {
@@ -179,6 +179,6 @@ export async function writeSchemasUris(
   }
   return {
     schemas,
-    externalSchemas
+    externalSchemas,
   };
 }

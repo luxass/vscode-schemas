@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "tar": "^6.1.15",
+    "vscode-uri": "^3.0.7",
     "which": "^3.0.1"
   },
   "devDependencies": {

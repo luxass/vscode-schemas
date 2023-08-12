@@ -103,6 +103,9 @@ importers:
       tar:
         specifier: ^6.1.15
         version: 6.1.15
+      vscode-uri:
+        specifier: ^3.0.7
+        version: 3.0.7
       which:
         specifier: ^3.0.1
         version: 3.0.1
@@ -9338,7 +9341,6 @@ packages:
 
   /vscode-uri@3.0.7:
     resolution: {integrity: sha512-eOpPHogvorZRobNqJGhapa0JdwaxpjVvyBp0QIUMRMSf8ZAlqOdEquKuRmw9Qwu0qXtJIWqFtMkmvJjUZmMjVA==}
-    dev: true
 
   /vue-bundle-renderer@1.0.3:
     resolution: {integrity: sha512-EfjX+5TTUl70bki9hPuVp+54JiZOvFIfoWBcfXsSwLzKEiDYyHNi5iX8srnqLIv3YRnvxgbntdcG1WPq0MvffQ==}
