@@ -11,11 +11,11 @@ export default defineNuxtConfig({
   css: [
     "@unocss/reset/tailwind.css",
   ],
-  routeRules: {
-    "/api/search": {
-      prerender: true,
-    },
-  },
+  // routeRules: {
+  //   "/api/search": {
+  //     prerender: true,
+  //   },
+  // },
   app: {
     head: {
       htmlAttrs: {
