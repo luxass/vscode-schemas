@@ -39,7 +39,6 @@ export async function scan(
       continue;
     }
     if (!ALLOWED_FILES_EXTENSIONS.includes(ext)) continue;
-    // TODO: Try to make it faster by using a ripgrep binary, will be published at @luxass/klow in the near future.
 
     const contents = await readFile(entry.path, "utf-8");
     if (ext === "json" || ext === "jsonc") {
