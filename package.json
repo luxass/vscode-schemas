@@ -27,7 +27,7 @@
     "semver": "^7.5.4"
   },
   "devDependencies": {
-    "@luxass/eslint-config": "^3.3.1",
+    "@luxass/eslint-config": "^4.0.0",
     "@types/node": "^18.16.19",
     "@types/semver": "^7.5.0",
     "eslint": "^8.47.0",
