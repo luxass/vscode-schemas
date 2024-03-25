@@ -1,11 +1,11 @@
 import {
   defineConfig,
-} from "tsup";
+} from 'tsup'
 
 export default defineConfig({
-  entry: ["./src/extension.ts"],
-  format: ["cjs"],
+  entry: ['./src/extension.ts'],
+  format: ['cjs'],
   clean: true,
   treeshake: true,
-  external: ["vscode"],
-});
+  external: ['vscode'],
+})

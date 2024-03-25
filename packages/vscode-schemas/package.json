@@ -1,14 +1,14 @@
 {
   "name": "vscode-schemas",
-  "type": "module",
   "version": "0.1.0",
-  "packageManager": "pnpm@8.6.12",
   "description": "",
+  "type": "module",
   "author": {
     "name": "Lucas Nørgård",
     "email": "lucasnrgaard@gmail.com",
     "url": "https://luxass.dev"
   },
+  "packageManager": "pnpm@8.6.12",
   "license": "MIT",
   "homepage": "https://github.com/luxass/vscode-schemas",
   "repository": {
@@ -28,9 +28,10 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "clean": "rm -rf .turbo node_modules dist",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
     "test": "vitest",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit"
   }
 }

@@ -1,5 +1,4 @@
 {
-  "publisher": "luxass",
   "name": "vscode-schema-extractor",
   "displayName": "Schema Extractor",
   "version": "0.3.1",
@@ -9,6 +8,7 @@
     "url": "https://luxass.dev",
     "email": "lucasnrgaard@gmail.com"
   },
+  "publisher": "luxass",
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -1,16 +1,16 @@
-import { createWriteStream, existsSync } from "node:fs";
-import { Stream } from "node:stream";
-import { promisify } from "node:util";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { mkdir, readdir, rm, unlink } from "node:fs/promises";
-import tar from "tar";
+import { createWriteStream, existsSync } from 'node:fs'
+import { Stream } from 'node:stream'
+import { promisify } from 'node:util'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { mkdir, readdir, rm, unlink } from 'node:fs/promises'
+import tar from 'tar'
 import {
   $fetch,
-} from "ofetch";
-import type { Release } from "./releases";
+} from 'ofetch'
+import type { Release } from './releases'
 
-const pipeline = promisify(Stream.pipeline);
+const pipeline = promisify(Stream.pipeline)
 
 export interface DownloadOptions {
   /**
@@ -40,48 +40,48 @@ export interface DownloadOptions {
 export async function downloadCodeSource(release: Release, options?: DownloadOptions): Promise<void> {
   if (!options) {
     options = {
-      out: ".vscode-src",
+      out: '.vscode-src',
       force: false,
-    };
+    }
   }
 
-  if (!options?.out) options.out = ".vscode-src";
+  if (!options?.out) options.out = '.vscode-src'
 
   if (!existsSync(options.out)) {
     await mkdir(options.out, {
       recursive: true,
-    });
+    })
   }
 
   if ((await readdir(options.out)).length > 0) {
     if (!options.force) {
-      throw new Error(`outDir "${options.out}" is not empty`);
+      throw new Error(`outDir "${options.out}" is not empty`)
     }
 
     // delete all files in out
     await rm(options.out, {
       recursive: true,
-    });
+    })
 
     await mkdir(options.out, {
       recursive: true,
-    });
+    })
   }
 
   // https://github.com/microsoft/vscode/archive/refs/tags/1.45.0.tar.gz
   // https://codeload.github.com/microsoft/vscode/tar.gz/refs/tags/1.45.0
   const tarFile = await $fetch(`https://codeload.github.com/microsoft/vscode/tar.gz/refs/tags/${release}`, {
-    responseType: "blob",
-  });
+    responseType: 'blob',
+  })
 
-  const tmpFile = join(tmpdir(), `vscode-src-${release}.tar.gz`);
-  await pipeline(tarFile.stream(), createWriteStream(tmpFile));
+  const tmpFile = join(tmpdir(), `vscode-src-${release}.tar.gz`)
+  await pipeline(tarFile.stream(), createWriteStream(tmpFile))
 
   await tar.x({
     file: tmpFile,
     cwd: options.out,
     strip: 1,
-  });
+  })
 
-  await unlink(tmpFile);
+  await unlink(tmpFile)
 }

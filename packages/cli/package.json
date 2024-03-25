@@ -1,14 +1,14 @@
 {
   "name": "vscode-schema-cli",
-  "type": "module",
   "version": "0.1.0",
-  "packageManager": "pnpm@8.6.12",
   "description": "A cli tool to download vscode-schemas",
+  "type": "module",
   "author": {
     "name": "Lucas Nørgård",
     "email": "lucasnrgaard@gmail.com",
     "url": "https://luxass.dev"
   },
+  "packageManager": "pnpm@8.6.12",
   "license": "MIT",
   "homepage": "https://github.com/luxass/vscode-schemas",
   "repository": {
@@ -30,16 +30,18 @@
     "dist"
   ],
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "dev": "tsup --watch",
     "build": "tsup",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest"
+    "dev": "tsup --watch",
+    "clean": "rm -rf .turbo node_modules dist",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "test": "vitest",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "cac": "^6.7.14",
     "colorette": "^2.0.20",
+    "semver": "^7.6.0",
     "vscode-schema-core": "workspace:*"
   }
 }

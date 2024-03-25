@@ -1,15 +1,15 @@
 import {
   defineConfig,
-} from "tsup";
+} from 'tsup'
 
 export default defineConfig({
-  entry: ["./src/cli.ts"],
-  format: ["esm"],
+  entry: ['./src/cli.ts'],
+  format: ['esm'],
   clean: true,
   treeshake: true,
   outExtension(ctx) {
     return {
-      js: ctx.format === "cjs" ? ".cjs" : ".mjs",
-    };
+      js: ctx.format === 'cjs' ? '.cjs' : '.mjs',
+    }
   },
-});
+})

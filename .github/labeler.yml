@@ -1,0 +1,25 @@
+# See https://github.com/actions/labeler
+
+"pkg: core":
+  - changed-files:
+    - any-glob-to-any-file: packages/core/**
+
+"pkg: cli":
+  - changed-files:
+    - any-glob-to-any-file: packages/cli/**
+
+"apps: www":
+  - changed-files:
+    - any-glob-to-any-file: apps/www/**
+
+"apps: internal-extension":
+  - changed-files:
+    - any-glob-to-any-file: apps/schema-extractor-internal/**
+
+"apps: extension":
+  - changed-files:
+    - any-glob-to-any-file: apps/schema-extractor/**
+
+"🚨 ci":
+  - changed-files:
+    - any-glob-to-any-file: .github/**
