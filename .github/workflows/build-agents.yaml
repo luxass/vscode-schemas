@@ -44,7 +44,7 @@ jobs:
         uses: docker/build-push-action@v3
         if: ${{ github.event.inputs.dry-run != 'true' }}
         with:
-          context: ${{ matrix.arch }}
-          file: ${{ matrix.arch }}/Dockerfile
+          context: code-prebuilt/build-agents/${{ matrix.arch }}
+          file: code-prebuilt/build-agents/${{ matrix.arch }}/Dockerfile
           tags: code-prebuilt/code-prebuilt-linux-build-agent:${{ matrix.arch }}
           push: ${{ github.ref == 'refs/heads/main' }}
