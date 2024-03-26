@@ -28,6 +28,10 @@
   - changed-files:
       - any-glob-to-any-file: code-prebuilt/patches/**
 
+'code-prebuilt: scripts':
+  - changed-files:
+      - any-glob-to-any-file: code-prebuilt/scripts/**
+
 🚨 ci:
   - changed-files:
       - any-glob-to-any-file: .github/**
