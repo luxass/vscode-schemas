@@ -1,9 +1,14 @@
 name: update code submodule
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Run the workflow without creating a pull request
+        required: false
+        default: 'false'
+  schedule:
+    - cron: '0 12,18 * * *'
 
 jobs:
   update:
@@ -19,6 +24,7 @@ jobs:
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
+        if: ${{ github.event.inputs.dry-run != 'true' }}
         with:
           commit-message: 'chore: updated code submodule'
           title: 'chore: updated code submodule'
