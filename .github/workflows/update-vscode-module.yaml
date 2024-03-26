@@ -18,7 +18,7 @@ jobs:
           git submodule foreach git pull origin main
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v6
         with:
           commit-message: 'chore: updated vscode submodule'
           title: 'chore: updated vscode submodule'
