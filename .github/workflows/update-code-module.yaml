@@ -1,4 +1,4 @@
-name: Update Submodule
+name: update code submodule
 
 on:
   push:
@@ -20,8 +20,8 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: 'chore: updated vscode submodule'
-          title: 'chore: updated vscode submodule'
+          commit-message: 'chore: updated code submodule'
+          title: 'chore: updated code submodule'
           body: |
             I found some new changes in [microsoft/vscode](https://github.com/microsoft/vscode).
 
