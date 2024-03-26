@@ -1,0 +1,7 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "update-code-submodule": false
+    }
+  }
+}
