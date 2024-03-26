@@ -1,0 +1,43 @@
+name: build agents
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'code-prebuilt/build-agents/**'
+
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - alpine-x64
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          install: true
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ${{ matrix.arch }}
+          file: ${{ matrix.arch }}/Dockerfile
+          tags: code-prebuilt/code-prebuilt-linux-build-agent:${{ matrix.arch }}
+          push: ${{ github.ref == 'refs/heads/main' }}
