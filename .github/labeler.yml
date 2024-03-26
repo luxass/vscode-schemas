@@ -1,25 +1,33 @@
 # See https://github.com/actions/labeler
 
-"pkg: core":
+'pkg: core':
   - changed-files:
-    - any-glob-to-any-file: packages/core/**
+      - any-glob-to-any-file: packages/core/**
 
-"pkg: cli":
+'pkg: cli':
   - changed-files:
-    - any-glob-to-any-file: packages/cli/**
+      - any-glob-to-any-file: packages/cli/**
 
-"apps: www":
+'apps: www':
   - changed-files:
-    - any-glob-to-any-file: apps/www/**
+      - any-glob-to-any-file: apps/www/**
 
-"apps: internal-extension":
+'apps: internal-extension':
   - changed-files:
-    - any-glob-to-any-file: apps/schema-extractor-internal/**
+      - any-glob-to-any-file: apps/schema-extractor-internal/**
 
-"apps: extension":
+'apps: extension':
   - changed-files:
-    - any-glob-to-any-file: apps/schema-extractor/**
+      - any-glob-to-any-file: apps/schema-extractor/**
 
-"🚨 ci":
+'code-prebuilt: build-agents':
   - changed-files:
-    - any-glob-to-any-file: .github/**
+      - any-glob-to-any-file: code-prebuilt/build-agents/**
+
+'code-prebuilt: patches':
+  - changed-files:
+      - any-glob-to-any-file: code-prebuilt/patches/**
+
+🚨 ci:
+  - changed-files:
+      - any-glob-to-any-file: .github/**
