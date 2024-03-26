@@ -29,7 +29,6 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf .turbo node_modules dist",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
     "test": "vitest",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"

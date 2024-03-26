@@ -2,12 +2,12 @@
   "name": "@vscode-schemas/monorepo",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@8.15.5",
   "author": {
     "name": "Lucas Nørgård",
     "email": "lucasnrgaard@gmail.com",
     "url": "https://luxass.dev"
   },
+  "packageManager": "pnpm@8.15.5",
   "license": "MIT",
   "homepage": "https://github.com/luxass/vscode-schemas",
   "repository": "https://github.com/luxass/vscode-schemas",
@@ -19,8 +19,6 @@
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo clean",
     "dev": "turbo dev --parallel",
-    "format": "turbo format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
-    "format:fix": "turbo format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
     "lint": "turbo lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:fix": "turbo lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:workspace": "pnpm dlx sherif@latest",
@@ -31,11 +29,11 @@
     "@luxass/eslint-config": "^4.2.12",
     "@types/node": "^18.16.19",
     "eslint": "^8.57.0",
+    "eslint-plugin-format": "^0.1.0",
     "tsup": "^8.0.2",
     "turbo": "^1.13.0",
     "typescript": "^5.4.3",
-    "vitest": "^1.4.0",
-    "eslint-plugin-format": "^0.1.0"
+    "vitest": "^1.4.0"
   },
   "workspaces": [
     "packages/**",
