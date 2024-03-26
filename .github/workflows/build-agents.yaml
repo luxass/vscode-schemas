@@ -40,11 +40,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/luxass/code-prebuilt-linux-build-agent:${{ matrix.arch }}
 
       - name: Build and push
         uses: docker/build-push-action@v3
@@ -53,5 +48,4 @@ jobs:
           context: code-prebuilt/build-agents/${{ matrix.arch }}
           file: code-prebuilt/build-agents/${{ matrix.arch }}/Dockerfile
           push: ${{ github.ref == 'refs/heads/main' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ghcr.io/${{ github.repository }}:${{ matrix.arch }}
