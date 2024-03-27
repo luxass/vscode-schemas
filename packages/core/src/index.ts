@@ -1,9 +1,9 @@
 export {
   downloadCodeSource,
-  DownloadOptions,
 } from './download'
+export type { DownloadOptions } from './download'
 
-export {
+export type {
   Release,
 } from './releases'
 

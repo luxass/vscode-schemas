@@ -3,11 +3,11 @@ import { writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import cac from 'cac'
 import semver from 'semver'
-import type { Release } from 'vscode-schema-core'
+import type { Release } from '@vscode-schemas/core'
 import {
   downloadCodeSource,
   scan,
-} from 'vscode-schema-core'
+} from '@vscode-schemas/core'
 import { bold, green, inverse, red, yellow } from 'colorette'
 import { version } from '../package.json'
 

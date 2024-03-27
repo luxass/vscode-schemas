@@ -5,9 +5,6 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { mkdir, readdir, rm, unlink } from 'node:fs/promises'
 import tar from 'tar'
-import {
-  $fetch,
-} from 'ofetch'
 import type { Release } from './releases'
 
 const pipeline = promisify(Stream.pipeline)
@@ -70,9 +67,7 @@ export async function downloadCodeSource(release: Release, options?: DownloadOpt
 
   // https://github.com/microsoft/vscode/archive/refs/tags/1.45.0.tar.gz
   // https://codeload.github.com/microsoft/vscode/tar.gz/refs/tags/1.45.0
-  const tarFile = await $fetch(`https://codeload.github.com/microsoft/vscode/tar.gz/refs/tags/${release}`, {
-    responseType: 'blob',
-  })
+  const tarFile = await fetch(`https://codeload.github.com/microsoft/vscode/tar.gz/refs/tags/${release}`).then((res) => res.blob())
 
   const tmpFile = join(tmpdir(), `vscode-src-${release}.tar.gz`)
   await pipeline(tarFile.stream(), createWriteStream(tmpFile))
