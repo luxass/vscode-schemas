@@ -1,7 +1,3 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "unocss.root": [
-    "apps/www"
-  ],
-  "nuxtr.monorepoMode.DirectoryName": "apps/www"
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

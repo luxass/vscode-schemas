@@ -1,5 +1,5 @@
 {
-  "name": "vscode-schema-core",
+  "name": "@vscode-schemas/core",
   "version": "0.1.0",
   "description": "",
   "type": "module",
@@ -40,7 +40,10 @@
     "which": "^3.0.1"
   },
   "devDependencies": {
+    "@luxass/eslint-config": "^4.2.15",
     "@types/tar": "^6.1.5",
-    "@types/which": "^3.0.0"
+    "@types/which": "^3.0.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.3"
   }
 }
