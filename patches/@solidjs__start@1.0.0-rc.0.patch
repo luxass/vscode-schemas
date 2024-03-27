@@ -1,0 +1,16 @@
+diff --git a/package.json b/package.json
+index d369dac80acdbf87beb5f01d03cf913a7cf7957a..dca53b0f9e48eb76e1a63d1f48092a3cb22085e7 100644
+--- a/package.json
++++ b/package.json
+@@ -29,7 +29,10 @@
+     "./server/spa": "./dist/server/spa/index.jsx",
+     "./client": "./dist/client/index.jsx",
+     "./client/islands": "./dist/client/islands.jsx",
+-    "./client/spa": "./dist/client/spa/index.jsx"
++    "./client/spa": "./dist/client/spa/index.jsx",
++    "./env": {
++      "types": "./env.d.ts"
++    }
+   },
+   "typesVersions": {
+     "*": {

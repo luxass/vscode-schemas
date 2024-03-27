@@ -38,5 +38,10 @@
   "workspaces": [
     "packages/**",
     "apps/*"
-  ]
+  ],
+  "pnpm": {
+    "patchedDependencies": {
+      "@solidjs/start@1.0.0-rc.0": "patches/@solidjs__start@1.0.0-rc.0.patch"
+    }
+  }
 }
