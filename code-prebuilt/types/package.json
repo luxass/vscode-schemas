@@ -15,14 +15,11 @@
     "directory": "code-prebuilt/types"
   },
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
     "clean": "rm -rf .turbo node_modules dist",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "magicast": "^0.3.3",
-    "tsup": "^8.0.2"
+    "magicast": "^0.3.3"
   }
 }

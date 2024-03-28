@@ -154,9 +154,6 @@ importers:
       magicast:
         specifier: ^0.3.3
         version: 0.3.3
-      tsup:
-        specifier: ^8.0.2
-        version: 8.0.2(typescript@5.4.3)
 
   packages/cli:
     dependencies:
