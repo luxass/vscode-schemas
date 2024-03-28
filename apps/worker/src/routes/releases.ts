@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import semver from 'semver'
 import type { HonoContext } from '../types'
-import { LATEST_RELEASE_SCHEMA, RELEASE_SCHEMA } from '../schemas'
+import { RELEASE_SCHEMA } from '../schemas'
 
 export const releasesRouter = new OpenAPIHono<HonoContext>()
 
@@ -14,7 +14,10 @@ const releasesRoute = createRoute({
         'application/json': {
           schema: z
             .array(
-              RELEASE_SCHEMA,
+              z.object({
+                tag: z.string(),
+                url: z.string(),
+              }),
             ),
         },
       },
@@ -44,6 +47,75 @@ releasesRouter.openapi(releasesRoute, async (ctx) => {
   )
 })
 
+const releaseRoute = createRoute({
+  method: 'get',
+  path: '/releases/{tag}',
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: RELEASE_SCHEMA,
+        },
+      },
+      description: 'Get the latest release',
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string(),
+          }),
+        },
+      },
+      description: 'No release found',
+    },
+  },
+})
+
+releasesRouter.openapi(releaseRoute, async (ctx) => {
+  const octokit = ctx.get('octokit')
+
+  const params = ctx.req.param()
+  if (!params || !params.tag) {
+    return ctx.json({
+      error: 'No release found',
+    }, 404, {
+      'Content-Type': 'application/json',
+    })
+  }
+
+  const releases = await octokit.paginate('GET /repos/{owner}/{repo}/releases', {
+    owner: 'microsoft',
+    repo: 'vscode',
+    per_page: 100,
+  }).then((releases) => releases.filter((release) => semver.gte(release.tag_name, '1.45.0')))
+
+  const release = releases.find((release) => release.tag_name === params.tag)
+
+  if (!release) {
+    return ctx.json({
+      error: 'No release found',
+    }, 404, {
+      'Content-Type': 'application/json',
+    })
+  }
+
+  const { data: commit } = await octokit.request('GET /repos/{owner}/{repo}/commits/{ref}', {
+    owner: 'microsoft',
+    repo: 'vscode',
+    ref: release.tag_name,
+    per_page: 1,
+  })
+
+  return ctx.json({
+    tag: release.tag_name,
+    url: release.url,
+    commit: commit.sha,
+  }, 200, {
+    'Content-Type': 'application/json',
+  })
+})
+
 const latestReleaseRoute = createRoute({
   method: 'get',
   path: '/releases/latest',
@@ -51,7 +123,7 @@ const latestReleaseRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: LATEST_RELEASE_SCHEMA,
+          schema: RELEASE_SCHEMA,
         },
       },
       description: 'Get the latest release',
