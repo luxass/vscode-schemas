@@ -32,10 +32,24 @@ releasesRouter.openapi(releasesRoute, async (ctx) => {
     per_page: 100,
   }).then((releases) => releases.filter((release) => semver.gte(release.tag_name, '1.45.0')))
 
+  const releasesWithCommits: [typeof releases[number], any][] = await Promise.all(
+    releases.map(async (release) => {
+      const { data: commit } = await octokit.request('GET /repos/{owner}/{repo}/commits/{ref}', {
+        owner: 'microsoft',
+        repo: 'vscode',
+        ref: release.tag_name,
+        per_page: 1,
+      })
+
+      return [release, commit]
+    }),
+  )
+
   return ctx.json(
-    releases.map((release) => ({
+    releasesWithCommits.map(([release, commit]) => ({
       tag: release.tag_name,
       url: release.url,
+      commit: commit.sha,
     })),
     200,
     {
@@ -87,9 +101,17 @@ releasesRouter.openapi(latestReleaseRoute, async (ctx) => {
     })
   }
 
+  const { data: commit } = await octokit.request('GET /repos/{owner}/{repo}/commits/{ref}', {
+    owner: 'microsoft',
+    repo: 'vscode',
+    ref: release.tag_name,
+    per_page: 1,
+  })
+
   return ctx.json({
     tag: release.tag_name,
     url: release.url,
+    commit: commit.sha,
   }, 200, {
     'Content-Type': 'application/json',
   })
