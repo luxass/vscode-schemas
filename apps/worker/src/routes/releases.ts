@@ -50,6 +50,14 @@ releasesRouter.openapi(releasesRoute, async (ctx) => {
 const releaseRoute = createRoute({
   method: 'get',
   path: '/releases/{tag}',
+  parameters: [
+    {
+      in: 'path',
+      name: 'tag',
+      required: true,
+      example: '1.87.0',
+    },
+  ],
   responses: {
     200: {
       content: {
