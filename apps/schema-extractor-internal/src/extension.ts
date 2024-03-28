@@ -21,6 +21,4 @@ export function activate(context: ExtensionContext) {
       console.warn(uri)
     },
   }))
-
-
 }
