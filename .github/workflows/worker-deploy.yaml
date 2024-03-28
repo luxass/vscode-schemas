@@ -70,6 +70,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install
@@ -80,6 +81,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           packageManager: pnpm
+          workingDirectory: ./apps/worker
           environment: staging
 
   deploy-production:
@@ -95,6 +97,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install
@@ -105,4 +108,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           packageManager: pnpm
+          workingDirectory: ./apps/worker
           environment: production
