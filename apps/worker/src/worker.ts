@@ -70,6 +70,7 @@ app.onError(async (err, ctx) => {
   }
 
   const message = ctx.env.ENVIRONMENT === 'production' ? 'Internal server error' : err.stack
+  console.error(err)
   return new Response(message, {
     status: 500,
   })
