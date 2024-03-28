@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@luxass/eslint-config": "^4.3.0",
+    "@luxass/eslint-config": "^4.3.1",
     "eslint": "^8.57.0",
     "typescript": "^5.4.3"
   }
