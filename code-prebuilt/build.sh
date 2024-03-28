@@ -25,23 +25,39 @@ else
 fi
 
 if [[ -z "${VSCODE_TAG}" ]]; then
-  echo "Retrieving latest version"
-  LATEST_VERSION=$(curl --silent --fail "https://update.code.visualstudio.com/api/update/darwin/stable/0000000000000000000000000000000000000000")
-
-  # print LATEST VERSION if debug is enabled
-  if [[ "${DEBUG}" == "yes" ]]; then
-    echo "LATEST_VERSION=${LATEST_VERSION}"
-  fi
-
-  TAG=$(echo "${LATEST_VERSION}" | jq -r '.name')
-  COMMIT=$(echo "${LATEST_VERSION}" | jq -r '.version')
-
-  mkdir -p vscode
-  cd vscode || { echo "'vscode' dir not found"; exit 1; }
-
-  git init -q
-  git remote add origin https://github.com/microsoft/vscode.git
-
-  git fetch --depth 1 origin "${COMMIT}"
-  git checkout FETCH_HEAD
+  echo "using latest version"
+  LATEST_VERSION=$(curl --silent --fail "https://vscode.luxass.dev/releases/latest")
+else
+  echo "using provided version: ${VSCODE_TAG}"
+  LATEST_VERSION=$(curl --silent --fail "https://vscode.luxass.dev/releases/${VSCODE_TAG}")
 fi
+
+# print LATEST VERSION if debug is enabled
+if [[ "${DEBUG}" == "yes" ]]; then
+  echo "LATEST_VERSION=${LATEST_VERSION}"
+fi
+
+TAG=$(echo "${LATEST_VERSION}" | jq -r '.tag')
+COMMIT=$(echo "${LATEST_VERSION}" | jq -r '.commit')
+
+mkdir -p vscode
+cd vscode || { echo "'vscode' dir not found"; exit 1; }
+
+git init -q
+git remote add origin https://github.com/microsoft/vscode.git
+
+git fetch --depth 1 origin "${COMMIT}"
+git checkout FETCH_HEAD
+
+# run prepare script
+./scripts/prepare.sh
+
+cd vscode || { echo "'vscode' dir not found"; exit 1; }
+
+yarn monaco-compile-check
+yarn valid-layers-check
+
+yarn gulp compile-build
+yarn gulp compile-extension-media
+yarn gulp compile-extensions-build
+yarn gulp minify-vscode
