@@ -21,7 +21,7 @@
     "tailwindcss": "^3.4.3"
   },
   "devDependencies": {
-    "@luxass/eslint-config": "^4.2.15",
+    "@luxass/eslint-config": "^4.3.0",
     "astro-eslint-parser": "^0.16.3",
     "eslint": "^8.57.0",
     "eslint-plugin-astro": "^0.33.1",

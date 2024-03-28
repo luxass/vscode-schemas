@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240320.1",
-    "@luxass/eslint-config": "^4.2.15",
+    "@luxass/eslint-config": "^4.3.0",
     "@types/semver": "^7.5.8",
     "eslint": "^8.57.0",
     "eslint-plugin-format": "^0.1.0",
