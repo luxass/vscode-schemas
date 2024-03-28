@@ -33,7 +33,31 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@types/node@20.11.30)
 
-  apps/cloudflare-worker:
+  apps/schema-extractor:
+    devDependencies:
+      '@types/vscode':
+        specifier: ^1.70.0
+        version: 1.70.0
+      '@vscode/test-web':
+        specifier: ^0.0.45
+        version: 0.0.45
+      '@vscode/vsce':
+        specifier: ^2.20.1
+        version: 2.20.1
+
+  apps/schema-extractor-internal:
+    devDependencies:
+      '@types/vscode':
+        specifier: ^1.70.0
+        version: 1.70.0
+      '@vscode/test-web':
+        specifier: ^0.0.45
+        version: 0.0.45
+      '@vscode/vsce':
+        specifier: ^2.20.1
+        version: 2.20.1
+
+  apps/worker:
     dependencies:
       '@hono/zod-openapi':
         specifier: ^0.9.9
@@ -81,30 +105,6 @@ importers:
       wrangler:
         specifier: ^3.39.0
         version: 3.39.0(@cloudflare/workers-types@4.20240320.1)
-
-  apps/schema-extractor:
-    devDependencies:
-      '@types/vscode':
-        specifier: ^1.70.0
-        version: 1.70.0
-      '@vscode/test-web':
-        specifier: ^0.0.45
-        version: 0.0.45
-      '@vscode/vsce':
-        specifier: ^2.20.1
-        version: 2.20.1
-
-  apps/schema-extractor-internal:
-    devDependencies:
-      '@types/vscode':
-        specifier: ^1.70.0
-        version: 1.70.0
-      '@vscode/test-web':
-        specifier: ^0.0.45
-        version: 0.0.45
-      '@vscode/vsce':
-        specifier: ^2.20.1
-        version: 2.20.1
 
   apps/www:
     dependencies:
