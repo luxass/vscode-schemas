@@ -1,5 +1,6 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import semver from 'semver'
+import pLimit from 'p-limit'
 import type { HonoContext } from '../types'
 import { RELEASE_SCHEMA } from '../schemas'
 
@@ -31,9 +32,10 @@ releasesRouter.openapi(releasesRoute, async (ctx) => {
     repo: 'vscode',
     per_page: 100,
   }).then((releases) => releases.filter((release) => semver.gte(release.tag_name, '1.45.0')))
+  const limit = pLimit(6)
 
-  const releasesWithCommits: [typeof releases[number], any][] = await Promise.all(
-    releases.map(async (release) => {
+  const releasesWithCommits = await Promise.all(
+    releases.map((release) => limit(async () => {
       const { data: commit } = await octokit.request('GET /repos/{owner}/{repo}/commits/{ref}', {
         owner: 'microsoft',
         repo: 'vscode',
@@ -42,8 +44,8 @@ releasesRouter.openapi(releasesRoute, async (ctx) => {
       })
 
       return [release, commit]
-    }),
-  )
+    })),
+  ) as [typeof releases[number], any][]
 
   return ctx.json(
     releasesWithCommits.map(([release, commit]) => ({
