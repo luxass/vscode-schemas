@@ -1,6 +1,5 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import semver from 'semver'
-import pLimit from 'p-limit'
 import type { HonoContext } from '../types'
 import { LATEST_RELEASE_SCHEMA, RELEASE_SCHEMA } from '../schemas'
 
