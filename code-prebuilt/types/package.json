@@ -22,6 +22,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "magicast": "^0.3.3"
+    "magicast": "^0.3.3",
+    "tsup": "^8.0.2"
   }
 }
