@@ -34,14 +34,5 @@
     "turbo": "^1.13.0",
     "typescript": "^5.4.3",
     "vitest": "^1.4.0"
-  },
-  "workspaces": [
-    "packages/**",
-    "apps/*"
-  ],
-  "pnpm": {
-    "patchedDependencies": {
-      "@solidjs/start@1.0.0-rc.0": "patches/@solidjs__start@1.0.0-rc.0.patch"
-    }
   }
 }

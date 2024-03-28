@@ -1,20 +1,3 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "paths": {
-      "~/*": ["./src/*"]
-    },
-    "types": ["vinxi/client", "vite/client", "vitest/globals", "@testing-library/jest-dom"],
-    "allowJs": true,
-    "strict": true,
-    "noEmit": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "skipLibCheck": true
-  }
+  "extends": "astro/tsconfigs/strict"
 }

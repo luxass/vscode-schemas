@@ -9,7 +9,7 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": [
-        ".vinxi/**",
+        ".astro/**",
         ".vercel/output/**"
       ]
     },

@@ -13,3 +13,4 @@ logs
 .env.*
 !.env.example
 .vscode-scan-result.json
+code-prebuilt/vscode

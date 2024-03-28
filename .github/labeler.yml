@@ -12,6 +12,10 @@
   - changed-files:
       - any-glob-to-any-file: apps/www/**
 
+'apps: worker':
+  - changed-files:
+      - any-glob-to-any-file: apps/worker/**
+
 'apps: internal-extension':
   - changed-files:
       - any-glob-to-any-file: apps/schema-extractor-internal/**

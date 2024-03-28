@@ -1,0 +1,27 @@
+{
+  "name": "@vscode-schemas/code-prebuilt-types",
+  "version": "0.0.1",
+  "description": "Types for Code Prebuilt",
+  "author": {
+    "name": "Lucas Nørgård",
+    "url": "https://luxass.dev",
+    "email": "lucasnrgaard@gmail.com"
+  },
+  "publisher": "luxass",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luxass/vscode-schemas.git",
+    "directory": "code-prebuilt/types"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf .turbo node_modules dist",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "magicast": "^0.3.3"
+  }
+}

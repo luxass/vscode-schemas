@@ -1,0 +1,40 @@
+diff --git a/src/vs/workbench/api/common/extHost.api.impl.ts b/src/vs/workbench/api/common/extHost.api.impl.ts
+index 7f9eae154c3..5cc5880b11b 100644
+--- a/src/vs/workbench/api/common/extHost.api.impl.ts
++++ b/src/vs/workbench/api/common/extHost.api.impl.ts
+@@ -1475,6 +1475,12 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
+ 			}
+ 		};
+
++		const schemas: typeof vscode.schemas = {
++			get hello() {
++				return "hello!"
++			}
++		}
++
+ 		return <typeof vscode>{
+ 			version: initData.version,
+ 			// namespaces
+@@ -1497,6 +1503,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
+ 			tests,
+ 			window,
+ 			workspace,
++			schemas,
+ 			// types
+ 			Breakpoint: extHostTypes.Breakpoint,
+ 			TerminalOutputAnchor: extHostTypes.TerminalOutputAnchor,
+diff --git a/src/vscode-dts/vscode.d.ts b/src/vscode-dts/vscode.d.ts
+index 357bd5ee9b5..1c425eb7bef 100644
+--- a/src/vscode-dts/vscode.d.ts
++++ b/src/vscode-dts/vscode.d.ts
+@@ -18314,6 +18314,10 @@ declare module 'vscode' {
+ 		 */
+ 		readonly additionalCommonProperties?: Record<string, any>;
+ 	}
++
++	export namespace schemas {
++		export const hello: string
++	}
+ }
+
+ /**

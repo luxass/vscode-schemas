@@ -1,3 +1,0 @@
-[submodule "code-prebuilt/vscode"]
-	path = code-prebuilt/vscode
-	url = https://github.com/microsoft/vscode.git

@@ -18,6 +18,13 @@
       "args": ["--extensionDevelopmentPath=${workspaceFolder}/apps/schema-extractor"],
       "outFiles": ["${workspaceFolder}/apps/schema-extractor/dist/**/*.js"],
       "preLaunchTask": "Build Extension (Schema Extractor)"
+    },
+    {
+      "command": "./node_modules/.bin/astro dev",
+      "name": "Development server",
+      "request": "launch",
+      "type": "node-terminal",
+      "cwd": "${workspaceFolder}/apps/www"
     }
   ]
 }
