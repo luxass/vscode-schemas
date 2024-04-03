@@ -14,12 +14,17 @@
     "url": "https://github.com/luxass/vscode-schemas.git",
     "directory": "code-prebuilt/types"
   },
+  "types": "module",
   "scripts": {
     "clean": "rm -rf .turbo node_modules dist",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "ts-morph": "^22.0.0"
+  },
   "devDependencies": {
-    "magicast": "^0.3.3"
+    "magicast": "^0.3.3",
+    "typescript": "^5.4.3"
   }
 }
