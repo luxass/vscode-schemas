@@ -9,121 +9,58 @@ import {
   scan,
 } from '@vscode-schemas/core'
 import { bold, green, inverse, red, yellow } from 'colorette'
-import { version } from '../package.json'
+import { defineCommand, runMain } from 'citty'
 
-const cli = cac('vscode-schema')
+import pkg from '../package.json' with { type: 'json' }
+import { commands } from './commands'
+// cli.command('download-src [release] [out]', 'Download VSCode Source Code')
+//   .option('--out [out]', 'Outdir to place the source code', {
+//     default: '.vscode-src',
+//   })
+//   .option('-f, --force', 'Force download source code (will delete files in out)', {
+//     default: false,
+//   })
+//   .action(async (release: string, out: string, options: GlobalCLIOptions & {
+//     force: boolean
+//   }) => {
+//     if (!release) {
+//       release = await fetch('https://latest-vscode-release.luxass.dev').then((res) => res.text())
+//     }
 
-export interface GlobalCLIOptions {
-  out?: string
-}
+//     if (!semver.gte(release, '1.45.0')) {
+//       // set release to lastest, and notify user
+//       console.warn('The release you specified is not supported, using latest instead.')
+//       release = await fetch('https://latest-vscode-release.luxass.dev').then((res) => res.text())
+//     }
+//     try {
+//       await downloadCodeSource(release as Release, {
+//         out: out || options.out,
+//         force: options.force || false,
+//       })
+//       console.warn(`Downloaded source code to ${green(out || options.out || '.vscode-src')}`)
+//     } catch (err) {
+//       if (typeof err === 'string') {
+//         console.error(err)
+//       }
 
-cli.command('download [release] [out]', 'Download ')
-  .option('--out [out]', 'Outdir to place the schema files in', {
-    default: '.vscode-schemas',
-  })
-  .action(async (release: string, _out: string, _options: GlobalCLIOptions) => {
-    if (!release) {
-      release = await fetch('https://vscode.luxass.dev/releases/latest').then((res) => res.text())
-    }
+//       if (err instanceof Error && err.message === `outDir "${out || options.out}" is not empty`) {
+//         console.error(
+//           `The outDir "${out || options.out}" is not empty, use --force to force download source code.`,
+//         )
+//         return
+//       }
 
-    if (!semver.gte(release, '1.45.0')) {
-      // set release to lastest, and notify user
-      console.warn('The release you specified is not supported, using latest instead.')
-      release = await fetch('https://vscode.luxass.dev/releases/latest').then((res) => res.text())
-    }
+//       throw err
+//     }
+//   })
 
-    // await download(release as Release, {
-    //   outDir: out || options.out
-    // });
+const main = defineCommand({
+  meta: {
+    name: pkg.name,
+    version: pkg.version,
+    description: pkg.description,
+  },
+  subCommands: commands,
+})
 
-    console.warn('Currently not implemented.')
-  })
-
-cli.command('download-src [release] [out]', 'Download VSCode Source Code')
-  .option('--out [out]', 'Outdir to place the source code', {
-    default: '.vscode-src',
-  })
-  .option('-f, --force', 'Force download source code (will delete files in out)', {
-    default: false,
-  })
-  .action(async (release: string, out: string, options: GlobalCLIOptions & {
-    force: boolean
-  }) => {
-    if (!release) {
-      release = await fetch('https://latest-vscode-release.luxass.dev').then((res) => res.text())
-    }
-
-    if (!semver.gte(release, '1.45.0')) {
-      // set release to lastest, and notify user
-      console.warn('The release you specified is not supported, using latest instead.')
-      release = await fetch('https://latest-vscode-release.luxass.dev').then((res) => res.text())
-    }
-    try {
-      await downloadCodeSource(release as Release, {
-        out: out || options.out,
-        force: options.force || false,
-      })
-      console.warn(`Downloaded source code to ${green(out || options.out || '.vscode-src')}`)
-    } catch (err) {
-      if (typeof err === 'string') {
-        console.error(err)
-      }
-
-      if (err instanceof Error && err.message === `outDir "${out || options.out}" is not empty`) {
-        console.error(
-          `The outDir "${out || options.out}" is not empty, use --force to force download source code.`,
-        )
-        return
-      }
-
-      throw err
-    }
-  })
-
-cli.command('scan [folder]', 'Scan source code folder for schemas')
-  .option('--out [out]', 'Output file to place the result', {
-    default: '.vscode-scan-result.json',
-  })
-  .option('-f, --force', 'Forcefully write scan results', {
-    default: false,
-  })
-  .action(async (folder: string, options: GlobalCLIOptions & {
-    force: boolean
-  }) => {
-    if (!folder) {
-      folder = '.vscode-src'
-    }
-
-    const result = await scan(folder)
-
-    if (!options.out) {
-      options.out = '.vscode-scan-result.json'
-    }
-
-    if (existsSync(options.out) && !options.force) {
-      console.warn(`File ${yellow(options.out || '.vscode-scan-result.json')} already exists, writing to file skipped.`)
-      return
-    }
-
-    await writeFile(options.out, JSON.stringify(result, null, 2), 'utf8')
-    console.warn(`Wrote scan result to ${green(options.out)}`)
-  })
-
-cli.command('[root]', 'Download and start schema generation')
-  .option('--out [type]', 'Output file to place the result')
-  .action(async (_folder: string, _options: GlobalCLIOptions) => {
-    console.warn('Currently not implemented.')
-  })
-
-cli.help()
-cli.version(version)
-
-try {
-  cli.parse(process.argv, { run: false })
-  await cli.runMatchedCommand()
-} catch (err) {
-  console.error(`\n${red(bold(inverse(' Unhandled Error ')))}`)
-  console.error(err)
-  console.error('\n\n')
-  process.exit(1)
-}
+runMain(main)

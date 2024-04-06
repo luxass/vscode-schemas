@@ -19,8 +19,23 @@
   "bugs": {
     "url": "https://github.com/luxass/vscode-schemas/issues"
   },
-  "main": "dist/index.mjs",
-  "module": "dist/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./patches": {
+      "types": "./dist/patches/index.d.ts",
+      "import": "./dist/patches/index.js"
+    },
+    "./patches/*": {
+      "types": "./dist/patches/*.d.ts",
+      "import": "./dist/patches/*.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
