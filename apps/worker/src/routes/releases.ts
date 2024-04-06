@@ -47,6 +47,65 @@ releasesRouter.openapi(releasesRoute, async (ctx) => {
   )
 })
 
+const latestReleaseRoute = createRoute({
+  method: 'get',
+  path: '/releases/latest',
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: RELEASE_SCHEMA,
+        },
+      },
+      description: 'Get the latest release',
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string(),
+          }),
+        },
+      },
+      description: 'No release found',
+    },
+  },
+})
+
+releasesRouter.openapi(latestReleaseRoute, async (ctx) => {
+  const octokit = ctx.get('octokit')
+
+  const { data: releases } = await octokit.request('GET /repos/{owner}/{repo}/releases', {
+    owner: 'microsoft',
+    repo: 'vscode',
+    per_page: 1,
+  })
+
+  const release = releases[0]
+  if (!('tag_name' in release)) {
+    return ctx.json({
+      error: 'No release found',
+    }, 404, {
+      'Content-Type': 'application/json',
+    })
+  }
+
+  const { data: commit } = await octokit.request('GET /repos/{owner}/{repo}/commits/{ref}', {
+    owner: 'microsoft',
+    repo: 'vscode',
+    ref: release.tag_name,
+    per_page: 1,
+  })
+
+  return ctx.json({
+    tag: release.tag_name,
+    url: release.url,
+    commit: commit.sha,
+  }, 200, {
+    'Content-Type': 'application/json',
+  })
+})
+
 const releaseRoute = createRoute({
   method: 'get',
   path: '/releases/{tag}',
@@ -101,65 +160,6 @@ releasesRouter.openapi(releaseRoute, async (ctx) => {
   const release = releases.find((release) => release.tag_name === params.tag)
 
   if (!release) {
-    return ctx.json({
-      error: 'No release found',
-    }, 404, {
-      'Content-Type': 'application/json',
-    })
-  }
-
-  const { data: commit } = await octokit.request('GET /repos/{owner}/{repo}/commits/{ref}', {
-    owner: 'microsoft',
-    repo: 'vscode',
-    ref: release.tag_name,
-    per_page: 1,
-  })
-
-  return ctx.json({
-    tag: release.tag_name,
-    url: release.url,
-    commit: commit.sha,
-  }, 200, {
-    'Content-Type': 'application/json',
-  })
-})
-
-const latestReleaseRoute = createRoute({
-  method: 'get',
-  path: '/releases/latest',
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: RELEASE_SCHEMA,
-        },
-      },
-      description: 'Get the latest release',
-    },
-    404: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: z.string(),
-          }),
-        },
-      },
-      description: 'No release found',
-    },
-  },
-})
-
-releasesRouter.openapi(latestReleaseRoute, async (ctx) => {
-  const octokit = ctx.get('octokit')
-
-  const { data: releases } = await octokit.request('GET /repos/{owner}/{repo}/releases', {
-    owner: 'microsoft',
-    repo: 'vscode',
-    per_page: 1,
-  })
-
-  const release = releases[0]
-  if (!('tag_name' in release)) {
     return ctx.json({
       error: 'No release found',
     }, 404, {
