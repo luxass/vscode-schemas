@@ -1,0 +1,36 @@
+diff --git a/src/vs/workbench/api/common/extHost.api.impl.ts b/src/vs/workbench/api/common/extHost.api.impl.ts
+index 7f9eae154c3..8e622724943 100644
+--- a/src/vs/workbench/api/common/extHost.api.impl.ts
++++ b/src/vs/workbench/api/common/extHost.api.impl.ts
+@@ -109,6 +109,7 @@ import { ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyId
+ import { TextSearchCompleteMessageType } from 'vs/workbench/services/search/common/searchExtTypes';
+ import type * as vscode from 'vscode';
+ import { IExtHostTerminalShellIntegration } from 'vs/workbench/api/common/extHostTerminalShellIntegration';
++import { IExtHostSchemas } from 'vs/workbench/api/common/extHostSchemas';
+
+ export interface IExtensionRegistries {
+ 	mine: ExtensionDescriptionRegistry;
+@@ -147,6 +148,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
+ 	const extHostAuthentication = accessor.get(IExtHostAuthentication);
+ 	const extHostLanguageModels = accessor.get(IExtHostLanguageModels);
+
++	const extHostSchemas = rpcProtocol.set(ExtHostContext.ExtHostSchemas, accessor.get(IExtHostSchemas));
++
+ 	// register addressable instances
+ 	rpcProtocol.set(ExtHostContext.ExtHostFileSystemInfo, extHostFileSystemInfo);
+ 	rpcProtocol.set(ExtHostContext.ExtHostLogLevelServiceShape, <ExtHostLogLevelServiceShape><any>extHostLoggerService);
+@@ -1475,7 +1478,14 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
+ 			}
+ 		};
+
++		const schemas: typeof vscode.schemas = {
++			getSchemas: () => {
++				return extHostSchemas.getAllSchemas();
++			}
++		}
++
+ 		return <typeof vscode>{
++			schemas,
+ 			version: initData.version,
+ 			// namespaces
+ 			ai,

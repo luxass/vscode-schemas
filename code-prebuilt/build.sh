@@ -49,15 +49,18 @@ git remote add origin https://github.com/microsoft/vscode.git
 git fetch --depth 1 origin "${COMMIT}"
 git checkout FETCH_HEAD
 
+cd ..
+
+
 # run prepare script
-./scripts/prepare.sh
+. ./scripts/prepare.sh
 
 cd vscode || { echo "'vscode' dir not found"; exit 1; }
 
-yarn monaco-compile-check
-yarn valid-layers-check
+# yarn monaco-compile-check
+# yarn valid-layers-check
 
-yarn gulp compile-build
-yarn gulp compile-extension-media
-yarn gulp compile-extensions-build
-yarn gulp minify-vscode
+# yarn gulp compile-build
+# yarn gulp compile-extension-media
+# yarn gulp compile-extensions-build
+# yarn gulp minify-vscode

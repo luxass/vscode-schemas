@@ -22,6 +22,17 @@ for file in ../patches/*.patch; do
   fi
 done
 
+# apply extension api patches
+for file in ../patches/extension-api/*.patch; do
+  if [[ -f "${file}" ]]; then
+    echo applying extension api patch: "${file}";
+    if ! git apply --ignore-whitespace "${file}"; then
+      echo failed to apply patch "${file}" >&2
+      exit 1
+    fi
+  fi
+done
+
 set -x
 
 export ELECTRON_SKIP_BINARY_DOWNLOAD=1
@@ -61,3 +72,8 @@ else
 
   CHILD_CONCURRENCY=1 yarn --frozen-lockfile --check-files --network-timeout 180000
 fi
+
+# copy product.json to product.json.bak
+cp product.json{,.bak}
+
+cd ..

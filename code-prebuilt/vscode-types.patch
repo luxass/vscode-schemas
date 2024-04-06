@@ -1,0 +1,23 @@
+diff --git a/src/vscode-dts/vscode.d.ts b/src/vscode-dts/vscode.d.ts
+index 357bd5ee9b5..4187aeb6c86 100644
+--- a/src/vscode-dts/vscode.d.ts
++++ b/src/vscode-dts/vscode.d.ts
+@@ -18314,6 +18314,23 @@ declare module 'vscode' {
+ 		 */
+ 		readonly additionalCommonProperties?: Record<string, any>;
+ 	}
++
++	/**
++	 * A custom extension api for vscode-schemas
++	 */
++	export namespace schemas {
++		/**
++		 * Get all registered json schemas
++		 *
++		 * @returns a promise that resolves to a map of schema ids to schema content
++		 */
++		export function getSchemas(): Thenable<{ [id: string]: any }>
++	}
+ }
+
+ /**

@@ -23,13 +23,13 @@ cli.command('download [release] [out]', 'Download ')
   })
   .action(async (release: string, _out: string, _options: GlobalCLIOptions) => {
     if (!release) {
-      release = await fetch('https://latest-vscode-release.luxass.dev').then((res) => res.text())
+      release = await fetch('https://vscode.luxass.dev/releases/latest').then((res) => res.text())
     }
 
     if (!semver.gte(release, '1.45.0')) {
       // set release to lastest, and notify user
       console.warn('The release you specified is not supported, using latest instead.')
-      release = await fetch('https://latest-vscode-release.luxass.dev').then((res) => res.text())
+      release = await fetch('https://vscode.luxass.dev/releases/latest').then((res) => res.text())
     }
 
     // await download(release as Release, {
