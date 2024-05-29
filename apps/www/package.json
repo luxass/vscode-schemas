@@ -13,7 +13,7 @@
     "typecheck": "astro check"
   },
   "dependencies": {
-    "@astrojs/check": "^0.5.10",
+    "@astrojs/check": "^0.7.0",
     "@astrojs/tailwind": "^5.1.0",
     "@astrojs/vercel": "^7.4.0",
     "astro": "^4.5.10",
@@ -22,11 +22,11 @@
   },
   "devDependencies": {
     "@luxass/eslint-config": "^4.3.1",
-    "astro-eslint-parser": "^0.16.3",
+    "astro-eslint-parser": "^0.17.0",
     "eslint": "^8.57.0",
-    "eslint-plugin-astro": "^0.33.1",
+    "eslint-plugin-astro": "^0.34.0",
     "eslint-plugin-tailwindcss": "^3.15.1",
-    "prettier-plugin-astro": "^0.13.0",
+    "prettier-plugin-astro": "^0.14.0",
     "typescript": "^5.4.3"
   }
 }

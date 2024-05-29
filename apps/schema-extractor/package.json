@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@types/vscode": "^1.80.0",
-    "@vscode/test-web": "^0.0.53",
+    "@vscode/test-web": "^0.0.54",
     "@vscode/vsce": "^2.24.0"
   },
   "capabilities": {
