@@ -50,7 +50,7 @@
     "build-releases-type": "node scripts/build-releases-type.mjs"
   },
   "dependencies": {
-    "tar": "^6.2.1",
+    "tar": "^7.0.0",
     "vscode-uri": "^3.0.8",
     "which": "^4.0.0"
   },
