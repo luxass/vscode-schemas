@@ -24,7 +24,7 @@
     "ts-morph": "^22.0.0"
   },
   "devDependencies": {
-    "magicast": "^0.3.3",
+    "magicast": "^0.3.4",
     "typescript": "^5.4.3"
   }
 }
