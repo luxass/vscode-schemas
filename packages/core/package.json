@@ -50,15 +50,15 @@
     "build-releases-type": "node scripts/build-releases-type.mjs"
   },
   "dependencies": {
-    "tar": "^6.2.1",
+    "tar": "^7.4.0",
     "vscode-uri": "^3.0.8",
     "which": "^4.0.0"
   },
   "devDependencies": {
-    "@luxass/eslint-config": "^4.3.1",
-    "@types/tar": "^6.1.11",
-    "@types/which": "^3.0.3",
-    "eslint": "^8.57.0",
-    "typescript": "^5.4.3"
+    "@luxass/eslint-config": "^4.7.0",
+    "@types/tar": "^6.1.13",
+    "@types/which": "^3.0.4",
+    "eslint": "^9.6.0",
+    "typescript": "^5.5.2"
   }
 }

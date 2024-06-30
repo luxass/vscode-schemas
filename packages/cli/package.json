@@ -41,14 +41,14 @@
     "@vscode-schemas/core": "workspace:*",
     "cac": "^6.7.14",
     "colorette": "^2.0.20",
-    "semver": "^7.6.0"
+    "semver": "^7.6.2"
   },
   "devDependencies": {
-    "@luxass/eslint-config": "^4.3.1",
+    "@luxass/eslint-config": "^4.7.0",
     "@types/semver": "^7.5.8",
     "citty": "^0.1.6",
     "consola": "^3.2.3",
-    "eslint": "^8.57.0",
-    "typescript": "^5.4.3"
+    "eslint": "^9.6.0",
+    "typescript": "^5.5.2"
   }
 }
