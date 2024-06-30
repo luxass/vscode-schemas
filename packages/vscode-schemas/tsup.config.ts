@@ -1,16 +1,16 @@
 import {
   defineConfig,
-} from 'tsup'
+} from "tsup";
 
 export default defineConfig({
-  entry: ['./src/index.ts'],
-  format: ['esm', 'cjs'],
+  entry: ["./src/index.ts"],
+  format: ["esm", "cjs"],
   clean: true,
   treeshake: true,
   dts: true,
   outExtension(ctx) {
     return {
-      js: ctx.format === 'cjs' ? '.cjs' : '.mjs',
-    }
+      js: ctx.format === "cjs" ? ".cjs" : ".mjs",
+    };
   },
-})
+});

@@ -1,18 +1,7 @@
-import { existsSync } from 'node:fs'
-import { writeFile } from 'node:fs/promises'
-import process from 'node:process'
-import cac from 'cac'
-import semver from 'semver'
-import type { Release } from '@vscode-schemas/core'
-import {
-  downloadCodeSource,
-  scan,
-} from '@vscode-schemas/core'
-import { bold, green, inverse, red, yellow } from 'colorette'
-import { defineCommand, runMain } from 'citty'
+import { defineCommand, runMain } from "citty";
 
-import pkg from '../package.json' with { type: 'json' }
-import { commands } from './commands'
+import pkg from "../package.json" with { type: "json" };
+import { commands } from "./commands";
 // cli.command('download-src [release] [out]', 'Download VSCode Source Code')
 //   .option('--out [out]', 'Outdir to place the source code', {
 //     default: '.vscode-src',
@@ -61,6 +50,6 @@ const main = defineCommand({
     description: pkg.description,
   },
   subCommands: commands,
-})
+});
 
-runMain(main)
+runMain(main);

@@ -1,19 +1,19 @@
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import type { HonoContext, Repository } from '../../types'
-import { BUILTIN_QUERY } from '../../utils'
+import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import type { HonoContext, Repository } from "../../types";
+import { BUILTIN_QUERY } from "../../utils";
 import {
   builtinExtensionRouter,
-} from './:ext'
+} from "./:ext";
 
-export const builtinExtensionsRouter = new OpenAPIHono<HonoContext>()
+export const builtinExtensionsRouter = new OpenAPIHono<HonoContext>();
 
 const route = createRoute({
-  method: 'get',
-  path: '/builtin-extensions',
+  method: "get",
+  path: "/builtin-extensions",
   responses: {
     200: {
       content: {
-        'application/json': {
+        "application/json": {
           schema: z
             .object({
               extensions: z.array(
@@ -22,55 +22,55 @@ const route = createRoute({
             }),
         },
       },
-      description: 'Retrieve a list of all builtin extensions',
+      description: "Retrieve a list of all builtin extensions",
     },
     404: {
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             error: z.string(),
           }),
         },
       },
-      description: 'No builtin extensions found',
+      description: "No builtin extensions found",
     },
   },
-})
+});
 
 builtinExtensionsRouter.openapi(route, async (ctx) => {
-  const octokit = ctx.get('octokit')
+  const octokit = ctx.get("octokit");
 
   const {
     repository: {
       object: files,
     },
   } = await octokit.graphql<{
-    repository: Repository
+    repository: Repository;
   }>(BUILTIN_QUERY, {
-    path: 'HEAD:extensions',
+    path: "HEAD:extensions",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-  })
+  });
 
   if (!files.entries) {
     return ctx.json({
-      error: 'No builtin extensions found',
+      error: "No builtin extensions found",
     }, 404, {
-      'Content-Type': 'application/json',
-    })
+      "Content-Type": "application/json",
+    });
   }
 
   return ctx.json({
-    extensions: files.entries.filter((entry) => entry.type === 'tree').filter((entry) => {
-      const { entries } = entry.object
+    extensions: files.entries.filter((entry) => entry.type === "tree").filter((entry) => {
+      const { entries } = entry.object;
       if (!entries) {
-        return false
+        return false;
       }
 
-      return entries.some((entry) => entry.name === 'package.json' && entry.type === 'blob')
+      return entries.some((entry) => entry.name === "package.json" && entry.type === "blob");
     }).map((entry) => entry.name),
-  })
-})
+  });
+});
 
-builtinExtensionsRouter.route('/builtin-extensions', builtinExtensionRouter)
+builtinExtensionsRouter.route("/builtin-extensions", builtinExtensionRouter);

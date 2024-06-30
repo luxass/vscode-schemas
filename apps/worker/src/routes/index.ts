@@ -1,25 +1,25 @@
-import { OpenAPIHono } from '@hono/zod-openapi'
-import type { HonoContext } from '../types'
-import { $Octokit } from '../utils'
+import { OpenAPIHono } from "@hono/zod-openapi";
+import type { HonoContext } from "../types";
+import { $Octokit } from "../utils";
 
 import {
   releasesRouter,
-} from './releases'
+} from "./releases";
 import {
   builtinExtensionsRouter,
-} from './builtin-extensions'
+} from "./builtin-extensions";
 
-export const router = new OpenAPIHono<HonoContext>()
+export const router = new OpenAPIHono<HonoContext>();
 
 router.use(async (ctx, next) => {
   const octokit = new $Octokit({
     auth: ctx.env.GITHUB_TOKEN,
-  })
+  });
 
-  ctx.set('octokit', octokit)
+  ctx.set("octokit", octokit);
 
-  await next()
-})
+  await next();
+});
 
-router.route('/', releasesRouter)
-router.route('/', builtinExtensionsRouter)
+router.route("/", releasesRouter);
+router.route("/", builtinExtensionsRouter);

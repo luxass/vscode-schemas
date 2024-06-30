@@ -1,12 +1,12 @@
 export {
   downloadCodeSource,
-} from './download'
-export type { DownloadOptions } from './download'
+} from "./download";
+export type { DownloadOptions } from "./download";
 
 export type {
   Release,
-} from './releases'
+} from "./releases";
 
 export {
   scan,
-} from './scan'
+} from "./scan";
