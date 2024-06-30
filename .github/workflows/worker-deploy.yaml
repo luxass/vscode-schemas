@@ -35,12 +35,12 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4.0.0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4.0.2
         with:
           node-version: 20
           cache: pnpm
@@ -62,12 +62,12 @@ jobs:
     needs: ci
     if: (github.event.inputs.environment == 'staging' || github.event_name == 'pull_request') && github.repository == 'luxass/vscode-schemas' && contains(fromJson(vars.DEPLOY_ALLOWLIST), github.actor)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4.0.0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4.0.2
         with:
           node-version: 20
           cache: pnpm
@@ -89,12 +89,12 @@ jobs:
     needs: ci
     if: (github.event.inputs.environment == 'production' || github.event_name == 'push') && github.repository == 'luxass/vscode-schemas' && contains(fromJson(vars.DEPLOY_ALLOWLIST), github.actor)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4.0.0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4.0.2
         with:
           node-version: 20
           cache: pnpm
