@@ -73,7 +73,7 @@ importers:
         version: 0.5.87(postcss@8.4.39)(tailwindcss@3.4.4)(typescript@5.5.2)(vitest@1.6.0(@types/node@20.14.9))
       github-schema:
         specifier: ^1.9.0
-        version: 1.9.0
+        version: 1.10.1
       hono:
         specifier: ^4.4.10
         version: 4.4.10
@@ -3018,8 +3018,8 @@ packages:
   github-from-package@0.0.0:
     resolution: {integrity: sha512-SyHy3T1v2NUXn29OsWdxmK6RwHD+vkj3v8en8AOBZ1wBQ/hCAQ5bAQTD02kW4W9tUp/3Qh6J8r9EvntiyCmOOw==}
 
-  github-schema@1.9.0:
-    resolution: {integrity: sha512-Pwrwrvs6pgyScbLnN1TfTicas/zH+zY4HaQyigM5DpZ0mR0/bVvLw9IA2a9zhdKLAMX9Ird+DEWB47OCI+yHCA==}
+  github-schema@1.10.1:
+    resolution: {integrity: sha512-l7o0v1ZDeyAI53psqZT1/IVxs1OfwaxL/I/1oIE1bfY0MJrA1J68kW9IMEsZFv9X4z3840G0zSUSOR2Xs8+8GA==}
     engines: {node: '>=18'}
 
   github-slugger@2.0.0:
@@ -8992,7 +8992,7 @@ snapshots:
   github-from-package@0.0.0:
     optional: true
 
-  github-schema@1.9.0:
+  github-schema@1.10.1:
     dependencies:
       graphql: 16.9.0
       graphql-tag: 2.12.6(graphql@16.9.0)
