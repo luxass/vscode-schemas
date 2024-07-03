@@ -10,7 +10,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       '@types/node':
         specifier: ^20.14.9
         version: 20.14.9
@@ -39,8 +39,8 @@ importers:
         specifier: ^1.90.0
         version: 1.90.0
       '@vscode/test-web':
-        specifier: ^0.0.55
-        version: 0.0.55
+        specifier: ^0.0.56
+        version: 0.0.56
       '@vscode/vsce':
         specifier: ^2.29.0
         version: 2.29.0
@@ -51,8 +51,8 @@ importers:
         specifier: ^1.90.0
         version: 1.90.0
       '@vscode/test-web':
-        specifier: ^0.0.55
-        version: 0.0.55
+        specifier: ^0.0.56
+        version: 0.0.56
       '@vscode/vsce':
         specifier: ^2.29.0
         version: 2.29.0
@@ -89,7 +89,7 @@ importers:
         version: 4.20240620.0
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -129,7 +129,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       astro-eslint-parser:
         specifier: ^1.0.2
         version: 1.0.2(typescript@5.5.3)
@@ -179,7 +179,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -210,7 +210,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       '@types/tar':
         specifier: ^6.1.13
         version: 6.1.13
@@ -228,7 +228,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       eslint:
         specifier: ^9.6.0
         version: 9.6.0
@@ -1797,8 +1797,8 @@ packages:
   '@vscode/l10n@0.0.18':
     resolution: {integrity: sha512-KYSIHVmslkaCDyw013pphY+d7x1qV8IZupYfeIfzNA+nsaWHbn5uPuQRvdRFsa9zFzGeudPuoGoZ1Op4jrJXIQ==}
 
-  '@vscode/test-web@0.0.55':
-    resolution: {integrity: sha512-3e+RPXk7x4eoL4q/1PkLiVJ95MyXCKbbbWCtCDOJuFkcB3BN3Fjnk04J4l8J86R/uQUFGi71Ns66wWwanT1n+Q==}
+  '@vscode/test-web@0.0.56':
+    resolution: {integrity: sha512-lR688n+D6A9odw+IZ5cU8CYr2YXLB61bGgyZpPVJe/sJy4/DYX5CAxPb7Wj9ZMYL41CTvWq5DeXtfCjlabPcYA==}
     engines: {node: '>=16'}
     hasBin: true
 
@@ -6740,7 +6740,7 @@ snapshots:
       '@lezer/highlight': 1.2.0
       '@lezer/lr': 1.4.1
 
-  '@luxass/eslint-config@4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))':
+  '@luxass/eslint-config@4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))':
     dependencies:
       '@antfu/install-pkg': 0.3.3
       '@clack/prompts': 0.7.0
@@ -7702,11 +7702,12 @@ snapshots:
 
   '@vscode/l10n@0.0.18': {}
 
-  '@vscode/test-web@0.0.55':
+  '@vscode/test-web@0.0.56':
     dependencies:
       '@koa/cors': 5.0.0
       '@koa/router': 12.0.1
       '@playwright/browser-chromium': 1.45.0
+      glob: 10.4.2
       gunzip-maybe: 1.4.2
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.5
