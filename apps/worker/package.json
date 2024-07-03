@@ -12,22 +12,22 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hono/zod-openapi": "^0.14.5",
+    "@hono/zod-openapi": "^0.14.7",
     "@octokit/core": "^6.1.2",
-    "@octokit/plugin-paginate-rest": "^11.3.0",
-    "@scalar/hono-api-reference": "^0.5.87",
-    "github-schema": "^1.9.0",
-    "hono": "^4.4.10",
+    "@octokit/plugin-paginate-rest": "^11.3.3",
+    "@scalar/hono-api-reference": "^0.5.90",
+    "github-schema": "^1.10.1",
+    "hono": "^4.4.11",
     "semver": "^7.6.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240620.0",
-    "@luxass/eslint-config": "^4.7.0",
+    "@luxass/eslint-config": "^4.8.0",
     "@types/semver": "^7.5.8",
     "eslint": "^9.6.0",
     "eslint-plugin-format": "^0.1.2",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "wrangler": "^3.62.0"
   }
 }

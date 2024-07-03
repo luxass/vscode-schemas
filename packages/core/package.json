@@ -55,10 +55,10 @@
     "which": "^4.0.0"
   },
   "devDependencies": {
-    "@luxass/eslint-config": "^4.7.0",
+    "@luxass/eslint-config": "^4.8.0",
     "@types/tar": "^6.1.13",
     "@types/which": "^3.0.4",
     "eslint": "^9.6.0",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.3"
   }
 }
