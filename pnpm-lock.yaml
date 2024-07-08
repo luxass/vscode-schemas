@@ -10,7 +10,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       '@types/node':
         specifier: ^20.14.9
         version: 20.14.9
@@ -61,7 +61,7 @@ importers:
     dependencies:
       '@hono/zod-openapi':
         specifier: ^0.14.7
-        version: 0.14.7(hono@4.4.11)(zod@3.23.8)
+        version: 0.14.8(hono@4.4.11)(zod@3.23.8)
       '@octokit/core':
         specifier: ^6.1.2
         version: 6.1.2
@@ -89,7 +89,7 @@ importers:
         version: 4.20240620.0
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -129,7 +129,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       astro-eslint-parser:
         specifier: ^1.0.2
         version: 1.0.2(typescript@5.5.3)
@@ -179,7 +179,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -210,7 +210,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       '@types/tar':
         specifier: ^6.1.13
         version: 6.1.13
@@ -228,7 +228,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.8.0
-        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
+        version: 4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))
       eslint:
         specifier: ^9.6.0
         version: 9.6.0
@@ -938,8 +938,8 @@ packages:
     peerDependencies:
       vue: ^3.2.0
 
-  '@hono/zod-openapi@0.14.7':
-    resolution: {integrity: sha512-nxpph8z/wlBDX9oMH3UUcuxwzjnEujvFlyUa5a4A9pV4m8bDN4P0Ari0GpfJZ0B8V3zKdHnxqb7vk7wkoAAwdA==}
+  '@hono/zod-openapi@0.14.8':
+    resolution: {integrity: sha512-wlgJiHwomODOdG79+Z0bMbkheLykI4jWV1D9Z4B2q0UNtmcgq+sn6ViSPM1JGpPtrtuCq18F+4DAqv8Meh+2IA==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       hono: '>=4.3.6'
@@ -6505,7 +6505,7 @@ snapshots:
       '@tanstack/vue-virtual': 3.8.1(vue@3.4.31(typescript@5.5.3))
       vue: 3.4.31(typescript@5.5.3)
 
-  '@hono/zod-openapi@0.14.7(hono@4.4.11)(zod@3.23.8)':
+  '@hono/zod-openapi@0.14.8(hono@4.4.11)(zod@3.23.8)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.1.1(zod@3.23.8)
       '@hono/zod-validator': 0.2.2(hono@4.4.11)(zod@3.23.8)
@@ -6740,7 +6740,7 @@ snapshots:
       '@lezer/highlight': 1.2.0
       '@lezer/lr': 1.4.1
 
-  '@luxass/eslint-config@4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4))(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))':
+  '@luxass/eslint-config@4.8.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.2(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@1.6.0(@types/node@20.14.9))':
     dependencies:
       '@antfu/install-pkg': 0.3.3
       '@clack/prompts': 0.7.0
