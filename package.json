@@ -7,7 +7,7 @@
     "email": "lucasnrgaard@gmail.com",
     "url": "https://luxass.dev"
   },
-  "packageManager": "pnpm@9.4.0",
+  "packageManager": "pnpm@9.5.0",
   "license": "MIT",
   "homepage": "https://github.com/luxass/vscode-schemas",
   "repository": "https://github.com/luxass/vscode-schemas",
@@ -26,13 +26,13 @@
     "typecheck": "turbo typecheck"
   },
   "devDependencies": {
-    "@luxass/eslint-config": "^4.8.0",
+    "@luxass/eslint-config": "^4.9.0",
     "@types/node": "^20.14.9",
     "eslint": "^9.6.0",
     "eslint-plugin-format": "^0.1.2",
     "tsup": "^8.1.0",
     "turbo": "^2.0.6",
     "typescript": "^5.5.3",
-    "vitest": "^1.6.0"
+    "vitest": "^2.0.2"
   }
 }

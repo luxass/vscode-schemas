@@ -54,9 +54,9 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/vscode": "^1.90.0",
-    "@vscode/test-web": "^0.0.55",
-    "@vscode/vsce": "^2.29.0"
+    "@types/vscode": "^1.91.0",
+    "@vscode/test-web": "^0.0.56",
+    "@vscode/vsce": "^2.30.0"
   },
   "capabilities": {
     "virtualWorkspaces": true
