@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4.1.7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.3.0
+        uses: docker/setup-buildx-action@v3.4.0
         with:
           install: true
 
@@ -41,7 +41,7 @@ jobs:
 
 
       - name: Build and push
-        uses: docker/build-push-action@v6.2.0
+        uses: docker/build-push-action@v6.3.0
         if: ${{ github.event.inputs.dry-run != 'true' }}
         with:
           context: code-prebuilt/build-agents/${{ matrix.arch }}
