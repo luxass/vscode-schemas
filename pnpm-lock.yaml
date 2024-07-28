@@ -10,7 +10,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.9.0
-        version: 4.10.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))
+        version: 4.10.2(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))
       '@types/node':
         specifier: ^20.14.9
         version: 20.14.11
@@ -80,7 +80,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.9.0
-        version: 4.10.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))
+        version: 4.10.2(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))
       astro-eslint-parser:
         specifier: ^1.0.2
         version: 1.0.2(typescript@5.5.3)
@@ -130,7 +130,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.9.0
-        version: 4.10.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))
+        version: 4.10.2(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -161,7 +161,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.9.0
-        version: 4.10.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))
+        version: 4.10.2(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))
       '@types/tar':
         specifier: ^6.1.13
         version: 6.1.13
@@ -179,7 +179,7 @@ importers:
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.9.0
-        version: 4.10.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))
+        version: 4.10.2(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))
       eslint:
         specifier: ^9.6.0
         version: 9.6.0
@@ -793,8 +793,8 @@ packages:
     resolution: {integrity: sha512-ribfPYfHb+Uw3b27Eiw6NPqjhIhTpVFzEWLwyc/1Xp+DCdwRRyIlAUODX+9bPARF6aQtUu1+/PHzdNvRzcs/+Q==}
     engines: {node: '>= 12'}
 
-  '@luxass/eslint-config@4.10.0':
-    resolution: {integrity: sha512-1Q1QjrcbedjSBOOvh8BC2S5r/A9YdcE+7rPl/1qXkvef3OndWQ5KJ0ORr03l3FMh/tO9QS4A8apkNAGlNkyEog==}
+  '@luxass/eslint-config@4.10.2':
+    resolution: {integrity: sha512-1d2Kd36E3AgHNO9/6srk229qiWJ/ALBD1HnLRDijYW65FsRG8SYppnly+j0lphYICNhqjXBX/yaM1eQBUc1d2A==}
     engines: {node: '>=18'}
     peerDependencies:
       '@eslint-react/eslint-plugin': ^1.5.8
@@ -5261,7 +5261,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@luxass/eslint-config@4.10.0(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))':
+  '@luxass/eslint-config@4.10.2(@vue/compiler-sfc@3.4.31)(astro-eslint-parser@1.0.2(typescript@5.5.3))(eslint-plugin-astro@1.2.3(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-format@0.1.2(eslint@9.6.0))(eslint-plugin-tailwindcss@3.17.4)(eslint@9.6.0)(prettier-plugin-astro@0.14.0)(typescript@5.5.3)(vitest@2.0.2(@types/node@20.14.11))':
     dependencies:
       '@antfu/install-pkg': 0.3.3
       '@clack/prompts': 0.7.0
