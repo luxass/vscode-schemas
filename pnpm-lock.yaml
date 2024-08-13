@@ -64,7 +64,7 @@ importers:
         version: 0.8.3(prettier-plugin-astro@0.14.0)(prettier@3.3.2)(typescript@5.5.3)
       '@astrojs/tailwind':
         specifier: ^5.1.0
-        version: 5.1.0(astro@4.11.6(@types/node@20.14.11)(typescript@5.5.3))(tailwindcss@3.4.7)
+        version: 5.1.0(astro@4.11.6(@types/node@20.14.11)(typescript@5.5.3))(tailwindcss@3.4.9)
       '@astrojs/vercel':
         specifier: ^7.7.2
         version: 7.7.2(astro@4.11.6(@types/node@20.14.11)(typescript@5.5.3))
@@ -76,7 +76,7 @@ importers:
         version: 1.1.0
       tailwindcss:
         specifier: ^3.4.4
-        version: 3.4.7
+        version: 3.4.9
     devDependencies:
       '@luxass/eslint-config':
         specifier: ^4.9.0
@@ -92,7 +92,7 @@ importers:
         version: 1.2.3(eslint@9.6.0)(typescript@5.5.3)
       eslint-plugin-tailwindcss:
         specifier: ^3.17.4
-        version: 3.17.4(tailwindcss@3.4.7)
+        version: 3.17.4(tailwindcss@3.4.9)
       prettier-plugin-astro:
         specifier: ^0.14.0
         version: 0.14.0
@@ -3484,8 +3484,8 @@ packages:
     peerDependencies:
       postcss: ^8.2.14
 
-  postcss-selector-parser@6.1.1:
-    resolution: {integrity: sha512-b4dlw/9V8A71rLIDsSwVmak9z2DuBUB7CA1/wSdelNEzqsjoSPeADTWNO09lpH49Diy3/JIZ2bSPB1dI3LJCHg==}
+  postcss-selector-parser@6.1.2:
+    resolution: {integrity: sha512-Q8qQfPiZ+THO/3ZrOrO0cJJKfpYCagtMUkXbnEfmgUjwXg6z/WBeOyS9APBBPCTSiDV+s4SwQGu8yFsiMRIudg==}
     engines: {node: '>=4'}
 
   postcss-value-parser@4.2.0:
@@ -3953,8 +3953,8 @@ packages:
     resolution: {integrity: sha512-7gr8p9TQP6RAHusBOSLs46F4564ZrjV8xFmw5zCmgmhGUcw2hxsShhJ6CEiHQMgPDwAQ1fWHPM0ypc4RMAig4A==}
     engines: {node: ^14.18.0 || >=16.0.0}
 
-  tailwindcss@3.4.7:
-    resolution: {integrity: sha512-rxWZbe87YJb4OcSopb7up2Ba4U82BoiSGUdoDr3Ydrg9ckxFS/YWsvhN323GMcddgU65QRy7JndC7ahhInhvlQ==}
+  tailwindcss@3.4.9:
+    resolution: {integrity: sha512-1SEOvRr6sSdV5IDf9iC+NU4dhwdqzF4zKKq3sAbasUWHEM6lsMhX+eNN5gkPx1BvLFEnZQEUFbXnGj8Qlp83Pg==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -4649,13 +4649,13 @@ snapshots:
     dependencies:
       prismjs: 1.29.0
 
-  '@astrojs/tailwind@5.1.0(astro@4.11.6(@types/node@20.14.11)(typescript@5.5.3))(tailwindcss@3.4.7)':
+  '@astrojs/tailwind@5.1.0(astro@4.11.6(@types/node@20.14.11)(typescript@5.5.3))(tailwindcss@3.4.9)':
     dependencies:
       astro: 4.11.6(@types/node@20.14.11)(typescript@5.5.3)
       autoprefixer: 10.4.19(postcss@8.4.41)
       postcss: 8.4.41
       postcss-load-config: 4.0.2(postcss@8.4.41)
-      tailwindcss: 3.4.7
+      tailwindcss: 3.4.9
     transitivePeerDependencies:
       - ts-node
 
@@ -5260,7 +5260,7 @@ snapshots:
       astro-eslint-parser: 1.0.2(typescript@5.5.3)
       eslint-plugin-astro: 1.2.3(eslint@9.6.0)(typescript@5.5.3)
       eslint-plugin-format: 0.1.2(eslint@9.6.0)
-      eslint-plugin-tailwindcss: 3.17.4(tailwindcss@3.4.7)
+      eslint-plugin-tailwindcss: 3.17.4(tailwindcss@3.4.9)
       prettier-plugin-astro: 0.14.0
     transitivePeerDependencies:
       - '@vue/compiler-sfc'
@@ -6655,7 +6655,7 @@ snapshots:
       eslint-compat-utils: 0.5.1(eslint@9.6.0)
       globals: 15.9.0
       postcss: 8.4.41
-      postcss-selector-parser: 6.1.1
+      postcss-selector-parser: 6.1.2
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -6753,11 +6753,11 @@ snapshots:
       regexp-ast-analysis: 0.7.1
       scslre: 0.3.0
 
-  eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.7):
+  eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.9):
     dependencies:
       fast-glob: 3.3.2
       postcss: 8.4.41
-      tailwindcss: 3.4.7
+      tailwindcss: 3.4.9
 
   eslint-plugin-toml@0.11.1(eslint@9.6.0):
     dependencies:
@@ -6814,7 +6814,7 @@ snapshots:
       globals: 13.24.0
       natural-compare: 1.4.0
       nth-check: 2.1.1
-      postcss-selector-parser: 6.1.1
+      postcss-selector-parser: 6.1.2
       semver: 7.6.3
       vue-eslint-parser: 9.4.3(eslint@9.6.0)
       xml-name-validator: 4.0.0
@@ -8477,9 +8477,9 @@ snapshots:
   postcss-nested@6.2.0(postcss@8.4.41):
     dependencies:
       postcss: 8.4.41
-      postcss-selector-parser: 6.1.1
+      postcss-selector-parser: 6.1.2
 
-  postcss-selector-parser@6.1.1:
+  postcss-selector-parser@6.1.2:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
@@ -9055,7 +9055,7 @@ snapshots:
       '@pkgr/core': 0.1.1
       tslib: 2.6.3
 
-  tailwindcss@3.4.7:
+  tailwindcss@3.4.9:
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -9076,7 +9076,7 @@ snapshots:
       postcss-js: 4.0.1(postcss@8.4.41)
       postcss-load-config: 4.0.2(postcss@8.4.41)
       postcss-nested: 6.2.0(postcss@8.4.41)
-      postcss-selector-parser: 6.1.1
+      postcss-selector-parser: 6.1.2
       resolve: 1.22.8
       sucrase: 3.35.0
     transitivePeerDependencies:
